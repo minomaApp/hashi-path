@@ -1,0 +1,4340 @@
+{
+  "$id": "1",
+  "$type": "BoxPuller.Scripts.Data.LevelData, Assembly-CSharp",
+  "levelDataDefaultObjectType": 0,
+  "TargetQueue": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.BasePlaceableData, Assembly-CSharp]], mscorlib",
+    "$values": []
+  },
+  "connections": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ConnectionData, Assembly-CSharp]], mscorlib",
+    "$values": []
+  },
+  "bottomShooterLanes": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp]], mscorlib",
+    "$values": [
+      {
+        "$id": "2",
+        "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
+        "shooters": {
+          "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
+          "$values": [
+            {
+              "$id": "3",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 1,
+              "bulletCount": 5,
+              "laneIndex": 0,
+              "orderIndex": 0,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "4",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 6,
+              "bulletCount": 5,
+              "laneIndex": 0,
+              "orderIndex": 1,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "5",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 4,
+              "bulletCount": 5,
+              "laneIndex": 0,
+              "orderIndex": 2,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "6",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 10,
+              "bulletCount": 30,
+              "laneIndex": 0,
+              "orderIndex": 3,
+              "linkGroupId": -1,
+              "isHidden": true
+            },
+            {
+              "$id": "7",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 8,
+              "bulletCount": 30,
+              "laneIndex": 0,
+              "orderIndex": 4,
+              "linkGroupId": -1,
+              "isHidden": false
+            }
+          ]
+        }
+      },
+      {
+        "$id": "8",
+        "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
+        "shooters": {
+          "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
+          "$values": [
+            {
+              "$id": "9",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 2,
+              "bulletCount": 5,
+              "laneIndex": 1,
+              "orderIndex": 0,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "10",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 7,
+              "bulletCount": 5,
+              "laneIndex": 1,
+              "orderIndex": 1,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "11",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 5,
+              "bulletCount": 5,
+              "laneIndex": 1,
+              "orderIndex": 2,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "12",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 3,
+              "bulletCount": 30,
+              "laneIndex": 1,
+              "orderIndex": 3,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "13",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 8,
+              "bulletCount": 30,
+              "laneIndex": 1,
+              "orderIndex": 4,
+              "linkGroupId": -1,
+              "isHidden": false
+            }
+          ]
+        }
+      },
+      {
+        "$id": "14",
+        "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
+        "shooters": {
+          "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
+          "$values": [
+            {
+              "$id": "15",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 3,
+              "bulletCount": 5,
+              "laneIndex": 2,
+              "orderIndex": 0,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "16",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 8,
+              "bulletCount": 5,
+              "laneIndex": 2,
+              "orderIndex": 1,
+              "linkGroupId": -1,
+              "isHidden": false
+            },
+            {
+              "$id": "17",
+              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
+              "color": 10,
+              "bulletCount": 5,
+              "laneIndex": 2,
+              "orderIndex": 2,
+              "linkGroupId": -1,
+              "isHidden": false
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "bottomShooters": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
+    "$values": []
+  },
+  "boxes": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.BoxSpawnData, Assembly-CSharp]], mscorlib",
+    "$values": []
+  },
+  "boxGridWidth": 5,
+  "boxGridHeight": 10,
+  "bottomLaneCount": 3,
+  "visibleShooterCountPerLane": 4,
+  "Width": 14,
+  "Height": 12,
+  "GridData": {
+    "$type": "BoxPuller.Scripts.Data.GridCellData[,], Assembly-CSharp",
+    "$values": [
+      [
+        {
+          "$id": "18",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "19",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "20",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 0,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "21",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "22",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 1,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "23",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 0,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "24",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "25",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 2,
+            "magnitude": 2.0,
+            "sqrMagnitude": 4
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "26",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 0,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "27",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "28",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 3,
+            "magnitude": 3.0,
+            "sqrMagnitude": 9
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "29",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 0,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "30",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "31",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 4,
+            "magnitude": 4.0,
+            "sqrMagnitude": 16
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "32",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 0,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "33",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "34",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 5,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "35",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 0,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "36",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "37",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 6,
+            "magnitude": 6.0,
+            "sqrMagnitude": 36
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "38",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 0,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "39",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "40",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 7,
+            "magnitude": 7.0,
+            "sqrMagnitude": 49
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "41",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 0,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "42",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "43",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 8,
+            "magnitude": 8.0,
+            "sqrMagnitude": 64
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "44",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 0,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "45",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "46",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 9,
+            "magnitude": 9.0,
+            "sqrMagnitude": 81
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "47",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "48",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 10,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "49",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "50",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 11,
+            "magnitude": 11.0,
+            "sqrMagnitude": 121
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "51",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "52",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 0,
+            "magnitude": 1.0,
+            "sqrMagnitude": 1
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "53",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 1,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "54",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "55",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 1,
+            "magnitude": 1.41421354,
+            "sqrMagnitude": 2
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "56",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 1,
+            "y": 1,
+            "moldGroupId": 2,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "57",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "58",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 2,
+            "magnitude": 2.236068,
+            "sqrMagnitude": 5
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "59",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 1,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "60",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "61",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 3,
+            "magnitude": 3.1622777,
+            "sqrMagnitude": 10
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "62",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 1,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "63",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "64",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 4,
+            "magnitude": 4.12310553,
+            "sqrMagnitude": 17
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "65",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 1,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "66",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "67",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 5,
+            "magnitude": 5.09901953,
+            "sqrMagnitude": 26
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "68",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 1,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "69",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "70",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 6,
+            "magnitude": 6.08276272,
+            "sqrMagnitude": 37
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "71",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 1,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "72",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "73",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 7,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "74",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 1,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "75",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "76",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 8,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "77",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 1,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "78",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "79",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 9,
+            "magnitude": 9.055386,
+            "sqrMagnitude": 82
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "80",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "81",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 10,
+            "magnitude": 10.0498753,
+            "sqrMagnitude": 101
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "82",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "83",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 11,
+            "magnitude": 11.0453606,
+            "sqrMagnitude": 122
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "84",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "85",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 0,
+            "magnitude": 2.0,
+            "sqrMagnitude": 4
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "86",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 2,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "87",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "88",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 1,
+            "magnitude": 2.236068,
+            "sqrMagnitude": 5
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "89",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 2,
+            "y": 1,
+            "moldGroupId": 2,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "90",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "91",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 2,
+            "magnitude": 2.828427,
+            "sqrMagnitude": 8
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "92",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 2,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "93",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "94",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 3,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "95",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 2,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "96",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "97",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 4,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "98",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 2,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "99",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "100",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 5,
+            "magnitude": 5.38516474,
+            "sqrMagnitude": 29
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "101",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 2,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "102",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "103",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 6,
+            "magnitude": 6.3245554,
+            "sqrMagnitude": 40
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "104",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 2,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "105",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "106",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 7,
+            "magnitude": 7.28011,
+            "sqrMagnitude": 53
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "107",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 2,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "108",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "109",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 8,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "110",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 2,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "111",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "112",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 9,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "113",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "114",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 10,
+            "magnitude": 10.1980391,
+            "sqrMagnitude": 104
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "115",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "116",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 11,
+            "magnitude": 11.18034,
+            "sqrMagnitude": 125
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "117",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "118",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 0,
+            "magnitude": 3.0,
+            "sqrMagnitude": 9
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "119",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 3,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "120",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "121",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 1,
+            "magnitude": 3.1622777,
+            "sqrMagnitude": 10
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "122",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 3,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "123",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "124",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 2,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "125",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 3,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "126",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "127",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 3,
+            "magnitude": 4.2426405,
+            "sqrMagnitude": 18
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "128",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 3,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "129",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "130",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 4,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "131",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 3,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "132",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "133",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 5,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "134",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 3,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "135",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "136",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 6,
+            "magnitude": 6.708204,
+            "sqrMagnitude": 45
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "137",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 3,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "138",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "139",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 7,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "140",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 3,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "141",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "142",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 8,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "143",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 3,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "144",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "145",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 9,
+            "magnitude": 9.486833,
+            "sqrMagnitude": 90
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "146",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "147",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 10,
+            "magnitude": 10.4403067,
+            "sqrMagnitude": 109
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "148",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "149",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 11,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "150",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "151",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 0,
+            "magnitude": 4.0,
+            "sqrMagnitude": 16
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "152",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 4,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "153",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "154",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 1,
+            "magnitude": 4.12310553,
+            "sqrMagnitude": 17
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "155",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 4,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "156",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "157",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 2,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "158",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 4,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "159",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "160",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 3,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "161",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 4,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "162",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "163",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 4,
+            "magnitude": 5.656854,
+            "sqrMagnitude": 32
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "164",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 4,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "165",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "166",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 5,
+            "magnitude": 6.40312433,
+            "sqrMagnitude": 41
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "167",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 4,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "168",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "169",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 6,
+            "magnitude": 7.21110249,
+            "sqrMagnitude": 52
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "170",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 4,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "171",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "172",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 7,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "173",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 4,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "174",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "175",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 8,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "176",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 4,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "177",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "178",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 9,
+            "magnitude": 9.848858,
+            "sqrMagnitude": 97
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "179",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "180",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 10,
+            "magnitude": 10.7703295,
+            "sqrMagnitude": 116
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "181",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "182",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 11,
+            "magnitude": 11.7046995,
+            "sqrMagnitude": 137
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "183",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "184",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "185",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 5,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "186",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "187",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 1,
+            "magnitude": 5.09901953,
+            "sqrMagnitude": 26
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "188",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 5,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "189",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "190",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 2,
+            "magnitude": 5.38516474,
+            "sqrMagnitude": 29
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "191",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 5,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "192",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "193",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 3,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "194",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 5,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "195",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "196",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 4,
+            "magnitude": 6.40312433,
+            "sqrMagnitude": 41
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "197",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 5,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "198",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "199",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 5,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "200",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 5,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "201",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "202",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 6,
+            "magnitude": 7.81025,
+            "sqrMagnitude": 61
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "203",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 5,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "204",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "205",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 7,
+            "magnitude": 8.602325,
+            "sqrMagnitude": 74
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "206",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 5,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "207",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "208",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 8,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "209",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 5,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "210",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "211",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 9,
+            "magnitude": 10.29563,
+            "sqrMagnitude": 106
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "212",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "213",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 10,
+            "magnitude": 11.18034,
+            "sqrMagnitude": 125
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "214",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "215",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 11,
+            "magnitude": 12.083046,
+            "sqrMagnitude": 146
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "216",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "217",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 0,
+            "magnitude": 6.0,
+            "sqrMagnitude": 36
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "218",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 6,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "219",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "220",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 1,
+            "magnitude": 6.08276272,
+            "sqrMagnitude": 37
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "221",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 6,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "222",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "223",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 2,
+            "magnitude": 6.3245554,
+            "sqrMagnitude": 40
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "224",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 6,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "225",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "226",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 3,
+            "magnitude": 6.708204,
+            "sqrMagnitude": 45
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "227",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 6,
+            "y": 3,
+            "moldGroupId": 3,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "228",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "229",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 4,
+            "magnitude": 7.21110249,
+            "sqrMagnitude": 52
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "230",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 6,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "231",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "232",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 5,
+            "magnitude": 7.81025,
+            "sqrMagnitude": 61
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "233",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 6,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "234",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "235",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 6,
+            "magnitude": 8.485281,
+            "sqrMagnitude": 72
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "236",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 6,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "237",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "238",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 7,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "239",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 6,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "240",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "241",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 8,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "242",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 6,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "243",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "244",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 9,
+            "magnitude": 10.8166542,
+            "sqrMagnitude": 117
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "245",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "246",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 10,
+            "magnitude": 11.6619034,
+            "sqrMagnitude": 136
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "247",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "248",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 11,
+            "magnitude": 12.5299644,
+            "sqrMagnitude": 157
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "249",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "250",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 0,
+            "magnitude": 7.0,
+            "sqrMagnitude": 49
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "251",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 7,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "252",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "253",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 1,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "254",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 7,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "255",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "256",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 2,
+            "magnitude": 7.28011,
+            "sqrMagnitude": 53
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "257",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 7,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "258",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "259",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 3,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "260",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 7,
+            "y": 3,
+            "moldGroupId": 3,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "261",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "262",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 4,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "263",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 7,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "264",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "265",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 5,
+            "magnitude": 8.602325,
+            "sqrMagnitude": 74
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "266",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 7,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "267",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "268",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 6,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "269",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 7,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "270",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "271",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 7,
+            "magnitude": 9.899495,
+            "sqrMagnitude": 98
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "272",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 7,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "273",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "274",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 8,
+            "magnitude": 10.630146,
+            "sqrMagnitude": 113
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "275",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 7,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "276",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "277",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 9,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "278",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "279",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 10,
+            "magnitude": 12.2065554,
+            "sqrMagnitude": 149
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "280",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "281",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 11,
+            "magnitude": 13.0384045,
+            "sqrMagnitude": 170
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "282",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "283",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 0,
+            "magnitude": 8.0,
+            "sqrMagnitude": 64
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "284",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 8,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "285",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "286",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 1,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "287",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 8,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "288",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "289",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 2,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "290",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 8,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "291",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "292",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 3,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "293",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 8,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "294",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "295",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 4,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "296",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 8,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "297",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "298",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 5,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "299",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 8,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "300",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "301",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 6,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "302",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 8,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "303",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "304",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 7,
+            "magnitude": 10.630146,
+            "sqrMagnitude": 113
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "305",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 8,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "306",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "307",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 8,
+            "magnitude": 11.3137083,
+            "sqrMagnitude": 128
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "308",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 8,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "309",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "310",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 9,
+            "magnitude": 12.0415945,
+            "sqrMagnitude": 145
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "311",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "312",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 10,
+            "magnitude": 12.8062487,
+            "sqrMagnitude": 164
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "313",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "314",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 11,
+            "magnitude": 13.6014709,
+            "sqrMagnitude": 185
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "315",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "316",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 0,
+            "magnitude": 9.0,
+            "sqrMagnitude": 81
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "317",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 9,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "318",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "319",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 1,
+            "magnitude": 9.055386,
+            "sqrMagnitude": 82
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "320",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 9,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "321",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "322",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 2,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "323",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 9,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "324",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "325",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 3,
+            "magnitude": 9.486833,
+            "sqrMagnitude": 90
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "326",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 9,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "327",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "328",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 4,
+            "magnitude": 9.848858,
+            "sqrMagnitude": 97
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "329",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 9,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "330",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "331",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 5,
+            "magnitude": 10.29563,
+            "sqrMagnitude": 106
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "332",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 9,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "333",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "334",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 6,
+            "magnitude": 10.8166542,
+            "sqrMagnitude": 117
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "335",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 9,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "336",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "337",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 7,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "338",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 9,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "339",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "340",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 8,
+            "magnitude": 12.0415945,
+            "sqrMagnitude": 145
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "341",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 9,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "342",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "343",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 9,
+            "magnitude": 12.7279224,
+            "sqrMagnitude": 162
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "344",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "345",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 10,
+            "magnitude": 13.4536238,
+            "sqrMagnitude": 181
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "346",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "347",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 9,
+            "y": 11,
+            "magnitude": 14.21267,
+            "sqrMagnitude": 202
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "348",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "349",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 0,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "350",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 10,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "351",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "352",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 1,
+            "magnitude": 10.0498753,
+            "sqrMagnitude": 101
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "353",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 10,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "354",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "355",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 2,
+            "magnitude": 10.1980391,
+            "sqrMagnitude": 104
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "356",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 10,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "357",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "358",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 3,
+            "magnitude": 10.4403067,
+            "sqrMagnitude": 109
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "359",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 10,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "360",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "361",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 4,
+            "magnitude": 10.7703295,
+            "sqrMagnitude": 116
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "362",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 10,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "363",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "364",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 5,
+            "magnitude": 11.18034,
+            "sqrMagnitude": 125
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "365",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 10,
+            "y": 5,
+            "moldGroupId": 1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "366",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "367",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 6,
+            "magnitude": 11.6619034,
+            "sqrMagnitude": 136
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "368",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 10,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "369",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "370",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 7,
+            "magnitude": 12.2065554,
+            "sqrMagnitude": 149
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "371",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 10,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "372",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "373",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 8,
+            "magnitude": 12.8062487,
+            "sqrMagnitude": 164
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "374",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 10,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "375",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "376",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 9,
+            "magnitude": 13.4536238,
+            "sqrMagnitude": 181
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "377",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "378",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 10,
+            "magnitude": 14.1421356,
+            "sqrMagnitude": 200
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "379",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "380",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 10,
+            "y": 11,
+            "magnitude": 14.8660688,
+            "sqrMagnitude": 221
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "381",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "382",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 0,
+            "magnitude": 11.0,
+            "sqrMagnitude": 121
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "383",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 11,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "384",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "385",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 1,
+            "magnitude": 11.0453606,
+            "sqrMagnitude": 122
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "386",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 11,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "387",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "388",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 2,
+            "magnitude": 11.18034,
+            "sqrMagnitude": 125
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "389",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 11,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "390",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "391",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 3,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "392",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 11,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "393",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "394",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 4,
+            "magnitude": 11.7046995,
+            "sqrMagnitude": 137
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "395",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 11,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "396",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "397",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 5,
+            "magnitude": 12.083046,
+            "sqrMagnitude": 146
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "398",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 11,
+            "y": 5,
+            "moldGroupId": 1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "399",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "400",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 6,
+            "magnitude": 12.5299644,
+            "sqrMagnitude": 157
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "401",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 11,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "402",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "403",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 7,
+            "magnitude": 13.0384045,
+            "sqrMagnitude": 170
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "404",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 11,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "405",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "406",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 8,
+            "magnitude": 13.6014709,
+            "sqrMagnitude": 185
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "407",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 11,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "408",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "409",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 9,
+            "magnitude": 14.21267,
+            "sqrMagnitude": 202
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "410",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "411",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 10,
+            "magnitude": 14.8660688,
+            "sqrMagnitude": 221
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "412",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "413",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 11,
+            "y": 11,
+            "magnitude": 15.5563488,
+            "sqrMagnitude": 242
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "414",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "415",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 0,
+            "magnitude": 12.0,
+            "sqrMagnitude": 144
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "416",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 12,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "417",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "418",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 1,
+            "magnitude": 12.0415945,
+            "sqrMagnitude": 145
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "419",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 12,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "420",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "421",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 2,
+            "magnitude": 12.1655254,
+            "sqrMagnitude": 148
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "422",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 12,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "423",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "424",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 3,
+            "magnitude": 12.3693171,
+            "sqrMagnitude": 153
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "425",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 12,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "426",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "427",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 4,
+            "magnitude": 12.6491108,
+            "sqrMagnitude": 160
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "428",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 12,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "429",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "430",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 5,
+            "magnitude": 13.0,
+            "sqrMagnitude": 169
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "431",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 12,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "432",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "433",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 6,
+            "magnitude": 13.4164076,
+            "sqrMagnitude": 180
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "434",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 12,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "435",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "436",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 7,
+            "magnitude": 13.8924437,
+            "sqrMagnitude": 193
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "437",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 12,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "438",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "439",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 8,
+            "magnitude": 14.422205,
+            "sqrMagnitude": 208
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "440",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 12,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "441",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "442",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 9,
+            "magnitude": 15.0,
+            "sqrMagnitude": 225
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "443",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "444",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 10,
+            "magnitude": 15.6205,
+            "sqrMagnitude": 244
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "445",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "446",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 12,
+            "y": 11,
+            "magnitude": 16.27882,
+            "sqrMagnitude": 265
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "447",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "448",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 0,
+            "magnitude": 13.0,
+            "sqrMagnitude": 169
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "449",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 5,
+            "x": 13,
+            "y": 0,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "450",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "451",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 1,
+            "magnitude": 13.0384045,
+            "sqrMagnitude": 170
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "452",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 1,
+            "x": 13,
+            "y": 1,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "453",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "454",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 2,
+            "magnitude": 13.1529465,
+            "sqrMagnitude": 173
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "455",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 4,
+            "x": 13,
+            "y": 2,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "456",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "457",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 3,
+            "magnitude": 13.3416643,
+            "sqrMagnitude": 178
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "458",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 6,
+            "x": 13,
+            "y": 3,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "459",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "460",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 4,
+            "magnitude": 13.6014709,
+            "sqrMagnitude": 185
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "461",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 7,
+            "x": 13,
+            "y": 4,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "462",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "463",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 5,
+            "magnitude": 13.9283886,
+            "sqrMagnitude": 194
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "464",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 8,
+            "x": 13,
+            "y": 5,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "465",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "466",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 6,
+            "magnitude": 14.3178215,
+            "sqrMagnitude": 205
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "467",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 10,
+            "x": 13,
+            "y": 6,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "468",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "469",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 7,
+            "magnitude": 14.764823,
+            "sqrMagnitude": 218
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "470",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 2,
+            "x": 13,
+            "y": 7,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "471",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "472",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 8,
+            "magnitude": 15.2643375,
+            "sqrMagnitude": 233
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "473",
+            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
+            "color": 3,
+            "x": 13,
+            "y": 8,
+            "moldGroupId": -1,
+            "isFilled": true
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "474",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "475",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 9,
+            "magnitude": 15.811388,
+            "sqrMagnitude": 250
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "476",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "477",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 10,
+            "magnitude": 16.40122,
+            "sqrMagnitude": 269
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "478",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "479",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 13,
+            "y": 11,
+            "magnitude": 17.0293865,
+            "sqrMagnitude": 290
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ]
+    ]
+  },
+  "VerticalEmptyAreaData": {
+    "$type": "System.Int32[,], mscorlib",
+    "$values": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "HorizontalEmptyAreaData": {
+    "$type": "System.Int32[,], mscorlib",
+    "$values": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "ConveyorData": {
+    "$type": "BoxPuller.Scripts.Data.GridCellData[,], Assembly-CSharp",
+    "$values": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  }
+}
