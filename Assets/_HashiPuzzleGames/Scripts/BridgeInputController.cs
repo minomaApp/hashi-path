@@ -1,0 +1,403 @@
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
+
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
+
+namespace HashiGame.Scripts.Runtime
+{
+    [Serializable]
+    public class HashiStringUnityEvent : UnityEvent<string>
+    {
+    }
+
+    public class BridgeInputController : MonoBehaviour
+    {
+        [Header("References")]
+        [SerializeField] private Camera inputCamera;
+        [SerializeField] private BridgeBoardManager boardManager;
+        [SerializeField] private BridgePreviewController previewController;
+
+        [Header("Raycast")]
+        [SerializeField] private LayerMask islandLayerMask = ~0;
+        [SerializeField] private float raycastDistance = 500f;
+
+        [Header("Feedback")]
+        [SerializeField] private float invalidPreviewDuration = 0.18f;
+        [SerializeField] private bool useBasicDeviceVibration;
+        [SerializeField] private HashiStringUnityEvent onInvalidMove;
+
+        private IslandNode dragStartIsland;
+        private Coroutine invalidPreviewCoroutine;
+        private bool inputEnabled;
+        private bool isDragging;
+
+        public void Setup(BridgeBoardManager newBoardManager)
+        {
+            boardManager = newBoardManager;
+
+            if (inputCamera == null)
+            {
+                inputCamera = Camera.main;
+            }
+
+            if (previewController == null)
+            {
+                previewController = FindFirstObjectByType<BridgePreviewController>();
+            }
+
+            if (previewController != null)
+            {
+                previewController.Setup(
+                    boardManager != null ? boardManager.VisualSettings : null);
+            }
+
+            inputEnabled = boardManager != null && boardManager.IsSetup;
+            CancelDrag();
+        }
+
+        public void SetInputEnabled(bool value)
+        {
+            inputEnabled = value;
+
+            if (!inputEnabled)
+            {
+                CancelDrag();
+            }
+        }
+
+        private void Update()
+        {
+            if (!inputEnabled || boardManager == null || !boardManager.IsSetup)
+            {
+                return;
+            }
+
+            if (!TryReadPointerFrame(out PointerFrame pointerFrame))
+            {
+                return;
+            }
+
+            if (pointerFrame.pressedThisFrame)
+            {
+                HandlePointerPressed(pointerFrame);
+            }
+
+            if (pointerFrame.isPressed && isDragging)
+            {
+                HandlePointerDragged(pointerFrame.screenPosition);
+            }
+
+            if (pointerFrame.releasedThisFrame && isDragging)
+            {
+                HandlePointerReleased(pointerFrame.screenPosition);
+            }
+        }
+
+        private void HandlePointerPressed(PointerFrame pointerFrame)
+        {
+            if (IsPointerOverUi(pointerFrame.pointerId))
+            {
+                return;
+            }
+
+            if (!TryRaycastIsland(pointerFrame.screenPosition, out IslandNode island))
+            {
+                return;
+            }
+
+            if (island.IsLocked)
+            {
+                ShowInvalidFeedback(
+                    island.ConnectionPosition,
+                    island.ConnectionPosition,
+                    "This island is locked.");
+                return;
+            }
+
+            dragStartIsland = island;
+            isDragging = true;
+
+            if (previewController != null)
+            {
+                previewController.Show(
+                    dragStartIsland.ConnectionPosition,
+                    dragStartIsland.ConnectionPosition,
+                    true);
+            }
+        }
+
+        private void HandlePointerDragged(Vector2 screenPosition)
+        {
+            if (dragStartIsland == null)
+            {
+                CancelDrag();
+                return;
+            }
+
+            IslandNode hoveredIsland = null;
+            Vector3 endPoint = GetPointerWorldPoint(screenPosition, dragStartIsland.ConnectionPosition.y);
+            bool isValid = false;
+
+            if (TryRaycastIsland(screenPosition, out hoveredIsland))
+            {
+                endPoint = hoveredIsland.ConnectionPosition;
+
+                if (hoveredIsland != dragStartIsland)
+                {
+                    isValid = boardManager.CanCycleConnection(
+                        dragStartIsland,
+                        hoveredIsland,
+                        out _);
+                }
+            }
+
+            if (previewController != null)
+            {
+                previewController.Show(
+                    dragStartIsland.ConnectionPosition,
+                    endPoint,
+                    isValid);
+            }
+        }
+
+        private void HandlePointerReleased(Vector2 screenPosition)
+        {
+            IslandNode startIsland = dragStartIsland;
+            isDragging = false;
+            dragStartIsland = null;
+
+            if (startIsland == null)
+            {
+                HidePreview();
+                return;
+            }
+
+            if (!TryRaycastIsland(screenPosition, out IslandNode endIsland) ||
+                endIsland == startIsland)
+            {
+                HidePreview();
+                return;
+            }
+
+            bool success = boardManager.TryCycleConnection(
+                startIsland,
+                endIsland,
+                out string reason);
+
+            if (success)
+            {
+                HidePreview();
+                return;
+            }
+
+            ShowInvalidFeedback(
+                startIsland.ConnectionPosition,
+                endIsland.ConnectionPosition,
+                reason);
+        }
+
+        private bool TryRaycastIsland(Vector2 screenPosition, out IslandNode island)
+        {
+            island = null;
+
+            if (inputCamera == null)
+            {
+                inputCamera = Camera.main;
+            }
+
+            if (inputCamera == null)
+            {
+                return false;
+            }
+
+            Ray ray = inputCamera.ScreenPointToRay(screenPosition);
+
+            if (!Physics.Raycast(
+                    ray,
+                    out RaycastHit hit,
+                    raycastDistance,
+                    islandLayerMask,
+                    QueryTriggerInteraction.Collide))
+            {
+                return false;
+            }
+
+            island = hit.collider.GetComponentInParent<IslandNode>();
+            return island != null;
+        }
+
+        private Vector3 GetPointerWorldPoint(Vector2 screenPosition, float planeHeight)
+        {
+            if (inputCamera == null)
+            {
+                return Vector3.zero;
+            }
+
+            Plane plane = new Plane(Vector3.up, new Vector3(0f, planeHeight, 0f));
+            Ray ray = inputCamera.ScreenPointToRay(screenPosition);
+
+            if (plane.Raycast(ray, out float enter))
+            {
+                return ray.GetPoint(enter);
+            }
+
+            return ray.origin + ray.direction * 10f;
+        }
+
+        private void ShowInvalidFeedback(
+            Vector3 startPoint,
+            Vector3 endPoint,
+            string reason)
+        {
+            if (invalidPreviewCoroutine != null)
+            {
+                StopCoroutine(invalidPreviewCoroutine);
+            }
+
+            if (previewController != null)
+            {
+                previewController.Show(startPoint, endPoint, false);
+                invalidPreviewCoroutine = StartCoroutine(HideInvalidPreviewAfterDelay());
+            }
+
+            if (useBasicDeviceVibration)
+            {
+                Handheld.Vibrate();
+            }
+
+            onInvalidMove?.Invoke(reason ?? string.Empty);
+        }
+
+        private IEnumerator HideInvalidPreviewAfterDelay()
+        {
+            yield return new WaitForSeconds(invalidPreviewDuration);
+            invalidPreviewCoroutine = null;
+            HidePreview();
+        }
+
+        private void HidePreview()
+        {
+            if (previewController != null)
+            {
+                previewController.Hide();
+            }
+        }
+
+        private void CancelDrag()
+        {
+            isDragging = false;
+            dragStartIsland = null;
+
+            if (invalidPreviewCoroutine != null)
+            {
+                StopCoroutine(invalidPreviewCoroutine);
+                invalidPreviewCoroutine = null;
+            }
+
+            HidePreview();
+        }
+
+        private static bool IsPointerOverUi(int pointerId)
+        {
+            if (EventSystem.current == null)
+            {
+                return false;
+            }
+
+            return pointerId >= 0
+                ? EventSystem.current.IsPointerOverGameObject(pointerId)
+                : EventSystem.current.IsPointerOverGameObject();
+        }
+
+        private bool TryReadPointerFrame(out PointerFrame frame)
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Touchscreen.current != null)
+            {
+                UnityEngine.InputSystem.Controls.TouchControl touch =
+                    Touchscreen.current.primaryTouch;
+
+                bool pressed = touch.press.isPressed;
+                bool pressedThisFrame = touch.press.wasPressedThisFrame;
+                bool releasedThisFrame = touch.press.wasReleasedThisFrame;
+
+                if (pressed || pressedThisFrame || releasedThisFrame)
+                {
+                    frame = new PointerFrame
+                    {
+                        screenPosition = touch.position.ReadValue(),
+                        pointerId = touch.touchId.ReadValue(),
+                        isPressed = pressed,
+                        pressedThisFrame = pressedThisFrame,
+                        releasedThisFrame = releasedThisFrame
+                    };
+                    return true;
+                }
+            }
+
+            if (Mouse.current != null)
+            {
+                frame = new PointerFrame
+                {
+                    screenPosition = Mouse.current.position.ReadValue(),
+                    pointerId = -1,
+                    isPressed = Mouse.current.leftButton.isPressed,
+                    pressedThisFrame = Mouse.current.leftButton.wasPressedThisFrame,
+                    releasedThisFrame = Mouse.current.leftButton.wasReleasedThisFrame
+                };
+
+                return frame.isPressed ||
+                       frame.pressedThisFrame ||
+                       frame.releasedThisFrame;
+            }
+#else
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+                frame = new PointerFrame
+                {
+                    screenPosition = touch.position,
+                    pointerId = touch.fingerId,
+                    isPressed = touch.phase == TouchPhase.Began ||
+                                touch.phase == TouchPhase.Moved ||
+                                touch.phase == TouchPhase.Stationary,
+                    pressedThisFrame = touch.phase == TouchPhase.Began,
+                    releasedThisFrame = touch.phase == TouchPhase.Ended ||
+                                        touch.phase == TouchPhase.Canceled
+                };
+                return true;
+            }
+
+            frame = new PointerFrame
+            {
+                screenPosition = Input.mousePosition,
+                pointerId = -1,
+                isPressed = Input.GetMouseButton(0),
+                pressedThisFrame = Input.GetMouseButtonDown(0),
+                releasedThisFrame = Input.GetMouseButtonUp(0)
+            };
+
+            return frame.isPressed ||
+                   frame.pressedThisFrame ||
+                   frame.releasedThisFrame;
+#endif
+
+            frame = default;
+            return false;
+        }
+
+        private struct PointerFrame
+        {
+            public Vector2 screenPosition;
+            public int pointerId;
+            public bool isPressed;
+            public bool pressedThisFrame;
+            public bool releasedThisFrame;
+        }
+    }
+}

@@ -4,7 +4,6 @@ using System.Linq;
 using BoxPuller.Scripts.Data.Enums;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BoxPuller.Scripts.Data.SO
 {
@@ -15,52 +14,76 @@ namespace BoxPuller.Scripts.Data.SO
         public GameObject prefab;
     }
 
-
     [CreateAssetMenu(fileName = "GamePrefabs", menuName = "ScriptableObjects/GamePrefabs")]
     public class GamePrefabs : ScriptableObject
     {
-        [Header("Default Prefabs")] 
+        [Header("Default Prefabs")]
         public GameObject gridPrefab;
         public GameObject gridBlockPrefab;
 
         [Space(15)]
-        [Header("New Shooter Box Game Prefabs")]
+        [Header("Hashi Game Prefabs")]
+        public GameObject islandPrefab;
+        public GameObject bridgePrefab;
+        public GameObject chainBarrierPrefab;
+
+        [Space(15)]
+        [Header("Legacy Shooter Box Game Prefabs")]
         public GameObject shooterPrefab;
         public GameObject boxPrefab;
         public GameObject bottomSlotNodePrefab;
         public GameObject middleSlotNodePrefab;
         public GameObject flowerPetalPrefab;
 
-        [Header("Chain Prefabs")] public GameObject chainPrefab; 
+        [Header("Legacy Chain Prefabs")]
+        public GameObject chainPrefab;
         public GameObject chainNodePrefab;
-        public GameObject nodePrefab; 
+        public GameObject nodePrefab;
         public GameObject midNodePrefab;
         public GameObject objectSpawnerPrefab;
         public GameObject objectSpawnerPlatform;
         public GameObject matchingObjectPrefab;
         public GameObject completeConfettiPrefab;
 
-        [Header("Ice Prefabs")] public ParticleSystem iceParticle;
+        [Header("Legacy Ice Prefabs")]
+        public ParticleSystem iceParticle;
         public ParticleSystem iceFinalParticle;
         public TextMeshPro iceTextPrefab;
 
-        [Space(15)] [Header("Wall Prefabs")] public GameObject wallPrefab;
+        [Space(15)]
+        [Header("Legacy Wall Prefabs")]
+        public GameObject wallPrefab;
         public GameObject planeWallPrefab;
         public List<WallPrefabData> wallPrefabList;
         public List<WallPrefabData> wallVariantList;
 
-
         public GameObject GetWallPrefab(EnumHolder.WallType wallType)
         {
-            return (from prefabData in wallPrefabList where prefabData.wallType == wallType select prefabData.prefab)
+            if (wallPrefabList == null)
+            {
+                return null;
+            }
+
+            return wallPrefabList
+                .Where(prefabData => prefabData.wallType == wallType)
+                .Select(prefabData => prefabData.prefab)
                 .FirstOrDefault();
         }
 
-
         public GameObject GetWallVariantPrefab(EnumHolder.WallType wallType, int variantType)
         {
-            var matchingVariants = wallVariantList.Where(prefabData => prefabData.wallType == wallType).ToList();
-            return matchingVariants.Count > variantType ? matchingVariants[variantType].prefab : null;
+            if (wallVariantList == null)
+            {
+                return null;
+            }
+
+            List<WallPrefabData> matchingVariants = wallVariantList
+                .Where(prefabData => prefabData.wallType == wallType)
+                .ToList();
+
+            return variantType >= 0 && variantType < matchingVariants.Count
+                ? matchingVariants[variantType].prefab
+                : null;
         }
     }
 }

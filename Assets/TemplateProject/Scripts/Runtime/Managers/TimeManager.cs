@@ -5,16 +5,17 @@ using UnityEngine;
 namespace TemplateProject.Scripts.Runtime.Managers
 {
     public class TimeManager : MonoBehaviour
-    {        
-        
+    {
         public static TimeManager instance;
 
         [Header("Cached References")]
         private TextMeshProUGUI timerTMP;
-        
+
         [Header("Parameters")]
         [SerializeField] private float levelTime;
         [SerializeField] private bool isTimerActive;
+
+        private bool lowTimeBlinkStarted;
 
         private void Awake()
         {
@@ -23,71 +24,130 @@ namespace TemplateProject.Scripts.Runtime.Managers
                 instance = this;
             }
         }
+
         private void Update()
         {
-            //HandleTimer();
+            HandleTimer();
         }
 
         private void HandleTimer()
         {
-            if (!isTimerActive) return;
-            levelTime -= Time.deltaTime;
-            timerTMP.text = TimeSpan.FromSeconds((int)levelTime).ToString(@"m\:ss");
-            
-            if (levelTime <= 10f)
+            if (!isTimerActive)
             {
-                UIManager.instance.StartBlinkTimer();
+                return;
             }
 
-            if (levelTime > 0f) return;
+            if (LevelManager.instance == null)
+            {
+                return;
+            }
+
+            if (!LevelManager.instance.isGamePlayable ||
+                LevelManager.instance.isLevelFailed)
+            {
+                return;
+            }
+
+            levelTime -= Time.deltaTime;
+
+            if (timerTMP != null)
+            {
+                timerTMP.text = TimeSpan.FromSeconds(
+                    Mathf.Max(0, (int)levelTime)).ToString(@"m\:ss");
+            }
+
+            if (levelTime <= 10f && !lowTimeBlinkStarted)
+            {
+                lowTimeBlinkStarted = true;
+
+                if (UIManager.instance != null)
+                {
+                    UIManager.instance.StartBlinkTimer();
+                }
+            }
+
+            if (levelTime > 0f)
+            {
+                return;
+            }
+
+            levelTime = 0f;
             PauseTimer();
-            GameplayManager.instance.LoseGame(true);
+
+            if (GameplayManager.instance != null)
+            {
+                GameplayManager.instance.LoseGame(true);
+            }
         }
 
         public void SetTimer(int time)
         {
-            levelTime = time;
+            levelTime = Mathf.Max(0, time);
+            lowTimeBlinkStarted = false;
+            RefreshTimerText();
         }
 
         public void StartTimer()
         {
-            isTimerActive = false;
+            if (levelTime <= 0f)
+            {
+                return;
+            }
 
-            //isTimerActive = true;
+            isTimerActive = true;
+            RefreshTimerText();
         }
 
         public void PauseTimer()
         {
             isTimerActive = false;
-            UIManager.instance.PauseTimer();
+
+            if (UIManager.instance != null)
+            {
+                UIManager.instance.PauseTimer();
+            }
         }
 
         public bool GetIsTimerActive()
         {
             return isTimerActive;
         }
-        public void SetTimerTMP(TextMeshProUGUI timer, TextMeshProUGUI startScreenTimerTMP)
+
+        public void SetTimerTMP(
+            TextMeshProUGUI timer,
+            TextMeshProUGUI startScreenTimerTMP)
         {
             timerTMP = timer;
 
             if (startScreenTimerTMP != null)
             {
-                startScreenTimerTMP.gameObject.SetActive(false);
+                startScreenTimerTMP.gameObject.SetActive(true);
+                startScreenTimerTMP.text =
+                    "Level Time: " +
+                    TimeSpan.FromSeconds((int)levelTime).ToString(@"m\:ss");
             }
 
             if (timerTMP != null)
             {
-                timerTMP.gameObject.SetActive(false);
+                timerTMP.gameObject.SetActive(true);
+                RefreshTimerText();
             }
-
-            //timerTMP = timer;
-            //startScreenTimerTMP.text = "Level Time: " + TimeSpan.FromSeconds((int)levelTime).ToString(@"m\:ss");
-            //timerTMP.text = TimeSpan.FromSeconds((int)levelTime).ToString(@"m\:ss");
         }
 
         public float GetTimeLeft()
         {
             return levelTime;
+        }
+
+        private void RefreshTimerText()
+        {
+            if (timerTMP == null)
+            {
+                return;
+            }
+
+            timerTMP.text = TimeSpan.FromSeconds(
+                Mathf.Max(0, (int)levelTime)).ToString(@"m\:ss");
         }
     }
 }

@@ -103,7 +103,7 @@ namespace BoxPuller.Scripts.Data
         public int laneIndex;
         public int orderIndex;
 
-        // -1 = bağlantı yok
+        // -1 = baglanti yok
         public int linkGroupId = -1;
 
         public bool isHidden;
@@ -123,14 +123,14 @@ namespace BoxPuller.Scripts.Data
         public int x;
         public int y;
 
-        // -1 = kalıp yok
+        // -1 = kalip yok
         public int moldGroupId = -1;
 
         public bool isFilled = true;
     }
 
-    // Eski geçiş kodlarında BoxSpawnData adı kullanılmışsa compile kırılmasın diye bırakıyorum.
-    // Yeni sistem GridData[x,y].BasePlaceable içindeki BoxCellData'yı kullanacak.
+    // Eski gecis kodlarinda BoxSpawnData adi kullanilmissa compile kirilmasin diye birakiyorum.
+    // Yeni sistem GridData[x,y].BasePlaceable icindeki BoxCellData'yi kullanacak.
     [Serializable]
     public class BoxSpawnData
     {
@@ -139,6 +139,47 @@ namespace BoxPuller.Scripts.Data
         public int y;
         public int moldGroupId = -1;
         public bool isFilled = true;
+    }
+
+
+    [Serializable]
+    public class IslandCellData : BasePlaceableData
+    {
+        public int x;
+        public int y;
+        public int requiredBridgeCount = 1;
+        public EnumHolder.IslandBridgeMode bridgeMode = EnumHolder.IslandBridgeMode.SingleOnly;
+        public bool startsLocked;
+        public int unlockAfterCompletedIslandCount;
+
+        public Vector2Int Coordinate => new Vector2Int(x, y);
+    }
+
+    [Serializable]
+    public class FixedBridgeDefinitionData
+    {
+        public int id;
+        public Vector2Int startCoordinate;
+        public Vector2Int endCoordinate;
+        public int bridgeCount = 1;
+    }
+
+    [Serializable]
+    public class ChainBarrierData
+    {
+        public int id;
+        public Vector2Int startCoordinate;
+        public Vector2Int endCoordinate;
+        public int unlockAfterCompletedIslandCount;
+    }
+
+    [Serializable]
+    public class HashiLevelRulesData
+    {
+        public bool blockBridgeThroughIsland = true;
+        public bool blockBridgeCrossing = true;
+        public bool requireAllIslandsConnected;
+        public float islandBlockingRadius = 0.45f;
     }
 
     [Serializable]
@@ -168,16 +209,16 @@ namespace BoxPuller.Scripts.Data
         [Header("Bottom Slot Shooter Lanes")]
         public List<BottomShooterLaneData> bottomShooterLanes = new List<BottomShooterLaneData>();
 
-        // Eski sistemden geçiş için şimdilik kalabilir.
+        // Eski sistemden gecis icin simdilik kalabilir.
         // Yeni sistem bunu kullanmayacak.
         [Header("Legacy Bottom Shooters")]
         public List<ShooterSpawnData> bottomShooters = new List<ShooterSpawnData>();
 
-        // Middle slot her level'da aynı olacağı için level datasında tutulmayacak.
+        // Middle slot her level'da ayni olacagi icin level datasinda tutulmayacak.
         // public List<ShooterSpawnData> middleShooters = new List<ShooterSpawnData>();
 
-        // Yeni sistem box datasını GridData hücrelerinde BoxCellData olarak tutacak.
-        // Bu liste sadece eski geçiş kodları için kalabilir.
+        // Yeni sistem box datasini GridData hucrelerinde BoxCellData olarak tutacak.
+        // Bu liste sadece eski gecis kodlari icin kalabilir.
         [Header("Legacy Boxes")]
         public List<BoxSpawnData> boxes = new List<BoxSpawnData>();
 
@@ -189,6 +230,11 @@ namespace BoxPuller.Scripts.Data
         public int bottomLaneCount = 3;
         public int visibleShooterCountPerLane = 4;
         //****
+
+        [Header("Hashi Level Data")]
+        public List<FixedBridgeDefinitionData> fixedBridges = new List<FixedBridgeDefinitionData>();
+        public List<ChainBarrierData> chainBarriers = new List<ChainBarrierData>();
+        public HashiLevelRulesData hashiRules = new HashiLevelRulesData();
 
         public LevelData(int width, int height, int targetQueueLength, int conveyorLength = 0)
         {
@@ -219,38 +265,39 @@ namespace BoxPuller.Scripts.Data
             switch (levelDataDefaultObjectType)
             {
                 case EnumHolder.LevelDataDefaultObjectType.Single:
-                {
-                    for (var i = 0; i < targetQueueLength; i++)
                     {
-                        TargetQueue.Add(new SingleObjectData());
-                    }
+                        for (var i = 0; i < targetQueueLength; i++)
+                        {
+                            TargetQueue.Add(new SingleObjectData());
+                        }
 
-                    break;
-                }
+                        break;
+                    }
 
                 case EnumHolder.LevelDataDefaultObjectType.Stacked:
-                {
-                    for (var i = 0; i < targetQueueLength; i++)
                     {
-                        TargetQueue.Add(new StackedObjectData());
-                    }
+                        for (var i = 0; i < targetQueueLength; i++)
+                        {
+                            TargetQueue.Add(new StackedObjectData());
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
 
             connections = new List<ConnectionData>();
 
             ConveyorData = new GridCellData[width, conveyorLength];
             for (int x = 0; x < width; x++)
-            for (int y = 0; y < conveyorLength; y++)
-                ConveyorData[x, y] = new GridCellData
-                {
-                    coordinates = new Vector2Int(x, y),
-                    isActive = true
-                };
+                for (int y = 0; y < conveyorLength; y++)
+                    ConveyorData[x, y] = new GridCellData
+                    {
+                        coordinates = new Vector2Int(x, y),
+                        isActive = true
+                    };
 
             EnsureBottomLaneCount(bottomLaneCount);
+            EnsureHashiData();
         }
 
         public void SetConveyorCellStack(int x, int y, EnumHolder.GameColor color, bool secret)
@@ -732,6 +779,12 @@ namespace BoxPuller.Scripts.Data
                         if (resized[x, y] != null)
                         {
                             resized[x, y].coordinates = new Vector2Int(x, y);
+
+                            if (resized[x, y].BasePlaceable is IslandCellData islandCell)
+                            {
+                                islandCell.x = x;
+                                islandCell.y = y;
+                            }
                         }
                     }
                     else
@@ -751,6 +804,8 @@ namespace BoxPuller.Scripts.Data
             GridData = resized;
             VerticalEmptyAreaData = resizedVertical;
             HorizontalEmptyAreaData = resizedHorizontal;
+
+            ShiftHashiDefinitions(widthOffset, heightOffset, newWidth, newHeight);
         }
 
         public void ResizeConveyorCells(int conveyorWidth, int newLength, bool expandUp, bool expandLeft)
@@ -762,7 +817,7 @@ namespace BoxPuller.Scripts.Data
             {
                 for (int y = 0; y < newLength; y++)
                 {
-                    // Eski diziden hangi indeksi alacağız?
+                    // Eski diziden hangi indeksi alacagiz?
                     int oldY = expandUp
                         ? y - (newLength - (old?.GetLength(1) ?? 0))
                         : y;
@@ -975,6 +1030,277 @@ namespace BoxPuller.Scripts.Data
 
         #endregion
 
+
+
+        #region Hashi Level Data
+
+        public void EnsureHashiData()
+        {
+            fixedBridges ??= new List<FixedBridgeDefinitionData>();
+            chainBarriers ??= new List<ChainBarrierData>();
+            hashiRules ??= new HashiLevelRulesData();
+
+            if (hashiRules.islandBlockingRadius <= 0f)
+            {
+                hashiRules.islandBlockingRadius = 0.45f;
+            }
+        }
+
+        public void SetIslandCell(
+            int x,
+            int y,
+            int requiredBridgeCount,
+            EnumHolder.IslandBridgeMode bridgeMode,
+            bool startsLocked,
+            int unlockAfterCompletedIslandCount)
+        {
+            if (!IsInsideGrid(x, y))
+            {
+                return;
+            }
+
+            EnsureHashiData();
+
+            GridCellData cell = GridData[x, y];
+
+            if (TryActivateCell(x, y))
+            {
+                cell = GridData[x, y];
+            }
+
+            cell.blockCount = 0;
+            cell.BasePlaceable = new IslandCellData
+            {
+                x = x,
+                y = y,
+                requiredBridgeCount = Mathf.Max(1, requiredBridgeCount),
+                bridgeMode = bridgeMode,
+                startsLocked = startsLocked,
+                unlockAfterCompletedIslandCount = Mathf.Max(0, unlockAfterCompletedIslandCount)
+            };
+
+            GridData[x, y] = cell;
+        }
+
+        public void RemoveIslandCell(int x, int y)
+        {
+            if (!IsInsideGrid(x, y))
+            {
+                return;
+            }
+
+            EnsureHashiData();
+
+            GridCellData cell = GridData[x, y];
+            cell.blockCount = 0;
+            cell.BasePlaceable = null;
+            GridData[x, y] = cell;
+
+            Vector2Int coordinate = new Vector2Int(x, y);
+            fixedBridges.RemoveAll(bridge =>
+                bridge.startCoordinate == coordinate ||
+                bridge.endCoordinate == coordinate);
+        }
+
+        public bool TryGetIslandCell(Vector2Int coordinate, out IslandCellData islandCell)
+        {
+            islandCell = null;
+
+            if (!IsInsideGrid(coordinate.x, coordinate.y))
+            {
+                return false;
+            }
+
+            islandCell = GridData[coordinate.x, coordinate.y].BasePlaceable as IslandCellData;
+            return islandCell != null;
+        }
+
+        public List<IslandCellData> GetIslandCells()
+        {
+            List<IslandCellData> result = new List<IslandCellData>();
+
+            if (GridData == null)
+            {
+                return result;
+            }
+
+            for (int x = 0; x < GridData.GetLength(0); x++)
+            {
+                for (int y = 0; y < GridData.GetLength(1); y++)
+                {
+                    if (GridData[x, y].BasePlaceable is not IslandCellData islandCell)
+                    {
+                        continue;
+                    }
+
+                    islandCell.x = x;
+                    islandCell.y = y;
+                    result.Add(islandCell);
+                }
+            }
+
+            return result;
+        }
+
+        public bool AddFixedBridgeDefinition(
+            Vector2Int startCoordinate,
+            Vector2Int endCoordinate,
+            int bridgeCount)
+        {
+            EnsureHashiData();
+
+            if (startCoordinate == endCoordinate)
+            {
+                return false;
+            }
+
+            if (!TryGetIslandCell(startCoordinate, out _) ||
+                !TryGetIslandCell(endCoordinate, out _))
+            {
+                return false;
+            }
+
+            bool duplicate = fixedBridges.Exists(bridge =>
+                (bridge.startCoordinate == startCoordinate &&
+                 bridge.endCoordinate == endCoordinate) ||
+                (bridge.startCoordinate == endCoordinate &&
+                 bridge.endCoordinate == startCoordinate));
+
+            if (duplicate)
+            {
+                return false;
+            }
+
+            fixedBridges.Add(new FixedBridgeDefinitionData
+            {
+                id = GetNextFixedBridgeId(),
+                startCoordinate = startCoordinate,
+                endCoordinate = endCoordinate,
+                bridgeCount = Mathf.Clamp(bridgeCount, 1, 2)
+            });
+
+            return true;
+        }
+
+        public bool AddChainBarrier(
+            Vector2Int startCoordinate,
+            Vector2Int endCoordinate,
+            int unlockAfterCompletedIslandCount)
+        {
+            EnsureHashiData();
+
+            if (!IsInsideGrid(startCoordinate.x, startCoordinate.y) ||
+                !IsInsideGrid(endCoordinate.x, endCoordinate.y) ||
+                startCoordinate == endCoordinate)
+            {
+                return false;
+            }
+
+            bool duplicate = chainBarriers.Exists(chain =>
+                (chain.startCoordinate == startCoordinate &&
+                 chain.endCoordinate == endCoordinate) ||
+                (chain.startCoordinate == endCoordinate &&
+                 chain.endCoordinate == startCoordinate));
+
+            if (duplicate)
+            {
+                return false;
+            }
+
+            chainBarriers.Add(new ChainBarrierData
+            {
+                id = GetNextChainBarrierId(),
+                startCoordinate = startCoordinate,
+                endCoordinate = endCoordinate,
+                unlockAfterCompletedIslandCount = Mathf.Max(0, unlockAfterCompletedIslandCount)
+            });
+
+            return true;
+        }
+
+        public void RemoveFixedBridgeDefinition(int id)
+        {
+            EnsureHashiData();
+            fixedBridges.RemoveAll(bridge => bridge.id == id);
+        }
+
+        public void RemoveChainBarrier(int id)
+        {
+            EnsureHashiData();
+            chainBarriers.RemoveAll(chain => chain.id == id);
+        }
+
+        public int GetNextFixedBridgeId()
+        {
+            EnsureHashiData();
+
+            int nextId = 1;
+            while (fixedBridges.Exists(bridge => bridge.id == nextId))
+            {
+                nextId++;
+            }
+
+            return nextId;
+        }
+
+        public int GetNextChainBarrierId()
+        {
+            EnsureHashiData();
+
+            int nextId = 1;
+            while (chainBarriers.Exists(chain => chain.id == nextId))
+            {
+                nextId++;
+            }
+
+            return nextId;
+        }
+
+        private void ShiftHashiDefinitions(
+            int widthOffset,
+            int heightOffset,
+            int newWidth,
+            int newHeight)
+        {
+            EnsureHashiData();
+
+            Vector2Int offset = new Vector2Int(widthOffset, heightOffset);
+
+            for (int i = 0; i < fixedBridges.Count; i++)
+            {
+                FixedBridgeDefinitionData bridge = fixedBridges[i];
+                bridge.startCoordinate += offset;
+                bridge.endCoordinate += offset;
+            }
+
+            for (int i = 0; i < chainBarriers.Count; i++)
+            {
+                ChainBarrierData chain = chainBarriers[i];
+                chain.startCoordinate += offset;
+                chain.endCoordinate += offset;
+            }
+
+            fixedBridges.RemoveAll(bridge =>
+                !IsCoordinateInside(bridge.startCoordinate, newWidth, newHeight) ||
+                !IsCoordinateInside(bridge.endCoordinate, newWidth, newHeight));
+
+            chainBarriers.RemoveAll(chain =>
+                !IsCoordinateInside(chain.startCoordinate, newWidth, newHeight) ||
+                !IsCoordinateInside(chain.endCoordinate, newWidth, newHeight));
+        }
+
+        private static bool IsCoordinateInside(
+            Vector2Int coordinate,
+            int width,
+            int height)
+        {
+            return coordinate.x >= 0 &&
+                   coordinate.y >= 0 &&
+                   coordinate.x < width &&
+                   coordinate.y < height;
+        }
+
+        #endregion
 
         #region Bottom Shooter Lane Data
 

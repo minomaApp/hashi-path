@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.Enums;
 using BoxPuller.Scripts.Data.SO;
+using HashiGame.Scripts.Runtime;
 using TemplateProject.Scripts.Runtime.LevelCreation;
 using TemplateProject.Scripts.Runtime.Managers;
 using TemplateProject.Scripts.Runtime.Models;
 using TemplateProject.Scripts.Utilities;
-using TMPro;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BoxPuller.Scripts.Runtime.LevelCreation
 {
@@ -24,160 +23,349 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
 
     public class LevelCreator : MonoBehaviour
     {
-        #region Variables
-
-        // GAME REFERENCES
         [Header("Game References")]
         public GameColors gameColors;
         public GamePrefabs prefabs;
-        public WallGenerator wallGenerator;
+        public HashiVisualSettings visualSettings;
         public LevelContainer currentLevelContainer;
+        public WallGenerator wallGenerator;
+
+        [Header("Legacy Prefab Compatibility")]
+        [HideInInspector] public GameObject gridBasePrefab;
+        [HideInInspector] public GameObject normalObjectPrefab;
+        [HideInInspector] public GameObject hiddenObjectPrefab;
+        [HideInInspector] public GameObject lockedObjectPrefab;
+        [HideInInspector] public GameObject spawnerObjectPrefab;
+        [HideInInspector] public GameObject matchAreaPrefab;
+        [HideInInspector] public GameObject targetObjectPrefab;
+
+        [Header("Legacy Grid Compatibility")]
+        [HideInInspector] public EnumHolder.GridType gridType = EnumHolder.GridType.Normal;
+        [HideInInspector] public GridBase[,] gridBases;
+        [HideInInspector] public float emptyAreaSpaceModifier;
+        [HideInInspector] public int conveyorLength;
+        [HideInInspector] public bool expandConveyorToLeft;
+        [HideInInspector] public bool expandConveyorToUp;
+        [HideInInspector] public EnumHolder.GameColor color;
+        [HideInInspector] public EnumHolder.ObjectType objectType;
+        [HideInInspector] public EnumHolder.Direction direction;
+        [HideInInspector] public bool isSecret;
+        [HideInInspector] public bool isFrozen;
+        [HideInInspector] public int Count;
+        [HideInInspector] public bool isDirection;
+        [HideInInspector] public bool isHead;
+        [HideInInspector] public int bottomLaneCount = 3;
+        [HideInInspector] public int visibleShooterCountPerLane = 4;
+        [HideInInspector] public int shooterBulletCount = 5;
+        [HideInInspector] public int shooterLinkGroupId = -1;
+        [HideInInspector] public bool shooterIsHidden;
+        [HideInInspector] public int boxMoldGroupId = -1;
+        [HideInInspector]
+        public List<BottomLaneReferenceData> bottomLaneReferences =
+            new List<BottomLaneReferenceData>();
+        [HideInInspector]
+        public List<BoxContainerChain> boxContainerChains =
+            new List<BoxContainerChain>();
+        [HideInInspector]
+        public List<ObjectSpawner> objectSpawners =
+            new List<ObjectSpawner>();
+
 
         [SerializeField] private AddressablePrefabSaver prefabSaver;
         [SerializeField] private AddressablePrefabLoader prefabLoader;
         [SerializeField] private AddressablePrefabLoaderOld prefabLoaderOld;
         [SerializeField] private CinemachineCamera vCam;
 
-        private GameObject _loadedLevel;
+        [Header("Level")]
+        public int levelIndex;
+        public int gridWidth = 8;
+        public int gridHeight = 12;
+        public bool expandGridToLeft;
+        public bool expandGridToUp;
 
-        // PREFABS0
-        [Space(2)]
-        [Header("Prefabs")]
-        [HideInInspector] public GameObject gridBasePrefab;
+        [Header("Grid Placement")]
+        public float horizontalSpaceModifier = 2f;
+        public float verticalSpaceModifier = 2f;
+        public Vector3 gridOriginOffset;
+        public float islandBaseHeight;
+        public Vector3 islandEulerAngles;
 
-        [HideInInspector] public GameObject normalObjectPrefab;
-        [HideInInspector] public GameObject hiddenObjectPrefab;
-        [HideInInspector] public GameObject lockedObjectPrefab;
-        [HideInInspector] public GameObject spawnerObjectPrefab;
-        [HideInInspector] public GameObject matchAreaPrefab;
+        [Header("Island Paint Settings")]
+        public int islandRequiredBridgeCount = 1;
+        public EnumHolder.IslandBridgeMode islandBridgeMode =
+            EnumHolder.IslandBridgeMode.SingleOnly;
+        public bool islandStartsLocked;
+        public int islandUnlockRequirement;
 
-        [FormerlySerializedAs("targetQueuePrefab")]
-        [HideInInspector] public GameObject targetObjectPrefab;
+        [Header("Fixed Bridge Settings")]
+        [Range(1, 2)] public int fixedBridgeCount = 1;
 
-        [Header("New Level References")]
-        public List<Transform> boxBottomRowReferences = new List<Transform>();
+        [Header("Chain Settings")]
+        public int chainUnlockRequirement;
 
-        [Tooltip("Box grid satýr yönü. Kutular Y ekseninde üst üste çýkacaksa (0,3,0), Z ekseninde dizilecekse (0,0,3) veya (0,0,-3).")]
-        public Vector3 boxRowOffset = new Vector3(0f, 3f, 0f);
+        [Header("Level Rules")]
+        public bool blockBridgeThroughIsland = true;
+        public bool blockBridgeCrossing = true;
+        public bool requireAllIslandsConnected;
+        public float islandBlockingRadius = 0.45f;
 
-        [Header("Bottom Lane References")]
-        public List<BottomLaneReferenceData> bottomLaneReferences = new List<BottomLaneReferenceData>();
-
-        [Header("Dynamic Bottom Slot Layout")]
-        [HideInInspector] public bool useDynamicBottomSlotLayout = true;
-
-        [Tooltip("Lane 0 / Node 0 pozisyonu. Dinamik bottom slot üretimi buradan baþlar.")]
-        [HideInInspector] public Transform bottomSlotStartReference;
-
-        [Tooltip("Lane index arttýkça eklenecek world offset. Örn: satýrlar aþaðý doðru gidiyorsa (0,0,-1.5).")]
-        [HideInInspector] public Vector3 bottomLaneOffset = new Vector3(0f, 0f, -3f);
-
-        [Tooltip("Node index arttýkça eklenecek world offset. Örn: ayný satýr içinde saða gidiyorsa (1.5,0,0).")]
-        [HideInInspector] public Vector3 bottomNodeOffset = new Vector3(3f, 0f, 0f);
-
-        [Tooltip("Node/Shooter rotasyonuna ekstra açý vermek gerekirse kullan.")]
-        [HideInInspector] public Vector3 bottomSlotEulerOffset = Vector3.zero;
-
-        public Transform flowerParentReference;
-        public List<Transform> flowerPetalReferences = new List<Transform>();
-
-        [Header("Bottom Shooter Editor Settings")]
-        [HideInInspector] public int bottomLaneCount = 3;
-        [HideInInspector] public int visibleShooterCountPerLane = 4;
-        [HideInInspector] public int shooterBulletCount = 5;
-        [HideInInspector] public int shooterLinkGroupId = -1;
-        [HideInInspector] public bool shooterIsHidden;
-
-        [Header("Box Editor Settings")]
-        [HideInInspector] public int boxMoldGroupId = -1;
-
-        // GRID SETTINGS
-        [Header("Grid Settings")]
-        [HideInInspector] public EnumHolder.GridType gridType;
-
-        [HideInInspector] public GridBase[,] gridBases;
-        [HideInInspector] public int levelIndex;
-        [HideInInspector] public int gridWidth;
-        [HideInInspector] public int gridHeight;
-        [HideInInspector] public int conveyorLength;
-        [HideInInspector] public float horizontalSpaceModifier = 1;
-        [HideInInspector] public float verticalSpaceModifier = 1;
-        [HideInInspector] public float emptyAreaSpaceModifier;
-
-        // ENUMS
-        [HideInInspector] public EnumHolder.GameColor color;
-        [HideInInspector] public EnumHolder.ObjectType objectType;
-        [HideInInspector] public EnumHolder.Direction direction;
-
-        // LEVEL DATA
         private LevelData levelData;
-
-        // LEVEL DATA SETTINGS
-        [HideInInspector] public bool expandGridToLeft;
-        [HideInInspector] public bool expandGridToUp;
-
-        [HideInInspector] public bool expandConveyorToLeft;
-        [HideInInspector] public bool expandConveyorToUp;
-
-        // MANAGERS
-        private GridManager _gridManager;
-        private MatchTargetManager _targetManager;
-
-        // PARENTS
+        private int activeDataLevelIndex = int.MinValue;
         private GameObject parentObject;
-        private GameObject gridParentObject;
-        private GameObject conveyorParentObject;
-        private GameObject boxContainerChainParentObject;
+        private GameObject islandParentObject;
+        private GameObject bridgeParentObject;
+        private GameObject chainParentObject;
+        private GameObject effectsParentObject;
 
-        private GameObject boxGridParentObject;
-        private GameObject bottomSlotParentObject;
-        private GameObject flowerParentObject;
+        private readonly List<IslandNode> generatedIslands = new List<IslandNode>();
+        private readonly List<BridgeConnection> generatedFixedBridges =
+            new List<BridgeConnection>();
+        private readonly List<ChainBarrier> generatedChains = new List<ChainBarrier>();
 
-        public LevelData GetLevelData() => levelData;
+        public LevelData GetLevelData()
+        {
+            return levelData;
+        }
 
-        [HideInInspector] public bool isSecret;
-        [HideInInspector] public bool isFrozen;
-        [HideInInspector] public int Count;
-        [HideInInspector] public bool isDirection;
-        [HideInInspector] public bool isHead;
+        public void EnsureLevelData()
+        {
+            if (levelData != null && activeDataLevelIndex == levelIndex)
+            {
+                levelData.EnsureHashiData();
+                return;
+            }
 
-        [HideInInspector] public List<BoxContainerChain> boxContainerChains;
-        [HideInInspector] public List<ObjectSpawner> objectSpawners;
+            levelData = null;
 
-        private readonly List<GameObject> generatedBoxes = new List<GameObject>();
-        private readonly List<GameObject> generatedShooters = new List<GameObject>();
-        private readonly List<GameObject> generatedBottomNodes = new List<GameObject>();
-        private readonly List<GameObject> generatedFlowerPetals = new List<GameObject>();
+            if (LevelSaveSystem.IsLevelExists(levelIndex))
+            {
+                levelData = LevelSaveSystem.LoadLevel(levelIndex);
+            }
 
-        #endregion
+            if (levelData == null)
+            {
+                levelData = new LevelData(
+                    Mathf.Max(1, gridWidth),
+                    Mathf.Max(1, gridHeight),
+                    0,
+                    0);
+            }
 
+            activeDataLevelIndex = levelIndex;
+            ApplyLoadedLevelDataToEditor();
+        }
 
-        #region Save/Load/Reset/Generate Level
+        public void ResizeGrid()
+        {
+            EnsureLevelData();
+
+            gridWidth = Mathf.Max(1, gridWidth);
+            gridHeight = Mathf.Max(1, gridHeight);
+
+            if (levelData.Width == gridWidth && levelData.Height == gridHeight)
+            {
+                return;
+            }
+
+            levelData.ResizeGridCells(
+                gridWidth,
+                gridHeight,
+                expandGridToUp,
+                expandGridToLeft);
+
+            EditorUtility.SetDirty(this);
+        }
+
+        public void SetIslandAt(Vector2Int coordinate)
+        {
+            EnsureLevelData();
+
+            levelData.SetIslandCell(
+                coordinate.x,
+                coordinate.y,
+                Mathf.Max(1, islandRequiredBridgeCount),
+                islandBridgeMode,
+                islandStartsLocked,
+                Mathf.Max(0, islandUnlockRequirement));
+
+            EditorUtility.SetDirty(this);
+        }
+
+        public void RemoveIslandAt(Vector2Int coordinate)
+        {
+            EnsureLevelData();
+            levelData.RemoveIslandCell(coordinate.x, coordinate.y);
+            EditorUtility.SetDirty(this);
+        }
+
+        public bool TryAddFixedBridge(
+            Vector2Int firstCoordinate,
+            Vector2Int secondCoordinate,
+            out string error)
+        {
+            EnsureLevelData();
+            error = string.Empty;
+
+            if (!levelData.TryGetIslandCell(firstCoordinate, out IslandCellData firstIsland) ||
+                !levelData.TryGetIslandCell(secondCoordinate, out IslandCellData secondIsland))
+            {
+                error = "Fixed bridge endpoints must both contain islands.";
+                return false;
+            }
+
+            int count = Mathf.Clamp(fixedBridgeCount, 1, 2);
+
+            if (count == 2 &&
+                (firstIsland.bridgeMode != EnumHolder.IslandBridgeMode.DoubleAllowed ||
+                 secondIsland.bridgeMode != EnumHolder.IslandBridgeMode.DoubleAllowed))
+            {
+                error = "A double fixed bridge requires two Double Allowed islands.";
+                return false;
+            }
+
+            if (!levelData.AddFixedBridgeDefinition(
+                    firstCoordinate,
+                    secondCoordinate,
+                    count))
+            {
+                error = "This fixed bridge definition is invalid or already exists.";
+                return false;
+            }
+
+            EditorUtility.SetDirty(this);
+            return true;
+        }
+
+        public bool TryAddChain(
+            Vector2Int firstCoordinate,
+            Vector2Int secondCoordinate,
+            out string error)
+        {
+            EnsureLevelData();
+            error = string.Empty;
+
+            if (!levelData.AddChainBarrier(
+                    firstCoordinate,
+                    secondCoordinate,
+                    Mathf.Max(0, chainUnlockRequirement)))
+            {
+                error = "This chain definition is invalid or already exists.";
+                return false;
+            }
+
+            EditorUtility.SetDirty(this);
+            return true;
+        }
+
+        public void RemoveFixedBridge(int id)
+        {
+            EnsureLevelData();
+            levelData.RemoveFixedBridgeDefinition(id);
+            EditorUtility.SetDirty(this);
+        }
+
+        public void RemoveChain(int id)
+        {
+            EnsureLevelData();
+            levelData.RemoveChainBarrier(id);
+            EditorUtility.SetDirty(this);
+        }
+
+        public Vector3 GridSpaceToWorldSpace(float x, float y)
+        {
+            float centeredX = x - (gridWidth - 1) * 0.5f;
+            float centeredY = y - (gridHeight - 1) * 0.5f;
+
+            return gridOriginOffset + new Vector3(
+                centeredX * horizontalSpaceModifier,
+                islandBaseHeight,
+                centeredY * verticalSpaceModifier);
+        }
+
+        public Vector3 GridCoordinateToWorld(Vector2Int coordinate)
+        {
+            return GridSpaceToWorldSpace(coordinate.x, coordinate.y);
+        }
+
+        public HashiValidationResult GetValidationResult()
+        {
+            EnsureLevelData();
+            SynchronizeRulesToLevelData();
+            return HashiLevelValidator.Validate(levelData, GridCoordinateToWorld);
+        }
+
+        public void GenerateLevel()
+        {
+            EnsureLevelData();
+            ResizeGrid();
+            SynchronizeRulesToLevelData();
+
+            if (!ValidateRequiredPrefabs(out string prefabError))
+            {
+                EditorUtility.DisplayDialog("Hashi Level Error", prefabError, "OK");
+                return;
+            }
+
+            HashiValidationResult validation = GetValidationResult();
+            if (validation.HasErrors)
+            {
+                EditorUtility.DisplayDialog(
+                    "Hashi Level Error",
+                    BuildValidationMessage(validation),
+                    "OK");
+                return;
+            }
+
+            SetParents();
+            Dictionary<Vector2Int, IslandNode> islandMap = CreateIslands();
+            CreateFixedBridges(islandMap);
+            CreateChains();
+
+            currentLevelContainer.InitHashiRuntimeReferences(
+                gridWidth,
+                gridHeight,
+                horizontalSpaceModifier,
+                verticalSpaceModifier,
+                gridOriginOffset,
+                islandBaseHeight,
+                islandParentObject,
+                bridgeParentObject,
+                chainParentObject,
+                effectsParentObject,
+                generatedIslands,
+                generatedFixedBridges,
+                generatedChains);
+
+            SaveLevel();
+            EditorUtility.SetDirty(currentLevelContainer);
+            Selection.activeGameObject = parentObject;
+        }
 
         public void SaveLevel()
         {
-            var cam = Camera.main;
-            if (cam && currentLevelContainer != null)
+            EnsureLevelData();
+            SynchronizeRulesToLevelData();
+
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null && currentLevelContainer != null)
             {
-                var camTransform = cam.transform;
                 currentLevelContainer.SetCameraSettings(
-                    camTransform.position,
-                    camTransform.rotation.eulerAngles,
-                    cam.orthographicSize
-                );
+                    mainCamera.transform.position,
+                    mainCamera.transform.rotation.eulerAngles,
+                    mainCamera.orthographicSize);
             }
 
-            // Yeni oyunda conveyor datasý kullanýlmayacak.
-            // levelData.ResizeConveyorCells(
-            //     gridWidth,
-            //     conveyorLength,
-            //     expandConveyorToUp,
-            //     false
-            // );
+            LevelSaveSystem.SaveLevel(levelData, levelIndex);
 
-            if (parentObject != null)
+            GameObject levelRoot = parentObject != null
+                ? parentObject
+                : currentLevelContainer != null
+                    ? currentLevelContainer.gameObject
+                    : null;
+
+            if (levelRoot != null && prefabSaver != null)
             {
-                prefabSaver.SaveAndAssignPrefab(parentObject, levelIndex);
+                prefabSaver.SaveAndAssignPrefab(levelRoot, levelIndex);
                 EditorUtility.SetDirty(prefabSaver);
             }
 
@@ -186,1136 +374,366 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
                 EditorUtility.SetDirty(currentLevelContainer);
             }
 
-
-            if (levelData != null)
-            {
-                levelData.bottomLaneCount = bottomLaneCount;
-                levelData.visibleShooterCountPerLane = visibleShooterCountPerLane;
-                levelData.EnsureBottomLaneCount(bottomLaneCount);
-                levelData.RefreshBottomShooterIndexes();
-
-                Debug.Log(
-                    $"[LevelCreator SAVE CHECK] Me me me LaneCount:{levelData.bottomLaneCount} " +
-                    $"Visible:{levelData.visibleShooterCountPerLane}"
-                );
-                Debug.Log($"[LevelCreator SAVE CHECK] Me me me Saving LevelData/Level{levelIndex}");
-                Debug.Log($"[LevelCreator SAVE CHECK] Me me me LaneCount:{levelData.bottomLaneCount} Visible:{levelData.visibleShooterCountPerLane}");
-
-                for (int i = 0; i < levelData.bottomShooterLanes.Count; i++)
-                {
-                    Debug.Log(
-                        $"[LevelCreator SAVE CHECK] Me me me Lane:{i} " +
-                        $"Shooters:{levelData.bottomShooterLanes[i].shooters.Count}"
-                    );
-                }
-            }
-            else
-            {
-                Debug.Log($"[LevelCreator SAVE CHECK] Me me me Saving LevelData/Level levelData == null ");
-
-            }
-
-            LevelSaveSystem.SaveLevel(levelData, levelIndex);
+            AssetDatabase.SaveAssets();
         }
 
         public void LoadLevel()
         {
-            levelData = LevelSaveSystem.LoadLevel(levelIndex);
-            if (levelData == null) return;
+            if (!LevelSaveSystem.IsLevelExists(levelIndex))
+            {
+                Debug.LogWarning("[LevelCreator] Level data does not exist: " + levelIndex);
+                return;
+            }
 
+            levelData = LevelSaveSystem.LoadLevel(levelIndex);
+            activeDataLevelIndex = levelIndex;
+            if (levelData == null)
+            {
+                return;
+            }
+
+            levelData.EnsureHashiData();
+            ApplyLoadedLevelDataToEditor();
+            DestroyExistingLevelObjects();
+
+            string prefabAddress = "Level_" + levelIndex;
+
+            if (prefabLoaderOld != null)
+            {
+                prefabLoaderOld.ManualPrefabLoader(
+                    prefabAddress,
+                    loadedObject =>
+                    {
+                        parentObject = loadedObject;
+                        currentLevelContainer = loadedObject != null
+                            ? loadedObject.GetComponent<LevelContainer>()
+                            : null;
+                        AssignCameraSettings();
+                    });
+            }
+            else
+            {
+                LoadPrefabDirectlyFromAssetDatabase(prefabAddress);
+            }
+
+            EditorUtility.SetDirty(this);
+        }
+
+        public void ResetLevel()
+        {
+            gridWidth = Mathf.Max(1, gridWidth);
+            gridHeight = Mathf.Max(1, gridHeight);
+
+            levelData = new LevelData(gridWidth, gridHeight, 0, 0);
+            activeDataLevelIndex = levelIndex;
+            SynchronizeRulesToLevelData();
+            DestroyExistingLevelObjects();
+
+            if (prefabSaver != null)
+            {
+                prefabSaver.RemovePrefabFromAddressablesAndDelete(levelIndex);
+            }
+
+            EditorUtility.SetDirty(this);
+        }
+
+        private void SetParents()
+        {
+            DestroyExistingLevelObjects();
+
+            generatedIslands.Clear();
+            generatedFixedBridges.Clear();
+            generatedChains.Clear();
+
+            parentObject = new GameObject("Level_" + levelIndex);
+            parentObject.tag = "LevelParent";
+            currentLevelContainer = parentObject.AddComponent<LevelContainer>();
+
+            islandParentObject = CreateChildParent("Island Parent");
+            bridgeParentObject = CreateChildParent("Bridge Parent");
+            chainParentObject = CreateChildParent("Chain Parent");
+            effectsParentObject = CreateChildParent("Effects Parent");
+        }
+
+        private GameObject CreateChildParent(string objectName)
+        {
+            GameObject child = new GameObject(objectName);
+            child.transform.SetParent(parentObject.transform, false);
+            return child;
+        }
+
+        private Dictionary<Vector2Int, IslandNode> CreateIslands()
+        {
+            Dictionary<Vector2Int, IslandNode> result =
+                new Dictionary<Vector2Int, IslandNode>();
+
+            List<IslandCellData> islandCells = levelData.GetIslandCells();
+
+            for (int i = 0; i < islandCells.Count; i++)
+            {
+                IslandCellData islandData = islandCells[i];
+                GameObject islandObject = PrefabUtility.InstantiatePrefab(
+                    prefabs.islandPrefab) as GameObject;
+
+                if (islandObject == null)
+                {
+                    continue;
+                }
+
+                islandObject.transform.SetParent(islandParentObject.transform, true);
+                islandObject.transform.position = GridCoordinateToWorld(islandData.Coordinate);
+                islandObject.transform.eulerAngles = islandEulerAngles;
+                islandObject.name =
+                    "Island_" + islandData.x + "_" + islandData.y +
+                    "_Target_" + islandData.requiredBridgeCount;
+
+                IslandNode islandNode = islandObject.GetComponent<IslandNode>();
+                if (islandNode == null)
+                {
+                    islandNode = islandObject.AddComponent<IslandNode>();
+                }
+
+                islandNode.ConfigureLevelData(islandData, visualSettings);
+                generatedIslands.Add(islandNode);
+                result.Add(islandData.Coordinate, islandNode);
+            }
+
+            return result;
+        }
+
+        private void CreateFixedBridges(
+            Dictionary<Vector2Int, IslandNode> islandMap)
+        {
+            for (int i = 0; i < levelData.fixedBridges.Count; i++)
+            {
+                FixedBridgeDefinitionData bridgeData = levelData.fixedBridges[i];
+
+                if (!islandMap.TryGetValue(
+                        bridgeData.startCoordinate,
+                        out IslandNode firstIsland) ||
+                    !islandMap.TryGetValue(
+                        bridgeData.endCoordinate,
+                        out IslandNode secondIsland))
+                {
+                    continue;
+                }
+
+                GameObject bridgeObject = PrefabUtility.InstantiatePrefab(
+                    prefabs.bridgePrefab) as GameObject;
+
+                if (bridgeObject == null)
+                {
+                    continue;
+                }
+
+                bridgeObject.transform.SetParent(bridgeParentObject.transform, true);
+                bridgeObject.name = "FixedBridge_" + bridgeData.id;
+
+                BridgeVisual bridgeVisual = bridgeObject.GetComponent<BridgeVisual>();
+                if (bridgeVisual == null)
+                {
+                    bridgeVisual = bridgeObject.AddComponent<BridgeVisual>();
+                }
+
+                BridgeConnection connection = bridgeObject.GetComponent<BridgeConnection>();
+                if (connection == null)
+                {
+                    connection = bridgeObject.AddComponent<BridgeConnection>();
+                }
+
+                connection.ConfigureLevelData(
+                    firstIsland,
+                    secondIsland,
+                    bridgeData.bridgeCount,
+                    true,
+                    visualSettings);
+
+                generatedFixedBridges.Add(connection);
+            }
+        }
+
+        private void CreateChains()
+        {
+            for (int i = 0; i < levelData.chainBarriers.Count; i++)
+            {
+                ChainBarrierData chainData = levelData.chainBarriers[i];
+                GameObject chainObject = PrefabUtility.InstantiatePrefab(
+                    prefabs.chainBarrierPrefab) as GameObject;
+
+                if (chainObject == null)
+                {
+                    continue;
+                }
+
+                chainObject.transform.SetParent(chainParentObject.transform, true);
+                chainObject.name = "Chain_" + chainData.id;
+
+                ChainBarrier chain = chainObject.GetComponent<ChainBarrier>();
+                if (chain == null)
+                {
+                    chain = chainObject.AddComponent<ChainBarrier>();
+                }
+
+                chain.ConfigureLevelData(
+                    chainData,
+                    GridCoordinateToWorld(chainData.startCoordinate),
+                    GridCoordinateToWorld(chainData.endCoordinate),
+                    visualSettings);
+
+                generatedChains.Add(chain);
+            }
+        }
+
+        private void SynchronizeRulesToLevelData()
+        {
+            if (levelData == null)
+            {
+                return;
+            }
+
+            levelData.EnsureHashiData();
+            levelData.hashiRules.blockBridgeThroughIsland = blockBridgeThroughIsland;
+            levelData.hashiRules.blockBridgeCrossing = blockBridgeCrossing;
+            levelData.hashiRules.requireAllIslandsConnected = requireAllIslandsConnected;
+            levelData.hashiRules.islandBlockingRadius =
+                Mathf.Max(0.01f, islandBlockingRadius);
+        }
+
+        private void ApplyLoadedLevelDataToEditor()
+        {
+            if (levelData == null)
+            {
+                return;
+            }
+
+            levelData.EnsureHashiData();
             gridWidth = levelData.Width;
             gridHeight = levelData.Height;
-            conveyorLength = 0;
+            blockBridgeThroughIsland = levelData.hashiRules.blockBridgeThroughIsland;
+            blockBridgeCrossing = levelData.hashiRules.blockBridgeCrossing;
+            requireAllIslandsConnected = levelData.hashiRules.requireAllIslandsConnected;
+            islandBlockingRadius = levelData.hashiRules.islandBlockingRadius;
+        }
 
-            // Yeni oyunda conveyor datasý kullanýlmayacak.
-            // levelData.ResizeConveyorCells(
-            //     gridWidth,
-            //     conveyorLength,
-            //     expandConveyorToUp,
-            //     false
-            // );
-
-            levelData.EnsureBottomLaneCount(levelData.bottomLaneCount);
-            bottomLaneCount = levelData.bottomLaneCount;
-            visibleShooterCountPerLane = levelData.visibleShooterCountPerLane;
-
-            var prefabName = $"Level_{levelIndex}";
-
-            _loadedLevel = GameObject.FindGameObjectWithTag("LevelParent");
-            if (_loadedLevel)
+        private bool ValidateRequiredPrefabs(out string error)
+        {
+            if (prefabs == null)
             {
-                DestroyImmediate(_loadedLevel);
+                error = "GamePrefabs is not assigned.";
+                return false;
             }
 
-            var prevList = GameObject.FindGameObjectsWithTag("LevelParent");
-            foreach (var oldLevel in prevList)
+            if (prefabs.islandPrefab == null)
             {
-                if (oldLevel)
-                {
-                    DestroyImmediate(oldLevel);
-                }
+                error = "GamePrefabs.islandPrefab is not assigned.";
+                return false;
             }
 
-            if (parentObject)
+            if (prefabs.bridgePrefab == null)
             {
-                DestroyImmediate(parentObject);
+                error = "GamePrefabs.bridgePrefab is not assigned.";
+                return false;
             }
 
-            if (currentLevelContainer)
+            if (levelData.chainBarriers.Count > 0 &&
+                prefabs.chainBarrierPrefab == null)
             {
-                DestroyImmediate(currentLevelContainer.gameObject);
+                error = "GamePrefabs.chainBarrierPrefab is not assigned.";
+                return false;
             }
 
-            _loadedLevel = prefabLoaderOld.ManualPrefabLoader(
-                prefabName,
-                level =>
-                {
-                    currentLevelContainer = level.GetComponent<LevelContainer>();
-                    AssignCameraSettings();
-                    _loadedLevel = level;
-                }
-            );
+            error = string.Empty;
+            return true;
+        }
+
+        private static string BuildValidationMessage(HashiValidationResult validation)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+
+            for (int i = 0; i < validation.issues.Count; i++)
+            {
+                HashiValidationIssue issue = validation.issues[i];
+                builder.Append(issue.severity);
+                builder.Append(": ");
+                builder.AppendLine(issue.message);
+            }
+
+            return builder.ToString();
         }
 
         private void AssignCameraSettings()
         {
-            if (currentLevelContainer == null || vCam == null) return;
+            if (currentLevelContainer == null || vCam == null)
+            {
+                return;
+            }
 
             vCam.transform.position = currentLevelContainer.GetCameraPos();
             vCam.transform.eulerAngles = currentLevelContainer.GetCameraEuler();
             vCam.Lens.OrthographicSize = currentLevelContainer.GetCameraOrthoSize();
         }
 
-        public void ResetLevel()
+        private void LoadPrefabDirectlyFromAssetDatabase(string prefabAddress)
         {
-            int targetQueueCount = levelData?.TargetQueue?.Count ?? 0;
-
-            if (gridWidth <= 0) gridWidth = 5;
-            if (gridHeight <= 0) gridHeight = 10;
-
-            conveyorLength = 0;
-
-            levelData = new LevelData(gridWidth, gridHeight, targetQueueCount, conveyorLength);
-            levelData.bottomLaneCount = bottomLaneCount;
-            levelData.visibleShooterCountPerLane = visibleShooterCountPerLane;
-            levelData.EnsureBottomLaneCount(bottomLaneCount);
-
-            prefabSaver.RemovePrefabFromAddressablesAndDelete(levelIndex);
-        }
-        public void GenerateLevel()
-        {
-            if (levelData == null)
+            if (prefabSaver == null)
             {
-                ResetLevel();
-            }
-
-            levelData.bottomLaneCount = bottomLaneCount;
-            levelData.visibleShooterCountPerLane = visibleShooterCountPerLane;
-            levelData.EnsureBottomLaneCount(bottomLaneCount);
-            levelData.RefreshBottomShooterIndexes();
-
-            SetParents();
-
-            CreateGrid();
-            CreateBoxes();
-            CreateBottomShooters();
-            CreateFlowerPetals();
-
-            // Eski oyun akýþý iptal edildi.
-            // CreateConveyors();
-            // CreateChains();
-
-            // Wall generator yeni akýþtan çýkarýldý.
-            // wallGenerator.Init(levelData, this, levelIndex);
-            // wallGenerator.GenerateWalls();
-
-            currentLevelContainer.Init(gridWidth, gridHeight, gridBases, boxContainerChains, objectSpawners);
-
-            currentLevelContainer.InitNewRuntimeReferences(
-                boxGridParentObject,
-                bottomSlotParentObject,
-                flowerParentObject,
-                generatedBoxes,
-                generatedShooters,
-                generatedBottomNodes,
-                generatedFlowerPetals
-            );
-
-            // Eski template level parent'ý 180 derece döndürüyordu.
-            // Yeni sistemde transform referanslarýný world position olarak kullandýðýmýz için
-            // bu satýr child objeleri referans noktalarýndan uzaklaþtýrýr.
-            // parentObject.transform.localEulerAngles = new Vector3(
-            //     parentObject.transform.localEulerAngles.x,
-            //     180f,
-            //     parentObject.transform.localEulerAngles.z
-            // );
-
-            SaveLevel();
-
-            EditorUtility.SetDirty(currentLevelContainer);
-        }
-        #endregion
-
-
-        #region Initialization
-
-        private void SetParents()
-        {
-            generatedBoxes.Clear();
-            generatedShooters.Clear();
-            generatedBottomNodes.Clear();
-            generatedFlowerPetals.Clear();
-
-            boxContainerChains ??= new List<BoxContainerChain>();
-            objectSpawners ??= new List<ObjectSpawner>();
-
-            boxContainerChains.Clear();
-            objectSpawners.Clear();
-
-            parentObject = GameObject.Find($"Level_{levelIndex}");
-            if (parentObject) DestroyImmediate(parentObject);
-
-            parentObject = new GameObject($"Level_{levelIndex}");
-            parentObject.tag = "LevelParent";
-
-            currentLevelContainer = parentObject.AddComponent<LevelContainer>();
-
-            gridParentObject = new GameObject("Grid Parent");
-            gridParentObject.transform.SetParent(parentObject.transform, false);
-
-            boxGridParentObject = new GameObject("Box Grid Parent");
-            boxGridParentObject.transform.SetParent(parentObject.transform, false);
-
-            bottomSlotParentObject = new GameObject("Bottom Slot Parent");
-            bottomSlotParentObject.transform.SetParent(parentObject.transform, false);
-
-            flowerParentObject = new GameObject("Flower Parent");
-            flowerParentObject.transform.SetParent(parentObject.transform, false);
-
-            // Eski parentlar þimdilik dursun ama yeni akýþta kullanýlmayacak.
-            conveyorParentObject = new GameObject("Conveyor Parent - Disabled");
-            conveyorParentObject.transform.SetParent(parentObject.transform, false);
-            conveyorParentObject.SetActive(false);
-
-            boxContainerChainParentObject = new GameObject("BoxContainerChains Parent - Disabled");
-            boxContainerChainParentObject.transform.SetParent(parentObject.transform, false);
-            boxContainerChainParentObject.SetActive(false);
-        }
-
-        #endregion
-
-
-        #region Create Grid
-
-        private void CreateGrid()
-        {
-            Dictionary<Vector2Int, Vector3> spawnPositions = new();
-
-            switch (gridType)
-            {
-                case EnumHolder.GridType.Normal:
-                    spawnPositions = CalculateSpawnPositions();
-                    break;
-
-                case EnumHolder.GridType.DynamicSpaced:
-                    spawnPositions = CalculateCumulativeSpawnPositions();
-                    break;
-
-                case EnumHolder.GridType.Hexagon:
-                    break;
-            }
-
-            gridBases = new GridBase[gridWidth, gridHeight];
-
-            for (var y = 0; y < levelData.Height; y++)
-            {
-                for (var x = 0; x < levelData.Width; x++)
-                {
-                    CreateGridBaseObjects(
-                        x,
-                        y,
-                        spawnPositions[new Vector2Int(x, y)],
-                        levelData.GridData[x, y]
-                    );
-                }
-            }
-        }
-
-        private void CreateGridBaseObjects(int x, int y, Vector3 spawnPosition, GridCellData data)
-        {
-            var gridData = levelData.GridData[x, y];
-
-            var gridObject = PrefabUtility.InstantiatePrefab(gridBasePrefab) as GameObject;
-            if (!gridObject) return;
-
-            gridObject.transform.SetParent(gridParentObject.transform, true);
-            gridObject.transform.position = spawnPosition;
-            gridObject.transform.name = gridObject.transform.name + " (" + x + "x" + y + ") ";
-
-            var gridScript = gridObject.GetComponent<GridBase>();
-            gridScript.Init(x, y);
-            gridScript.SetActive(gridData.isActive);
-            gridBases[x, y] = gridScript;
-        }
-
-        #endregion
-
-
-        #region Create New Box Grid
-
-        private void CreateBoxes()
-        {
-            if (prefabs == null || prefabs.boxPrefab == null)
-            {
-                Debug.LogWarning("[LevelCreator] Box prefab is missing in GamePrefabs.");
+                Debug.LogError(
+                    "[LevelCreator] prefabSaver is required for direct prefab loading.");
                 return;
             }
 
-            if (boxBottomRowReferences == null || boxBottomRowReferences.Count == 0)
+            string prefabPath = prefabSaver.prefabBasePath + prefabAddress + ".prefab";
+            GameObject prefabAsset = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+            if (prefabAsset == null)
             {
-                Debug.LogWarning("[LevelCreator] Box bottom row references are missing.");
+                Debug.LogError("[LevelCreator] Level prefab not found: " + prefabPath);
                 return;
             }
 
-            var boxCells = levelData.GetBoxCells();
-
-            foreach (var boxCell in boxCells)
-            {
-                if (boxCell.x < 0 || boxCell.x >= boxBottomRowReferences.Count)
-                {
-                    Debug.LogWarning(
-                        $"[LevelCreator] Box x index out of reference range: {boxCell.x}. " +
-                        $"Grid Width: {gridWidth}, Box Bottom Row References Count: {boxBottomRowReferences.Count}"
-                    );
-                    continue;
-                }
-
-                Transform bottomReference = boxBottomRowReferences[boxCell.x];
-
-                if (bottomReference == null)
-                {
-                    Debug.LogWarning($"[LevelCreator] Box bottom reference is null at x: {boxCell.x}");
-                    continue;
-                }
-
-                GameObject boxObject = PrefabUtility.InstantiatePrefab(prefabs.boxPrefab) as GameObject;
-                if (!boxObject) continue;
-
-                boxObject.transform.SetParent(boxGridParentObject.transform, true);
-
-                Vector3 spawnPosition = bottomReference.position + boxRowOffset * boxCell.y;
-
-                boxObject.transform.position = spawnPosition;
-                boxObject.transform.rotation = bottomReference.rotation;
-                boxObject.name = $"Box ({boxCell.x},{boxCell.y}) {boxCell.color} Mold:{boxCell.moldGroupId}";
-
-                GeneratedLevelItem generatedItem = boxObject.GetComponent<GeneratedLevelItem>();
-                if (!generatedItem)
-                {
-                    generatedItem = boxObject.AddComponent<GeneratedLevelItem>();
-                }
-
-                generatedItem.SetupBox(
-                    boxCell.x,
-                    boxCell.y,
-                    boxCell.color,
-                    boxCell.moldGroupId
-                );
-
-                Box box = boxObject.GetComponent<Box>();
-                if (box != null)
-                {
-                    var runtimeBoxData = new global::BoxSpawnData
-                    {
-                        color = boxCell.color,
-                        x = boxCell.x,
-                        y = boxCell.y,
-                        moldGroupId = boxCell.moldGroupId
-                    };
-
-                    box.Setup(runtimeBoxData);
-                }
-
-                boxObject.SendMessage(
-                    "InitFromLevelData",
-                    boxCell,
-                    SendMessageOptions.DontRequireReceiver
-                );
-
-                generatedBoxes.Add(boxObject);
-            }
+            parentObject = PrefabUtility.InstantiatePrefab(prefabAsset) as GameObject;
+            currentLevelContainer = parentObject != null
+                ? parentObject.GetComponent<LevelContainer>()
+                : null;
+            AssignCameraSettings();
         }
 
-        #endregion
-
-        #region Create Bottom Shooters
-
-        private void CreateBottomShooters()
+        private void DestroyExistingLevelObjects()
         {
-            if (levelData.bottomShooterLanes == null)
-                return;
+            LevelContainer[] containers = FindObjectsByType<LevelContainer>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
 
-            if (prefabs == null)
+            for (int i = 0; i < containers.Length; i++)
             {
-                Debug.LogWarning("[LevelCreator] GamePrefabs reference is missing.");
-                return;
-            }
-
-            if (useDynamicBottomSlotLayout)
-            {
-                CreateBottomShootersDynamic();
-            }
-            else
-            {
-                CreateBottomShootersFromReferences();
-            }
-        }
-
-        private void CreateBottomShootersDynamic()
-        {
-            if (!TryGetBottomSlotBasePose(out Vector3 basePosition, out Quaternion baseRotation))
-            {
-                Debug.LogWarning("[LevelCreator] Dynamic bottom slot layout için Bottom Slot Start Reference atanmalý.");
-                return;
-            }
-
-            int laneCount = Mathf.Max(0, bottomLaneCount);
-            int nodeCountPerLane = Mathf.Max(1, visibleShooterCountPerLane);
-
-            for (int laneIndex = 0; laneIndex < laneCount; laneIndex++)
-            {
-                if (laneIndex >= levelData.bottomShooterLanes.Count)
+                if (containers[i] != null)
                 {
-                    Debug.LogWarning($"[LevelCreator] LevelData içinde bottom lane yok: {laneIndex}");
-                    continue;
-                }
-
-                BottomShooterLaneData laneData = levelData.bottomShooterLanes[laneIndex];
-
-                if (laneData?.shooters == null)
-                    continue;
-
-                GameObject laneParent = new GameObject($"Bottom Lane {laneIndex}");
-                laneParent.transform.SetParent(bottomSlotParentObject.transform, false);
-
-                for (int nodeIndex = 0; nodeIndex < nodeCountPerLane; nodeIndex++)
-                {
-                    GetDynamicBottomSlotPose(
-                        basePosition,
-                        baseRotation,
-                        laneIndex,
-                        nodeIndex,
-                        out Vector3 nodePosition,
-                        out Quaternion nodeRotation
-                    );
-
-                    CreateBottomNode(
-                        laneParent.transform,
-                        laneIndex,
-                        nodeIndex,
-                        nodePosition,
-                        nodeRotation
-                    );
-                }
-
-                int visibleCount = Mathf.Min(
-                    nodeCountPerLane,
-                    laneData.shooters.Count
-                );
-
-                for (int orderIndex = 0; orderIndex < visibleCount; orderIndex++)
-                {
-                    ShooterSpawnData shooterData = laneData.shooters[orderIndex];
-
-                    GetDynamicBottomSlotPose(
-                        basePosition,
-                        baseRotation,
-                        laneIndex,
-                        orderIndex,
-                        out Vector3 shooterPosition,
-                        out Quaternion shooterRotation
-                    );
-
-                    CreateBottomShooter(
-                      laneParent.transform,
-                      shooterData,
-                      laneIndex,
-                      orderIndex,
-                      shooterPosition,
-                      shooterRotation
-                  );
-                }
-            }
-        }
-
-        private void CreateBottomShootersFromReferences()
-        {
-            for (int laneIndex = 0; laneIndex < levelData.bottomShooterLanes.Count; laneIndex++)
-            {
-                BottomShooterLaneData laneData = levelData.bottomShooterLanes[laneIndex];
-
-                if (laneData?.shooters == null)
-                    continue;
-
-                if (laneIndex < 0 || laneIndex >= bottomLaneReferences.Count)
-                {
-                    Debug.LogWarning(
-                        $"[LevelCreator] Bottom lane reference missing for lane {laneIndex}. " +
-                        $"Bottom Lane References Count: {bottomLaneReferences.Count}"
-                    );
-                    continue;
-                }
-
-                BottomLaneReferenceData laneReferenceData = bottomLaneReferences[laneIndex];
-
-                if (laneReferenceData == null ||
-                    laneReferenceData.nodeReferences == null ||
-                    laneReferenceData.nodeReferences.Count == 0)
-                {
-                    Debug.LogWarning($"[LevelCreator] Lane {laneIndex} has no node references.");
-                    continue;
-                }
-
-                GameObject laneParent = new GameObject($"Bottom Lane {laneIndex}");
-                laneParent.transform.SetParent(bottomSlotParentObject.transform, false);
-
-                int nodeCount = Mathf.Min(
-                    visibleShooterCountPerLane,
-                    laneReferenceData.nodeReferences.Count
-                );
-
-                int visibleCount = Mathf.Min(
-                    visibleShooterCountPerLane,
-                    laneReferenceData.nodeReferences.Count,
-                    laneData.shooters.Count
-                );
-
-                for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++)
-                {
-                    Transform nodeReference = laneReferenceData.nodeReferences[nodeIndex];
-
-                    if (nodeReference == null)
-                    {
-                        Debug.LogWarning($"[LevelCreator] Lane {laneIndex} node reference {nodeIndex} is null.");
-                        continue;
-                    }
-
-                    CreateBottomNode(
-                        laneParent.transform,
-                        laneIndex,
-                        nodeIndex,
-                        nodeReference.position,
-                        nodeReference.rotation
-                    );
-                }
-
-                for (int orderIndex = 0; orderIndex < visibleCount; orderIndex++)
-                {
-                    ShooterSpawnData shooterData = laneData.shooters[orderIndex];
-                    Transform nodeReference = laneReferenceData.nodeReferences[orderIndex];
-
-                    if (nodeReference == null)
-                    {
-                        Debug.LogWarning($"[LevelCreator] Lane {laneIndex} shooter reference {orderIndex} is null.");
-                        continue;
-                    }
-
-                    CreateBottomShooter(
-                         laneParent.transform,
-                         shooterData,
-                         laneIndex,
-                         orderIndex,
-                         nodeReference.position,
-                         nodeReference.rotation
-                     );
-                }
-            }
-        }
-
-        private bool TryGetBottomSlotBasePose(out Vector3 basePosition, out Quaternion baseRotation)
-        {
-            if (bottomSlotStartReference != null)
-            {
-                basePosition = bottomSlotStartReference.position;
-                baseRotation = bottomSlotStartReference.rotation * Quaternion.Euler(bottomSlotEulerOffset);
-                return true;
-            }
-
-            if (bottomLaneReferences != null &&
-                bottomLaneReferences.Count > 0 &&
-                bottomLaneReferences[0] != null &&
-                bottomLaneReferences[0].nodeReferences != null &&
-                bottomLaneReferences[0].nodeReferences.Count > 0 &&
-                bottomLaneReferences[0].nodeReferences[0] != null)
-            {
-                Transform fallback = bottomLaneReferences[0].nodeReferences[0];
-
-                basePosition = fallback.position;
-                baseRotation = fallback.rotation * Quaternion.Euler(bottomSlotEulerOffset);
-
-                Debug.LogWarning("[LevelCreator] Bottom Slot Start Reference boþ. Fallback olarak BottomLaneReferences[0][0] kullanýldý.");
-                return true;
-            }
-
-            basePosition = Vector3.zero;
-            baseRotation = Quaternion.identity;
-            return false;
-        }
-
-        private void GetDynamicBottomSlotPose(
-        Vector3 basePosition,
-        Quaternion baseRotation,
-        int laneIndex,
-        int nodeIndex,
-        out Vector3 position,
-        out Quaternion rotation)
-        {
-            float centeredLaneIndex = laneIndex - ((bottomLaneCount - 1) * 0.5f);
-            float centeredNodeIndex = nodeIndex - ((visibleShooterCountPerLane - 1) * 0.5f);
-
-            position =
-                basePosition +
-                bottomLaneOffset * centeredLaneIndex +
-                bottomNodeOffset * centeredNodeIndex;
-
-            rotation = baseRotation;
-        }
-
-        private void CreateBottomNode(
-            Transform laneParent,
-            int laneIndex,
-            int nodeIndex,
-            Vector3 position,
-            Quaternion rotation)
-        {
-            GameObject nodeObject;
-
-            if (prefabs.bottomSlotNodePrefab != null)
-            {
-                nodeObject = PrefabUtility.InstantiatePrefab(prefabs.bottomSlotNodePrefab) as GameObject;
-            }
-            else
-            {
-                nodeObject = new GameObject("Bottom Slot Node");
-            }
-
-            if (!nodeObject)
-                return;
-
-            nodeObject.transform.SetParent(laneParent, true);
-            nodeObject.transform.position = position;
-            nodeObject.transform.rotation = rotation;
-            nodeObject.name = $"Bottom Node Lane:{laneIndex} Node:{nodeIndex}";
-
-            GeneratedLevelItem generatedItem = nodeObject.GetComponent<GeneratedLevelItem>();
-            if (!generatedItem)
-            {
-                generatedItem = nodeObject.AddComponent<GeneratedLevelItem>();
-            }
-
-            generatedItem.SetupBottomSlotNode(laneIndex, nodeIndex);
-
-            BottomSlotNode bottomSlotNode = nodeObject.GetComponent<BottomSlotNode>();
-            if (bottomSlotNode == null)
-            {
-                bottomSlotNode = nodeObject.AddComponent<BottomSlotNode>();
-            }
-
-            bottomSlotNode.Setup(laneIndex, nodeIndex);
-
-            generatedBottomNodes.Add(nodeObject);
-        }
-
-        private void CreateBottomShooter(
-       Transform laneParent,
-       ShooterSpawnData shooterData,
-       int laneIndex,
-       int orderIndex,
-       Vector3 position,
-       Quaternion rotation)
-        {
-            if (prefabs.shooterPrefab == null)
-            {
-                Debug.LogWarning("[LevelCreator] Shooter prefab is missing in GamePrefabs.");
-                return;
-            }
-
-            GameObject shooterObject = PrefabUtility.InstantiatePrefab(prefabs.shooterPrefab) as GameObject;
-            if (!shooterObject)
-                return;
-
-            shooterObject.transform.SetParent(laneParent, true);
-            shooterObject.transform.position = position;
-            shooterObject.transform.rotation = rotation;
-
-            // ÖNEMLÝ:
-            // Data içindeki eski lane/order deðerlerine güvenmiyoruz.
-            // Generate anýndaki gerçek pozisyon bilgisini zorla yazýyoruz.
-            shooterData.laneIndex = laneIndex;
-            shooterData.orderIndex = orderIndex;
-
-            shooterObject.name =
-             $"Shooter Lane:{laneIndex} Order:{orderIndex} " +
-             $"{shooterData.color} Bullet:{shooterData.bulletCount} " +
-             $"Link:{shooterData.linkGroupId} Hidden:{shooterData.isHidden}";
-
-            GeneratedLevelItem generatedItem = shooterObject.GetComponent<GeneratedLevelItem>();
-            if (!generatedItem)
-            {
-                generatedItem = shooterObject.AddComponent<GeneratedLevelItem>();
-            }
-
-            generatedItem.SetupShooter(
-                  laneIndex,
-                  orderIndex,
-                  shooterData.color,
-                  shooterData.bulletCount,
-                  shooterData.linkGroupId,
-                  shooterData.isHidden
-              );
-
-            Shooter shooter = shooterObject.GetComponent<Shooter>();
-            if (shooter == null)
-            {
-                shooter = shooterObject.AddComponent<Shooter>();
-            }
-
-            shooter.Setup(shooterData);
-
-            Collider shooterCollider = shooterObject.GetComponent<Collider>();
-            if (shooterCollider == null)
-            {
-                Debug.LogWarning($"[LevelCreator] Shooter prefabýnda collider yok: {shooterObject.name}. OnMouseDown çalýþmayabilir.");
-            }
-
-            shooterObject.SendMessage(
-                "InitFromLevelData",
-                shooterData,
-                SendMessageOptions.DontRequireReceiver
-            );
-
-            generatedShooters.Add(shooterObject);
-        }
-
-        #endregion
-        #region Create Flower Petals
-
-        private void CreateFlowerPetals()
-        {
-            Transform flowerRoot = flowerParentObject.transform;
-
-            if (flowerParentReference != null)
-            {
-                flowerParentObject.transform.position = flowerParentReference.position;
-                flowerParentObject.transform.rotation = flowerParentReference.rotation;
-                flowerParentObject.transform.localScale = flowerParentReference.lossyScale;
-                flowerRoot = flowerParentObject.transform;
-            }
-
-            if (flowerPetalReferences != null && flowerPetalReferences.Count > 0)
-            {
-                for (int i = 0; i < flowerPetalReferences.Count; i++)
-                {
-                    Transform reference = flowerPetalReferences[i];
-                    if (reference == null) continue;
-
-                    CreateFlowerPetal(i, reference.position, reference.rotation, flowerRoot);
-                }
-
-                return;
-            }
-
-            const int defaultPetalCount = 5;
-            float radius = 1f;
-
-            for (int i = 0; i < defaultPetalCount; i++)
-            {
-                float angle = i * Mathf.PI * 2f / defaultPetalCount;
-                Vector3 localPosition = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius;
-                Vector3 worldPosition = flowerRoot.position + localPosition;
-
-                CreateFlowerPetal(i, worldPosition, Quaternion.identity, flowerRoot);
-            }
-        }
-
-        private void CreateFlowerPetal(
-         int petalIndex,
-         Vector3 position,
-         Quaternion rotation,
-         Transform flowerRoot)
-        {
-            GameObject petalObject;
-
-            if (prefabs != null && prefabs.flowerPetalPrefab != null)
-            {
-                petalObject = PrefabUtility.InstantiatePrefab(prefabs.flowerPetalPrefab) as GameObject;
-            }
-            else
-            {
-                petalObject = new GameObject("Flower Petal");
-            }
-
-            if (!petalObject)
-                return;
-
-            petalObject.transform.SetParent(flowerRoot, false);
-            petalObject.transform.position = position;
-            petalObject.transform.rotation = rotation;
-            petalObject.name = $"Flower Petal {petalIndex}";
-
-            GeneratedLevelItem generatedItem = petalObject.GetComponent<GeneratedLevelItem>();
-            if (!generatedItem)
-            {
-                generatedItem = petalObject.AddComponent<GeneratedLevelItem>();
-            }
-
-            generatedItem.SetupFlowerPetal(petalIndex);
-
-            FlowerPetal flowerPetal = petalObject.GetComponent<FlowerPetal>();
-            if (flowerPetal == null)
-            {
-                flowerPetal = petalObject.AddComponent<FlowerPetal>();
-            }
-
-            flowerPetal.Setup(petalIndex);
-
-            generatedFlowerPetals.Add(petalObject);
-        }
-
-        #endregion
-
-
-        #region Create Chains - Legacy Disabled
-
-        private void CreateChains()
-        {
-            var chains = levelData.GetChains();
-
-            foreach (var chainData in chains)
-            {
-                var chainParentObject = PrefabUtility.InstantiatePrefab(prefabs.chainPrefab) as GameObject;
-                if (!chainParentObject) return;
-
-                var chainParent = chainParentObject.GetComponent<BoxContainerChain>();
-                chainParent.color = chainData[0].Color;
-                chainParentObject.transform.SetParent(boxContainerChainParentObject.transform);
-
-                for (var i = 0; i < chainData.Count; i++)
-                {
-                    var chainDataItem = chainData[i];
-                    var chainCellObject = PrefabUtility.InstantiatePrefab(prefabs.chainNodePrefab) as GameObject;
-                    if (!chainCellObject) return;
-
-                    chainCellObject.transform.SetParent(chainParentObject.transform);
-                    chainCellObject.transform.position = GridSpaceToWorldSpace(chainDataItem.X, chainDataItem.Y);
-
-                    var chainNodeScript = chainCellObject.GetComponent<BoxContainerChainNode>();
-                    chainNodeScript.Init(chainParent);
-                    chainNodeScript.SetGrid(gridBases[chainDataItem.X, chainDataItem.Y]);
-                    chainNodeScript.transform.name += " " + i;
-                    chainParent.AddCell(chainNodeScript);
-                }
-
-                var material = gameColors.chainMaterials[(int)chainData[0].Color];
-                chainParent.Init(material, gridBases);
-                boxContainerChains.Add(chainParent);
-                CreateChainNodes(chainParent);
-
-                if (chainData[0].isFrozen)
-                {
-                    chainParent.IsFrozen = chainData[0].isFrozen;
-                    chainParent.IceCount = chainData[0].BlockCount;
-
-                    foreach (var cell in chainParent.chainNodes)
-                    {
-                        var iceParticle = PrefabUtility.InstantiatePrefab(prefabs.iceParticle) as ParticleSystem;
-                        var iceFinalParticle =
-                            PrefabUtility.InstantiatePrefab(prefabs.iceFinalParticle) as ParticleSystem;
-                        var iceText = PrefabUtility.InstantiatePrefab(prefabs.iceTextPrefab) as TextMeshPro;
-
-                        iceParticle.transform.SetParent(cell.transform);
-                        iceFinalParticle.transform.SetParent(cell.transform);
-                        iceText.transform.SetParent(cell.transform);
-
-                        iceText.transform.localEulerAngles = new Vector3(90f, 180f, 180f);
-                        iceParticle.transform.localPosition = new Vector3(0, 0.86f, 0);
-                        iceFinalParticle.transform.localPosition = new Vector3(0, 0.86f, 0);
-                        iceText.transform.localPosition = new Vector3(0, 0.86f, 0f);
-
-                        cell.iceBrokeParticle = iceFinalParticle;
-                        cell.iceDecreaseParticle = iceParticle;
-                        cell.iceText = iceText;
-                        cell.iceText.text = chainData[0].BlockCount.ToString();
-                    }
-
-                    chainParent.AllNodes.ForEach(node =>
-                    {
-                        var materials = new Material[node.visual.sharedMaterials.Length];
-
-                        for (var index = 0; index < materials.Length; index++)
-                        {
-                            materials[index] = gameColors.iceMaterial;
-                        }
-
-                        node.visual.sharedMaterials = materials;
-
-                        foreach (var subRenderer in node.subRenderers)
-                        {
-                            subRenderer.sharedMaterial = gameColors.iceMaterial;
-                        }
-
-                        if (node.insideBoxRenderer)
-                        {
-                            node.insideBoxRenderer.sharedMaterial = gameColors.iceMaterial;
-                        }
-                    });
-                }
-            }
-        }
-
-        private void CreateChainNodes(BoxContainerChain chain)
-        {
-            chain.ResetNodes();
-
-            var material = gameColors.chainMaterials[(int)chain.color];
-            var insideMat = gameColors.chainInsideMaterials[(int)chain.color];
-
-            var nodes = new List<Node>();
-            var midNodes = new List<Node>();
-
-            for (var i = 0; i < chain.TotalNodeCount; i++)
-            {
-                var nodeObject = PrefabUtility.InstantiatePrefab(prefabs.nodePrefab) as GameObject;
-                if (!nodeObject) return;
-
-                nodeObject.transform.SetParent(chain.transform);
-
-                var nodeScript = nodeObject.GetComponent<Node>();
-
-                chain.chainNodes[i].BoxContainer = nodeScript.boxContainer;
-                chain.chainNodes[i].BoxContainer.ContainerColorType = chain.color;
-
-                var placeParticle =
-                    PrefabUtility.InstantiatePrefab(gameColors.boxParticles[(int)chain.color]) as GameObject;
-
-                placeParticle.transform.SetParent(nodeScript.transform);
-                placeParticle.transform.localPosition = Vector3.zero + new Vector3(0f, 0.3f, 0f);
-                placeParticle.SetActive(false);
-
-                chain.chainNodes[i].BoxContainer.placeParticle = placeParticle;
-
-                var sharedMaterials = nodeScript.visual.sharedMaterials;
-                sharedMaterials[0] = material;
-                nodeScript.insideBoxRenderer.sharedMaterial = insideMat;
-                nodeScript.visual.sharedMaterials = sharedMaterials;
-
-                chain.AddNode(nodeScript);
-                nodes.Add(nodeScript);
-
-                if (i != 0)
-                {
-                    GameObject midNodeObject = PrefabUtility.InstantiatePrefab(prefabs.midNodePrefab) as GameObject;
-                    if (!midNodeObject) return;
-
-                    midNodeObject.transform.SetParent(nodeObject.transform);
-                    midNodeObject.transform.localPosition = Vector3.zero;
-
-                    nodeScript = midNodeObject.GetComponent<Node>();
-                    chain.AddMidNode(nodeScript);
-                    midNodes.Add(nodeScript);
+                    DestroyImmediate(containers[i].gameObject);
                 }
             }
 
-            var positions = chain.CalculateChainNodePositions(gridBases);
-
-            for (int i = 0; i < chain.TotalNodeCount; i++)
-            {
-                nodes[i].transform.position = positions[i];
-                nodes[i].ResetForward();
-                nodes[i].transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-                if (i != 0)
-                {
-                    midNodes[i - 1].transform.localPosition = Vector3.zero;
-
-                    var directionToNode = (nodes[i - 1].transform.position - nodes[i].transform.position).normalized;
-                    var lookEuler = Quaternion.LookRotation(directionToNode).eulerAngles;
-
-                    lookEuler.x = 0;
-                    lookEuler.z = 90;
-
-                    midNodes[i - 1].transform.eulerAngles = lookEuler;
-                }
-            }
+            parentObject = null;
+            currentLevelContainer = null;
+            islandParentObject = null;
+            bridgeParentObject = null;
+            chainParentObject = null;
+            effectsParentObject = null;
         }
 
-        private void CreateConveyors()
+#if UNITY_EDITOR
+        private void OnValidate()
         {
-            objectSpawners.Clear();
-
-            for (var i = 0; i < gridWidth; i++)
-            {
-                var spawner = PrefabUtility.InstantiatePrefab(prefabs.objectSpawnerPrefab) as GameObject;
-                if (!spawner) return;
-
-                spawner.transform.SetParent(conveyorParentObject.transform);
-                spawner.transform.localPosition =
-                    gridBases[i, gridHeight - 1].transform.position + new Vector3(0f, 0.45f, 4.29f);
-                spawner.transform.localRotation = Quaternion.Euler(0, 180f, 0);
-
-                var spawnerScript = spawner.GetComponent<ObjectSpawner>();
-                var matchingObjects = new List<MatchingObject>();
-
-                var conveyorData = levelData.ConveyorData;
-                for (var j = 0; j < conveyorData.GetLength(1); j++)
-                {
-                    var cell = conveyorData[i, j].BasePlaceable as ConveyorItemData;
-                    if (cell == null) continue;
-                    if (cell.Color == EnumHolder.GameColor.None) continue;
-
-                    var matchingObject = PrefabUtility.InstantiatePrefab(prefabs.matchingObjectPrefab) as GameObject;
-                    if (!matchingObject) continue;
-
-                    matchingObject.transform.SetParent(spawner.transform);
-                    matchingObject.transform.localPosition = spawnerScript.objectSpawnTransform.localPosition;
-
-                    var matchingObjectScript = matchingObject.GetComponent<MatchingObject>();
-                    matchingObjectScript.Color = cell.Color;
-                    matchingObjectScript.Init(spawnerScript, cell.isSecret);
-
-                    matchingObjects.Add(matchingObjectScript);
-                }
-
-                spawnerScript.Init(i, matchingObjects);
-
-                if (!objectSpawners.Contains(spawnerScript))
-                {
-                    objectSpawners.Add(spawnerScript);
-                }
-            }
-
-            var platform = PrefabUtility.InstantiatePrefab(prefabs.objectSpawnerPlatform) as GameObject;
-            platform.transform.SetParent(conveyorParentObject.transform);
-            platform.transform.localPosition =
-                new Vector3(-0.05f, 0.55f, gridBases[0, gridHeight - 1].transform.position.z + 2.95f);
-            platform.transform.localRotation = Quaternion.Euler(-90, 0, 0);
-            platform.transform.localScale = new Vector3(gridWidth * 1 + 0.5f, 4.5f, 1f);
+            gridWidth = Mathf.Max(1, gridWidth);
+            gridHeight = Mathf.Max(1, gridHeight);
+            horizontalSpaceModifier = Mathf.Max(0.01f, horizontalSpaceModifier);
+            verticalSpaceModifier = Mathf.Max(0.01f, verticalSpaceModifier);
+            islandRequiredBridgeCount = Mathf.Max(1, islandRequiredBridgeCount);
+            islandUnlockRequirement = Mathf.Max(0, islandUnlockRequirement);
+            chainUnlockRequirement = Mathf.Max(0, chainUnlockRequirement);
+            fixedBridgeCount = Mathf.Clamp(fixedBridgeCount, 1, 2);
+            islandBlockingRadius = Mathf.Max(0.01f, islandBlockingRadius);
         }
-
-        #endregion
-
-
-        #region Utility
-
-        private Dictionary<Vector2Int, Vector3> CalculateSpawnPositions()
-        {
-            var spawnPositions = new Dictionary<Vector2Int, Vector3>();
-
-            for (var y = gridHeight - 1; y >= 0; y--)
-            {
-                for (var x = 0; x < gridWidth; x++)
-                {
-                    var spawnPosition = GridSpaceToWorldSpace(x, y);
-                    spawnPositions.Add(new Vector2Int(x, y), spawnPosition);
-                }
-            }
-
-            return spawnPositions;
-        }
-
-        private Dictionary<Vector2Int, Vector3> CalculateCumulativeSpawnPositions()
-        {
-            var spawnPositions = new Dictionary<Vector2Int, Vector3>();
-
-            var cumulativeHorizontalEmptyAreaSpaceAmount =
-                new float[levelData.Height > levelData.Width ? levelData.Height : levelData.Width];
-
-            for (var y = levelData.Height - 1; y >= 0; y--)
-            {
-                var cumulativeVerticalEmptyAreaSpaceAmount = 0f;
-
-                for (var x = 0; x < levelData.Width; x++)
-                {
-                    var spawnPosition = GridSpaceToWorldSpace(x, y);
-
-                    cumulativeVerticalEmptyAreaSpaceAmount +=
-                        levelData.VerticalEmptyAreaData[x, y] * emptyAreaSpaceModifier;
-
-                    cumulativeHorizontalEmptyAreaSpaceAmount[x] +=
-                        levelData.HorizontalEmptyAreaData[x, y] * emptyAreaSpaceModifier;
-
-                    spawnPosition.x += cumulativeVerticalEmptyAreaSpaceAmount;
-                    spawnPosition.z -= cumulativeHorizontalEmptyAreaSpaceAmount[x];
-
-                    spawnPositions.Add(new Vector2Int(x, y), spawnPosition);
-                }
-            }
-
-            return spawnPositions;
-        }
-
-        public Vector3 GridSpaceToWorldSpace(float x, float y)
-        {
-            var offsetX = gridWidth / 2f * horizontalSpaceModifier;
-            var offsetY = gridHeight / 2f * verticalSpaceModifier;
-
-            return new Vector3(
-                (x * horizontalSpaceModifier) - offsetX + horizontalSpaceModifier / 2f,
-                0,
-                (y * verticalSpaceModifier) - offsetY + verticalSpaceModifier / 2f
-            );
-        }
-
-        private Vector2Int GetSpawnerVector2Int(Vector2Int coordinate, EnumHolder.Direction direction)
-        {
-            var vector = DirectionToVector(direction);
-            return new Vector2Int(coordinate.x + vector.x, coordinate.y + vector.y);
-        }
-
-        private Vector2Int DirectionToVector(EnumHolder.Direction direction)
-        {
-            switch (direction)
-            {
-                case EnumHolder.Direction.Up:
-                    return new Vector2Int(0, 1);
-
-                case EnumHolder.Direction.Down:
-                    return new Vector2Int(0, -1);
-
-                case EnumHolder.Direction.Left:
-                    return new Vector2Int(-1, 0);
-
-                case EnumHolder.Direction.Right:
-                    return new Vector2Int(1, 0);
-
-                default:
-                    return Vector2Int.zero;
-            }
-        }
-
-        private Vector3 DirectionToEuler(EnumHolder.Direction direction)
-        {
-            switch (direction)
-            {
-                case EnumHolder.Direction.Up:
-                    return new Vector3(0, 0, 0);
-
-                case EnumHolder.Direction.Down:
-                    return new Vector3(0, 180, 0);
-
-                case EnumHolder.Direction.Left:
-                    return new Vector3(0, -90, 0);
-
-                case EnumHolder.Direction.Right:
-                    return new Vector3(0, 90, 0);
-
-                default:
-                    return Vector3.zero;
-            }
-        }
-
-        #endregion
+#endif
     }
 }
-
 #endif

@@ -18,77 +18,23 @@
         "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
         "shooters": {
           "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
-          "$values": [
-            {
-              "$id": "3",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 1,
-              "bulletCount": 15,
-              "laneIndex": 0,
-              "orderIndex": 0,
-              "linkGroupId": -1,
-              "isHidden": false
-            },
-            {
-              "$id": "4",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 8,
-              "bulletCount": 10,
-              "laneIndex": 0,
-              "orderIndex": 1,
-              "linkGroupId": -1,
-              "isHidden": false
-            },
-            {
-              "$id": "5",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 1,
-              "bulletCount": 10,
-              "laneIndex": 0,
-              "orderIndex": 2,
-              "linkGroupId": -1,
-              "isHidden": false
-            }
-          ]
+          "$values": []
         }
       },
       {
-        "$id": "6",
+        "$id": "3",
         "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
         "shooters": {
           "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
-          "$values": [
-            {
-              "$id": "7",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 8,
-              "bulletCount": 15,
-              "laneIndex": 1,
-              "orderIndex": 0,
-              "linkGroupId": -1,
-              "isHidden": false
-            },
-            {
-              "$id": "8",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 1,
-              "bulletCount": 10,
-              "laneIndex": 1,
-              "orderIndex": 1,
-              "linkGroupId": -1,
-              "isHidden": false
-            },
-            {
-              "$id": "9",
-              "$type": "BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp",
-              "color": 8,
-              "bulletCount": 10,
-              "laneIndex": 1,
-              "orderIndex": 2,
-              "linkGroupId": -1,
-              "isHidden": false
-            }
-          ]
+          "$values": []
+        }
+      },
+      {
+        "$id": "4",
+        "$type": "BoxPuller.Scripts.Data.BottomShooterLaneData, Assembly-CSharp",
+        "shooters": {
+          "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ShooterSpawnData, Assembly-CSharp]], mscorlib",
+          "$values": []
         }
       }
     ]
@@ -103,19 +49,125 @@
   },
   "boxGridWidth": 5,
   "boxGridHeight": 10,
-  "bottomLaneCount": 2,
+  "bottomLaneCount": 3,
   "visibleShooterCountPerLane": 4,
-  "Width": 15,
-  "Height": 8,
+  "fixedBridges": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.FixedBridgeDefinitionData, Assembly-CSharp]], mscorlib",
+    "$values": [
+      {
+        "$id": "5",
+        "$type": "BoxPuller.Scripts.Data.FixedBridgeDefinitionData, Assembly-CSharp",
+        "id": 1,
+        "startCoordinate": {
+          "$id": "6",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 7,
+          "y": 4,
+          "magnitude": 8.062258,
+          "sqrMagnitude": 65
+        },
+        "endCoordinate": {
+          "$id": "7",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 7,
+          "y": 0,
+          "magnitude": 7.0,
+          "sqrMagnitude": 49
+        },
+        "bridgeCount": 1
+      }
+    ]
+  },
+  "chainBarriers": {
+    "$type": "System.Collections.Generic.List`1[[BoxPuller.Scripts.Data.ChainBarrierData, Assembly-CSharp]], mscorlib",
+    "$values": [
+      {
+        "$id": "8",
+        "$type": "BoxPuller.Scripts.Data.ChainBarrierData, Assembly-CSharp",
+        "id": 1,
+        "startCoordinate": {
+          "$id": "9",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 0,
+          "y": 4,
+          "magnitude": 4.0,
+          "sqrMagnitude": 16
+        },
+        "endCoordinate": {
+          "$id": "10",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 2,
+          "y": 4,
+          "magnitude": 4.472136,
+          "sqrMagnitude": 20
+        },
+        "unlockAfterCompletedIslandCount": 2
+      },
+      {
+        "$id": "11",
+        "$type": "BoxPuller.Scripts.Data.ChainBarrierData, Assembly-CSharp",
+        "id": 2,
+        "startCoordinate": {
+          "$id": "12",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 3,
+          "y": 2,
+          "magnitude": 3.60555124,
+          "sqrMagnitude": 13
+        },
+        "endCoordinate": {
+          "$id": "13",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 1,
+          "y": 0,
+          "magnitude": 1.0,
+          "sqrMagnitude": 1
+        },
+        "unlockAfterCompletedIslandCount": 3
+      },
+      {
+        "$id": "14",
+        "$type": "BoxPuller.Scripts.Data.ChainBarrierData, Assembly-CSharp",
+        "id": 3,
+        "startCoordinate": {
+          "$id": "15",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 4,
+          "y": 6,
+          "magnitude": 7.21110249,
+          "sqrMagnitude": 52
+        },
+        "endCoordinate": {
+          "$id": "16",
+          "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+          "x": 4,
+          "y": 4,
+          "magnitude": 5.656854,
+          "sqrMagnitude": 32
+        },
+        "unlockAfterCompletedIslandCount": 2
+      }
+    ]
+  },
+  "hashiRules": {
+    "$id": "17",
+    "$type": "BoxPuller.Scripts.Data.HashiLevelRulesData, Assembly-CSharp",
+    "blockBridgeThroughIsland": true,
+    "blockBridgeCrossing": true,
+    "requireAllIslandsConnected": false,
+    "islandBlockingRadius": 0.45
+  },
+  "Width": 10,
+  "Height": 10,
   "GridData": {
     "$type": "BoxPuller.Scripts.Data.GridCellData[,], Assembly-CSharp",
     "$values": [
       [
         {
-          "$id": "10",
+          "$id": "18",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "11",
+            "$id": "19",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 0,
             "y": 0,
@@ -124,22 +176,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "12",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "13",
+          "$id": "20",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "14",
+            "$id": "21",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 0,
             "y": 1,
@@ -148,64 +192,8 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "15",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "16",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "17",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 0,
-            "y": 2,
-            "magnitude": 2.0,
-            "sqrMagnitude": 4
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "18",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "19",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "20",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 0,
-            "y": 3,
-            "magnitude": 3.0,
-            "sqrMagnitude": 9
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "21",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "22",
@@ -214,46 +202,46 @@
             "$id": "23",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 0,
+            "y": 2,
+            "magnitude": 2.0,
+            "sqrMagnitude": 4
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "24",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "25",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 3,
+            "magnitude": 3.0,
+            "sqrMagnitude": 9
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "26",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "27",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
             "y": 4,
             "magnitude": 4.0,
             "sqrMagnitude": 16
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "24",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "25",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "26",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 0,
-            "y": 5,
-            "magnitude": 5.0,
-            "sqrMagnitude": 25
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "27",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "28",
@@ -262,28 +250,36 @@
             "$id": "29",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 0,
+            "y": 5,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "30",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "31",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
             "y": 6,
             "magnitude": 6.0,
             "sqrMagnitude": 36
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "30",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 6,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "31",
+          "$id": "32",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "32",
+            "$id": "33",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 0,
             "y": 7,
@@ -292,24 +288,48 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "33",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 0,
-            "y": 7,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        }
-      ],
-      [
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
         {
           "$id": "34",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
             "$id": "35",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 8,
+            "magnitude": 8.0,
+            "sqrMagnitude": 64
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "36",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "37",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 0,
+            "y": 9,
+            "magnitude": 9.0,
+            "sqrMagnitude": 81
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        }
+      ],
+      [
+        {
+          "$id": "38",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "39",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 0,
@@ -318,22 +338,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "36",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "37",
+          "$id": "40",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "38",
+            "$id": "41",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 1,
@@ -342,22 +354,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "39",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "40",
+          "$id": "42",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "41",
+            "$id": "43",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 2,
@@ -367,21 +371,29 @@
           "isActive": true,
           "blockCount": 0,
           "BasePlaceable": {
-            "$id": "42",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
+            "$id": "44",
+            "$type": "BoxPuller.Scripts.Data.IslandCellData, Assembly-CSharp",
             "x": 1,
             "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
+            "requiredBridgeCount": 3,
+            "bridgeMode": 1,
+            "startsLocked": false,
+            "unlockAfterCompletedIslandCount": 0,
+            "Coordinate": {
+              "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+              "x": 1,
+              "y": 2,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            }
           },
           "IsEmpty": false
         },
         {
-          "$id": "43",
+          "$id": "45",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "44",
+            "$id": "46",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 3,
@@ -390,22 +402,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "45",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "46",
+          "$id": "47",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "47",
+            "$id": "48",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 4,
@@ -414,16 +418,8 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "48",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "49",
@@ -438,22 +434,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "51",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "52",
+          "$id": "51",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "53",
+            "$id": "52",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 6,
@@ -462,27 +450,67 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "54",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 1,
-            "y": 6,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "55",
+          "$id": "53",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "56",
+            "$id": "54",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 1,
             "y": 7,
             "magnitude": 7.071068,
             "sqrMagnitude": 50
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "55",
+            "$type": "BoxPuller.Scripts.Data.IslandCellData, Assembly-CSharp",
+            "x": 1,
+            "y": 7,
+            "requiredBridgeCount": 2,
+            "bridgeMode": 1,
+            "startsLocked": true,
+            "unlockAfterCompletedIslandCount": 3,
+            "Coordinate": {
+              "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+              "x": 1,
+              "y": 7,
+              "magnitude": 7.071068,
+              "sqrMagnitude": 50
+            }
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "56",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "57",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 8,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "58",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "59",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 1,
+            "y": 9,
+            "magnitude": 9.055386,
+            "sqrMagnitude": 82
           },
           "isActive": true,
           "blockCount": 0,
@@ -492,10 +520,10 @@
       ],
       [
         {
-          "$id": "57",
+          "$id": "60",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "58",
+            "$id": "61",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 0,
@@ -504,22 +532,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "59",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "60",
+          "$id": "62",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "61",
+            "$id": "63",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 1,
@@ -528,22 +548,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "62",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "63",
+          "$id": "64",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "64",
+            "$id": "65",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 2,
@@ -552,16 +564,8 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "65",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "66",
@@ -576,22 +580,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "68",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "69",
+          "$id": "68",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "70",
+            "$id": "69",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 4,
@@ -600,22 +596,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "71",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "72",
+          "$id": "70",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "73",
+            "$id": "71",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 5,
@@ -624,22 +612,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "74",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 2,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "75",
+          "$id": "72",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "76",
+            "$id": "73",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 6,
@@ -652,10 +632,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "77",
+          "$id": "74",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "78",
+            "$id": "75",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 2,
             "y": 7,
@@ -666,14 +646,46 @@
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
+        },
+        {
+          "$id": "76",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "77",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 8,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "78",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "79",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 2,
+            "y": 9,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
         }
       ],
       [
         {
-          "$id": "79",
+          "$id": "80",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "80",
+            "$id": "81",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
             "y": 0,
@@ -682,16 +694,8 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "81",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 3,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "82",
@@ -706,22 +710,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "84",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 3,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "85",
+          "$id": "84",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "86",
+            "$id": "85",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
             "y": 2,
@@ -730,22 +726,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "87",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 3,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "88",
+          "$id": "86",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "89",
+            "$id": "87",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
             "y": 3,
@@ -754,22 +742,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "90",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 3,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "91",
+          "$id": "88",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "92",
+            "$id": "89",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
             "y": 4,
@@ -778,16 +758,40 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "93",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "90",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "91",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
+            "y": 5,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
           },
-          "IsEmpty": false
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "92",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "93",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 3,
+            "y": 6,
+            "magnitude": 6.708204,
+            "sqrMagnitude": 45
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "94",
@@ -796,9 +800,9 @@
             "$id": "95",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
-            "y": 5,
-            "magnitude": 5.83095169,
-            "sqrMagnitude": 34
+            "y": 7,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
           },
           "isActive": true,
           "blockCount": 0,
@@ -812,9 +816,9 @@
             "$id": "97",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
-            "y": 6,
-            "magnitude": 6.708204,
-            "sqrMagnitude": 45
+            "y": 8,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
           },
           "isActive": true,
           "blockCount": 0,
@@ -828,9 +832,9 @@
             "$id": "99",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 3,
-            "y": 7,
-            "magnitude": 7.615773,
-            "sqrMagnitude": 58
+            "y": 9,
+            "magnitude": 9.486833,
+            "sqrMagnitude": 90
           },
           "isActive": true,
           "blockCount": 0,
@@ -852,22 +856,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "102",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 4,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "103",
+          "$id": "102",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "104",
+            "$id": "103",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
             "y": 1,
@@ -876,22 +872,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "105",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 4,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "106",
+          "$id": "104",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "107",
+            "$id": "105",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
             "y": 2,
@@ -900,22 +888,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "108",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 4,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "109",
+          "$id": "106",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "110",
+            "$id": "107",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
             "y": 3,
@@ -924,16 +904,40 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "111",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "108",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "109",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
+            "y": 4,
+            "magnitude": 5.656854,
+            "sqrMagnitude": 32
           },
-          "IsEmpty": false
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "110",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "111",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 4,
+            "y": 5,
+            "magnitude": 6.40312433,
+            "sqrMagnitude": 41
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "112",
@@ -942,9 +946,9 @@
             "$id": "113",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
-            "y": 4,
-            "magnitude": 5.656854,
-            "sqrMagnitude": 32
+            "y": 6,
+            "magnitude": 7.21110249,
+            "sqrMagnitude": 52
           },
           "isActive": true,
           "blockCount": 0,
@@ -958,9 +962,9 @@
             "$id": "115",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
-            "y": 5,
-            "magnitude": 6.40312433,
-            "sqrMagnitude": 41
+            "y": 7,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
           },
           "isActive": true,
           "blockCount": 0,
@@ -974,9 +978,9 @@
             "$id": "117",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
-            "y": 6,
-            "magnitude": 7.21110249,
-            "sqrMagnitude": 52
+            "y": 8,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
           },
           "isActive": true,
           "blockCount": 0,
@@ -990,9 +994,9 @@
             "$id": "119",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 4,
-            "y": 7,
-            "magnitude": 8.062258,
-            "sqrMagnitude": 65
+            "y": 9,
+            "magnitude": 9.848858,
+            "sqrMagnitude": 97
           },
           "isActive": true,
           "blockCount": 0,
@@ -1014,22 +1018,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "122",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 5,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "123",
+          "$id": "122",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "124",
+            "$id": "123",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 1,
@@ -1038,22 +1034,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "125",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 5,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "126",
+          "$id": "124",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "127",
+            "$id": "125",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 2,
@@ -1062,22 +1050,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "128",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 5,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "129",
+          "$id": "126",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "130",
+            "$id": "127",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 3,
@@ -1090,10 +1070,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "131",
+          "$id": "128",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "132",
+            "$id": "129",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 4,
@@ -1106,10 +1086,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "133",
+          "$id": "130",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "134",
+            "$id": "131",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 5,
@@ -1122,10 +1102,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "135",
+          "$id": "132",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "136",
+            "$id": "133",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 6,
@@ -1138,10 +1118,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "137",
+          "$id": "134",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "138",
+            "$id": "135",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 5,
             "y": 7,
@@ -1152,14 +1132,46 @@
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
+        },
+        {
+          "$id": "136",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "137",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 8,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "138",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "139",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 5,
+            "y": 9,
+            "magnitude": 10.29563,
+            "sqrMagnitude": 106
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
         }
       ],
       [
         {
-          "$id": "139",
+          "$id": "140",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "140",
+            "$id": "141",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 0,
@@ -1168,16 +1180,8 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "141",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 6,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
           "$id": "142",
@@ -1192,22 +1196,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "144",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 1,
-            "x": 6,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "145",
+          "$id": "144",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "146",
+            "$id": "145",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 2,
@@ -1220,10 +1216,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "147",
+          "$id": "146",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "148",
+            "$id": "147",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 3,
@@ -1236,10 +1232,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "149",
+          "$id": "148",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "150",
+            "$id": "149",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 4,
@@ -1252,10 +1248,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "151",
+          "$id": "150",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "152",
+            "$id": "151",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 5,
@@ -1268,10 +1264,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "153",
+          "$id": "152",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "154",
+            "$id": "153",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 6,
@@ -1284,10 +1280,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "155",
+          "$id": "154",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "156",
+            "$id": "155",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 6,
             "y": 7,
@@ -1298,14 +1294,46 @@
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
+        },
+        {
+          "$id": "156",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "157",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 8,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "158",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "159",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 6,
+            "y": 9,
+            "magnitude": 10.8166542,
+            "sqrMagnitude": 117
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
         }
       ],
       [
         {
-          "$id": "157",
+          "$id": "160",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "158",
+            "$id": "161",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
             "y": 0,
@@ -1314,40 +1342,24 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "159",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "160",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 7,
-            "y": 1,
-            "magnitude": 7.071068,
-            "sqrMagnitude": 50
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "161",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
+          "BasePlaceable": {
             "$id": "162",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "$type": "BoxPuller.Scripts.Data.IslandCellData, Assembly-CSharp",
             "x": 7,
-            "y": 2,
-            "magnitude": 7.28011,
-            "sqrMagnitude": 53
+            "y": 0,
+            "requiredBridgeCount": 1,
+            "bridgeMode": 0,
+            "startsLocked": false,
+            "unlockAfterCompletedIslandCount": 0,
+            "Coordinate": {
+              "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+              "x": 7,
+              "y": 0,
+              "magnitude": 7.0,
+              "sqrMagnitude": 49
+            }
           },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
+          "IsEmpty": false
         },
         {
           "$id": "163",
@@ -1356,9 +1368,9 @@
             "$id": "164",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
-            "y": 3,
-            "magnitude": 7.615773,
-            "sqrMagnitude": 58
+            "y": 1,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
           },
           "isActive": true,
           "blockCount": 0,
@@ -1372,9 +1384,9 @@
             "$id": "166",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
-            "y": 4,
-            "magnitude": 8.062258,
-            "sqrMagnitude": 65
+            "y": 2,
+            "magnitude": 7.28011,
+            "sqrMagnitude": 53
           },
           "isActive": true,
           "blockCount": 0,
@@ -1388,9 +1400,9 @@
             "$id": "168",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
-            "y": 5,
-            "magnitude": 8.602325,
-            "sqrMagnitude": 74
+            "y": 3,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
           },
           "isActive": true,
           "blockCount": 0,
@@ -1404,6 +1416,54 @@
             "$id": "170",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
+            "y": 4,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": {
+            "$id": "171",
+            "$type": "BoxPuller.Scripts.Data.IslandCellData, Assembly-CSharp",
+            "x": 7,
+            "y": 4,
+            "requiredBridgeCount": 2,
+            "bridgeMode": 0,
+            "startsLocked": false,
+            "unlockAfterCompletedIslandCount": 0,
+            "Coordinate": {
+              "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+              "x": 7,
+              "y": 4,
+              "magnitude": 8.062258,
+              "sqrMagnitude": 65
+            }
+          },
+          "IsEmpty": false
+        },
+        {
+          "$id": "172",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "173",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
+            "y": 5,
+            "magnitude": 8.602325,
+            "sqrMagnitude": 74
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "174",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "175",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 7,
             "y": 6,
             "magnitude": 9.219544,
             "sqrMagnitude": 85
@@ -1414,10 +1474,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "171",
+          "$id": "176",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "172",
+            "$id": "177",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 7,
             "y": 7,
@@ -1426,56 +1486,22 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "173",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "174",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 8,
-            "y": 0,
-            "magnitude": 8.0,
-            "sqrMagnitude": 64
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "175",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 8,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "176",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "177",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 8,
-            "y": 1,
-            "magnitude": 8.062258,
-            "sqrMagnitude": 65
-          },
-          "isActive": true,
-          "blockCount": 0,
           "BasePlaceable": {
             "$id": "178",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 8,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
+            "$type": "BoxPuller.Scripts.Data.IslandCellData, Assembly-CSharp",
+            "x": 7,
+            "y": 7,
+            "requiredBridgeCount": 2,
+            "bridgeMode": 0,
+            "startsLocked": false,
+            "unlockAfterCompletedIslandCount": 0,
+            "Coordinate": {
+              "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+              "x": 7,
+              "y": 7,
+              "magnitude": 9.899495,
+              "sqrMagnitude": 98
+            }
           },
           "IsEmpty": false
         },
@@ -1485,10 +1511,10 @@
           "coordinates": {
             "$id": "180",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 8,
-            "y": 2,
-            "magnitude": 8.246211,
-            "sqrMagnitude": 68
+            "x": 7,
+            "y": 8,
+            "magnitude": 10.630146,
+            "sqrMagnitude": 113
           },
           "isActive": true,
           "blockCount": 0,
@@ -1501,16 +1527,18 @@
           "coordinates": {
             "$id": "182",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 8,
-            "y": 3,
-            "magnitude": 8.54400349,
-            "sqrMagnitude": 73
+            "x": 7,
+            "y": 9,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
           },
           "isActive": true,
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
-        },
+        }
+      ],
+      [
         {
           "$id": "183",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
@@ -1518,9 +1546,9 @@
             "$id": "184",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 8,
-            "y": 4,
-            "magnitude": 8.944272,
-            "sqrMagnitude": 80
+            "y": 0,
+            "magnitude": 8.0,
+            "sqrMagnitude": 64
           },
           "isActive": true,
           "blockCount": 0,
@@ -1534,9 +1562,9 @@
             "$id": "186",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 8,
-            "y": 5,
-            "magnitude": 9.433981,
-            "sqrMagnitude": 89
+            "y": 1,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
           },
           "isActive": true,
           "blockCount": 0,
@@ -1550,9 +1578,9 @@
             "$id": "188",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 8,
-            "y": 6,
-            "magnitude": 10.0,
-            "sqrMagnitude": 100
+            "y": 2,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
           },
           "isActive": true,
           "blockCount": 0,
@@ -1566,9 +1594,105 @@
             "$id": "190",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 8,
+            "y": 3,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "191",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "192",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 4,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "193",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "194",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 5,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "195",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "196",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 6,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "197",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "198",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
             "y": 7,
             "magnitude": 10.630146,
             "sqrMagnitude": 113
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "199",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "200",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 8,
+            "magnitude": 11.3137083,
+            "sqrMagnitude": 128
+          },
+          "isActive": true,
+          "blockCount": 0,
+          "BasePlaceable": null,
+          "IsEmpty": true
+        },
+        {
+          "$id": "201",
+          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
+          "coordinates": {
+            "$id": "202",
+            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
+            "x": 8,
+            "y": 9,
+            "magnitude": 12.0415945,
+            "sqrMagnitude": 145
           },
           "isActive": true,
           "blockCount": 0,
@@ -1578,10 +1702,10 @@
       ],
       [
         {
-          "$id": "191",
+          "$id": "203",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "192",
+            "$id": "204",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 0,
@@ -1590,22 +1714,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "193",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 9,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "194",
+          "$id": "205",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "195",
+            "$id": "206",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 1,
@@ -1614,22 +1730,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "196",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 9,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "197",
+          "$id": "207",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "198",
+            "$id": "208",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 2,
@@ -1638,22 +1746,14 @@
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "199",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 9,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "200",
+          "$id": "209",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "201",
+            "$id": "210",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 3,
@@ -1666,10 +1766,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "202",
+          "$id": "211",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "203",
+            "$id": "212",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 4,
@@ -1682,10 +1782,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "204",
+          "$id": "213",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "205",
+            "$id": "214",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 5,
@@ -1698,10 +1798,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "206",
+          "$id": "215",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "207",
+            "$id": "216",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 6,
@@ -1714,10 +1814,10 @@
           "IsEmpty": true
         },
         {
-          "$id": "208",
+          "$id": "217",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "209",
+            "$id": "218",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
             "x": 9,
             "y": 7,
@@ -1728,80 +1828,6 @@
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "210",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "211",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 0,
-            "magnitude": 10.0,
-            "sqrMagnitude": 100
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "212",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 10,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "213",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "214",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 1,
-            "magnitude": 10.0498753,
-            "sqrMagnitude": 101
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "215",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 10,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "216",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "217",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 2,
-            "magnitude": 10.1980391,
-            "sqrMagnitude": 104
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "218",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 10,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
         },
         {
           "$id": "219",
@@ -1809,815 +1835,31 @@
           "coordinates": {
             "$id": "220",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 3,
-            "magnitude": 10.4403067,
-            "sqrMagnitude": 109
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "221",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 10,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "222",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "223",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 4,
-            "magnitude": 10.7703295,
-            "sqrMagnitude": 116
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "224",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "225",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 5,
-            "magnitude": 11.18034,
-            "sqrMagnitude": 125
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "226",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "227",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 6,
-            "magnitude": 11.6619034,
-            "sqrMagnitude": 136
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "228",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "229",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 10,
-            "y": 7,
-            "magnitude": 12.2065554,
-            "sqrMagnitude": 149
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "230",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "231",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 0,
-            "magnitude": 11.0,
-            "sqrMagnitude": 121
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "232",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 11,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "233",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "234",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 1,
-            "magnitude": 11.0453606,
-            "sqrMagnitude": 122
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "235",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 11,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "236",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "237",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 2,
-            "magnitude": 11.18034,
-            "sqrMagnitude": 125
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "238",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 11,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "239",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "240",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 3,
-            "magnitude": 11.4017544,
-            "sqrMagnitude": 130
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "241",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 11,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "242",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "243",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 4,
-            "magnitude": 11.7046995,
-            "sqrMagnitude": 137
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "244",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 11,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "245",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "246",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 5,
-            "magnitude": 12.083046,
-            "sqrMagnitude": 146
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "247",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "248",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 6,
-            "magnitude": 12.5299644,
-            "sqrMagnitude": 157
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        },
-        {
-          "$id": "249",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "250",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 11,
-            "y": 7,
-            "magnitude": 13.0384045,
-            "sqrMagnitude": 170
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "251",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "252",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 0,
-            "magnitude": 12.0,
-            "sqrMagnitude": 144
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "253",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "254",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "255",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 1,
+            "x": 9,
+            "y": 8,
             "magnitude": 12.0415945,
             "sqrMagnitude": 145
           },
           "isActive": true,
           "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "256",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
+          "BasePlaceable": null,
+          "IsEmpty": true
         },
         {
-          "$id": "257",
+          "$id": "221",
           "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
           "coordinates": {
-            "$id": "258",
+            "$id": "222",
             "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 2,
-            "magnitude": 12.1655254,
-            "sqrMagnitude": 148
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "259",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "260",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "261",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 3,
-            "magnitude": 12.3693171,
-            "sqrMagnitude": 153
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "262",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "263",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "264",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 4,
-            "magnitude": 12.6491108,
-            "sqrMagnitude": 160
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "265",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "266",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "267",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 5,
-            "magnitude": 13.0,
-            "sqrMagnitude": 169
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "268",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 12,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "269",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "270",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 6,
-            "magnitude": 13.4164076,
-            "sqrMagnitude": 180
+            "x": 9,
+            "y": 9,
+            "magnitude": 12.7279224,
+            "sqrMagnitude": 162
           },
           "isActive": true,
           "blockCount": 0,
           "BasePlaceable": null,
           "IsEmpty": true
-        },
-        {
-          "$id": "271",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "272",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 12,
-            "y": 7,
-            "magnitude": 13.8924437,
-            "sqrMagnitude": 193
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "273",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "274",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 0,
-            "magnitude": 13.0,
-            "sqrMagnitude": 169
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "275",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "276",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "277",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 1,
-            "magnitude": 13.0384045,
-            "sqrMagnitude": 170
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "278",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "279",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "280",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 2,
-            "magnitude": 13.1529465,
-            "sqrMagnitude": 173
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "281",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "282",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "283",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 3,
-            "magnitude": 13.3416643,
-            "sqrMagnitude": 178
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "284",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "285",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "286",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 4,
-            "magnitude": 13.6014709,
-            "sqrMagnitude": 185
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "287",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "288",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "289",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 5,
-            "magnitude": 13.9283886,
-            "sqrMagnitude": 194
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "290",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "291",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "292",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 6,
-            "magnitude": 14.3178215,
-            "sqrMagnitude": 205
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "293",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 13,
-            "y": 6,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "294",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "295",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 13,
-            "y": 7,
-            "magnitude": 14.764823,
-            "sqrMagnitude": 218
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": null,
-          "IsEmpty": true
-        }
-      ],
-      [
-        {
-          "$id": "296",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "297",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 0,
-            "magnitude": 14.0,
-            "sqrMagnitude": 196
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "298",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 0,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "299",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "300",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 1,
-            "magnitude": 14.0356684,
-            "sqrMagnitude": 197
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "301",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 1,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "302",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "303",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 2,
-            "magnitude": 14.1421356,
-            "sqrMagnitude": 200
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "304",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 2,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "305",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "306",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 3,
-            "magnitude": 14.3178215,
-            "sqrMagnitude": 205
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "307",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 3,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "308",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "309",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 4,
-            "magnitude": 14.56022,
-            "sqrMagnitude": 212
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "310",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 4,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "311",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "312",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 5,
-            "magnitude": 14.8660688,
-            "sqrMagnitude": 221
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "313",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 5,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "314",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "315",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 6,
-            "magnitude": 15.2315464,
-            "sqrMagnitude": 232
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "316",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 6,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
-        },
-        {
-          "$id": "317",
-          "$type": "BoxPuller.Scripts.Data.GridCellData, Assembly-CSharp",
-          "coordinates": {
-            "$id": "318",
-            "$type": "UnityEngine.Vector2Int, UnityEngine.CoreModule",
-            "x": 14,
-            "y": 7,
-            "magnitude": 15.6524763,
-            "sqrMagnitude": 245
-          },
-          "isActive": true,
-          "blockCount": 0,
-          "BasePlaceable": {
-            "$id": "319",
-            "$type": "BoxPuller.Scripts.Data.BoxCellData, Assembly-CSharp",
-            "color": 8,
-            "x": 14,
-            "y": 7,
-            "moldGroupId": -1,
-            "isFilled": true
-          },
-          "IsEmpty": false
         }
       ]
     ]
@@ -2633,14 +1875,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2648,14 +1882,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2673,14 +1899,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2688,14 +1906,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2713,14 +1923,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2728,14 +1930,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2753,6 +1947,20 @@
         0,
         0,
         0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       [
@@ -2763,9 +1971,13 @@
         0,
         0,
         0,
+        0,
+        0,
         0
       ],
       [
+        0,
+        0,
         0,
         0,
         0,
@@ -2788,14 +2000,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2803,14 +2007,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2828,14 +2024,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2843,14 +2031,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2868,14 +2048,6 @@
         0,
         0,
         0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
         0,
         0,
         0
@@ -2883,14 +2055,6 @@
       [
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      [
         0,
         0,
         0,
@@ -2908,6 +2072,20 @@
         0,
         0,
         0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         0
       ],
       [
@@ -2918,9 +2096,13 @@
         0,
         0,
         0,
+        0,
+        0,
         0
       ],
       [
+        0,
+        0,
         0,
         0,
         0,
@@ -2935,11 +2117,6 @@
   "ConveyorData": {
     "$type": "BoxPuller.Scripts.Data.GridCellData[,], Assembly-CSharp",
     "$values": [
-      [],
-      [],
-      [],
-      [],
-      [],
       [],
       [],
       [],

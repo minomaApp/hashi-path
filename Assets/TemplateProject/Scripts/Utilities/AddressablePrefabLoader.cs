@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using UnityEngine.Serialization;
 
 namespace TemplateProject.Scripts.Utilities
 {
@@ -25,8 +26,10 @@ namespace TemplateProject.Scripts.Utilities
         [SerializeField] private bool isTest;
         [SerializeField] private int testLevelIndex;
 
-        [Header("Shooter Box Game")]
-        [SerializeField] private global::GameManager shooterBoxGameManager;
+        [Header("Game Setup")]
+        [FormerlySerializedAs("shooterBoxGameManager")]
+        [SerializeField] private global::GameManager gameManager;
+        [SerializeField] private bool useTimer;
 
         private GameObject loadedPrefabInstance;
         private int currentLogicalLevelIndex;
@@ -38,14 +41,17 @@ namespace TemplateProject.Scripts.Utilities
 
         private void LoadLocationsAndSpawn()
         {
-            Addressables.LoadResourceLocationsAsync(prefabLabel).Completed += OnLocationsLoaded;
+            Addressables.LoadResourceLocationsAsync(prefabLabel).Completed +=
+                OnLocationsLoaded;
         }
 
-        private async void OnLocationsLoaded(AsyncOperationHandle<IList<IResourceLocation>> handle)
+        private async void OnLocationsLoaded(
+            AsyncOperationHandle<IList<IResourceLocation>> handle)
         {
             if (handle.Status != AsyncOperationStatus.Succeeded)
             {
-                Debug.LogError("[AddressablePrefabLoader] Resource location load failed.");
+                Debug.LogError(
+                    "[AddressablePrefabLoader] Resource location load failed.");
                 return;
             }
 
@@ -53,12 +59,18 @@ namespace TemplateProject.Scripts.Utilities
 
             if (levelCount <= 0)
             {
-                Debug.LogError("[AddressablePrefabLoader] Bu label altýnda hiç level bulunamadý: " + prefabLabel);
+                Debug.LogError(
+                    "[AddressablePrefabLoader] No level uses label: " + prefabLabel);
+                return;
+            }
+
+            if (LevelManager.instance == null)
+            {
+                Debug.LogError("[AddressablePrefabLoader] LevelManager is missing.");
                 return;
             }
 
             LevelManager.instance.InitializeLevelDataForLoading(levelCount);
-
             int logicalIndex = LevelManager.instance.GetLevelIndex();
 
             if (isTest)
@@ -68,13 +80,14 @@ namespace TemplateProject.Scripts.Utilities
 
             currentLogicalLevelIndex = logicalIndex;
 
-            Debug.Log($"[AddressablePrefabLoader] Loading logical level index: {currentLogicalLevelIndex}");
-
-            string prefabAddress = await LevelCacheManager.Instance.GetPrefabAddressByIndex(currentLogicalLevelIndex);
+            string prefabAddress = await LevelCacheManager.Instance
+                .GetPrefabAddressByIndex(currentLogicalLevelIndex);
 
             if (string.IsNullOrEmpty(prefabAddress))
             {
-                Debug.LogError($"[AddressablePrefabLoader] Prefab address boþ geldi. Index: {currentLogicalLevelIndex}");
+                Debug.LogError(
+                    "[AddressablePrefabLoader] Prefab address is empty. Index: " +
+                    currentLogicalLevelIndex);
                 return;
             }
 
@@ -83,62 +96,97 @@ namespace TemplateProject.Scripts.Utilities
 
         private void InstantiateFromCache(string prefabAddress)
         {
-            var handle = LevelCacheManager.Instance.GetPrefabHandle(prefabAddress);
+            var handle =
+                LevelCacheManager.Instance.GetPrefabHandle(prefabAddress);
 
             if (!handle.IsValid() || handle.Result == null)
             {
-                Debug.LogError($"[AddressablePrefabLoader] Invalid or missing prefab handle for: {prefabAddress}");
+                Debug.LogError(
+                    "[AddressablePrefabLoader] Invalid prefab handle: " +
+                    prefabAddress);
                 return;
             }
 
-            GameObject prefab = handle.Result;
-            OnPrefabInstantiated(prefab);
+            OnPrefabInstantiated(handle.Result);
         }
 
         private void OnPrefabInstantiated(GameObject prefab)
         {
             loadedPrefabInstance = Instantiate(prefab);
 
-            if (loadedPrefabInstance.TryGetComponent(out LevelContainer levelContainer))
+            if (!loadedPrefabInstance.TryGetComponent(
+                    out LevelContainer levelContainer))
             {
-                levelContainer.InitializeVariables(gameplayManager, gridManager, virtualCamera);
-
-                if (shooterBoxGameManager != null)
-                {
-                    LevelData levelData = RuntimeLevelDataLoader.LoadLevel(currentLogicalLevelIndex);
-                    shooterBoxGameManager.StartGame(levelData, levelContainer);
-                }
-                else
-                {
-                    Debug.LogWarning("[AddressablePrefabLoader] shooterBoxGameManager atanmadý.");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[AddressablePrefabLoader] Yüklenen prefab üzerinde LevelContainer bulunamadý.");
+                levelContainer = loadedPrefabInstance
+                    .GetComponentInChildren<LevelContainer>(true);
             }
 
-            HandleTransitions();
+            if (levelContainer == null)
+            {
+                Debug.LogError(
+                    "[AddressablePrefabLoader] Loaded prefab has no LevelContainer.");
+                return;
+            }
 
-            Debug.Log($"[AddressablePrefabLoader] Instantiated prefab: {prefab.name}");
+            levelContainer.InitializeVariables(
+                gameplayManager,
+                gridManager,
+                virtualCamera);
+
+            if (gameManager == null)
+            {
+                gameManager = FindFirstObjectByType<global::GameManager>();
+            }
+
+            if (gameManager == null)
+            {
+                Debug.LogError(
+                    "[AddressablePrefabLoader] GameManager is not assigned.");
+                return;
+            }
+
+            int levelDataIndex = ResolveLevelDataIndex(
+                prefab.name,
+                currentLogicalLevelIndex);
+
+            LevelData levelData = RuntimeLevelDataLoader.LoadLevel(levelDataIndex);
+
+            if (levelData == null)
+            {
+                Debug.LogError(
+                    "[AddressablePrefabLoader] LevelData could not be loaded. Index: " +
+                    levelDataIndex);
+                return;
+            }
+
+            gameManager.StartGame(levelData, levelContainer);
+            HandleTransitions(levelDataIndex);
+
+            Debug.Log(
+                "[AddressablePrefabLoader] Instantiated prefab: " + prefab.name);
         }
 
-        private void HandleTransitions()
+        private void HandleTransitions(int levelDataIndex)
         {
+            if (LevelManager.instance == null || UIManager.instance == null)
+            {
+                return;
+            }
+
             LevelManager.instance.InitializeAfterLevelLoaded();
 
-            int timerValue = ABManager.GetTimerSeconds(currentLogicalLevelIndex);
-            TimeManager.instance.SetTimer(timerValue);
-
-            TimeManager.instance.SetTimerTMP(
-                UIManager.instance.GetTimerTMP(),
-                UIManager.instance.GetStartLevelTimeTMP()
-            );
+            if (useTimer && TimeManager.instance != null)
+            {
+                int timerValue = ABManager.GetTimerSeconds(levelDataIndex);
+                TimeManager.instance.SetTimer(timerValue);
+                TimeManager.instance.SetTimerTMP(
+                    UIManager.instance.GetTimerTMP(),
+                    UIManager.instance.GetStartLevelTimeTMP());
+            }
 
             LevelManager.instance.SetLevelTMP(
                 UIManager.instance.GetLevelTMP(),
-                UIManager.instance.GetStartLevelTMP()
-            );
+                UIManager.instance.GetStartLevelTMP());
 
             DOVirtual.DelayedCall(0.2f, () =>
             {
@@ -150,7 +198,16 @@ namespace TemplateProject.Scripts.Utilities
                     {
                         LevelManager.instance.onLevelLoadComplete?.Invoke();
 
-                        UIManager.instance.OpenTimer();
+                        if (useTimer)
+                        {
+                            UIManager.instance.OpenTimer();
+
+                            if (TimeManager.instance != null)
+                            {
+                                TimeManager.instance.StartTimer();
+                            }
+                        }
+
                         UIManager.instance.OpenLevelText();
                         UIManager.instance.EnableSettingsButton();
                         UIManager.instance.EnableRestartButton();
@@ -158,6 +215,25 @@ namespace TemplateProject.Scripts.Utilities
                     });
                 });
             });
+        }
+
+        private static int ResolveLevelDataIndex(
+            string prefabName,
+            int fallbackIndex)
+        {
+            if (string.IsNullOrEmpty(prefabName))
+            {
+                return fallbackIndex;
+            }
+
+            int separatorIndex = prefabName.LastIndexOf('_');
+            string numberText = separatorIndex >= 0
+                ? prefabName.Substring(separatorIndex + 1)
+                : prefabName;
+
+            return int.TryParse(numberText, out int parsedIndex)
+                ? parsedIndex
+                : fallbackIndex;
         }
     }
 }

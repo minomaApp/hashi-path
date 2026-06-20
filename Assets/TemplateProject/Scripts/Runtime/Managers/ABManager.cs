@@ -120,7 +120,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
             tutorialLevelsString = "0,1";
             skipAfterLoopLevelsString = "0";
             featureUnlockLevelsString = "4,8,14";
-            levelTimersString = CreateDefaultString("180", levelCount);
+            levelTimersString = CreateDefaultString("60", levelCount);
 
             Levels = GetIntArrayFromString(levelsString);
             TutorialLevels = GetIntArrayFromString(tutorialLevelsString);
@@ -128,7 +128,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
             SkipAfterLoopLevels = GetIntArrayFromString(skipAfterLoopLevelsString);
 
             IsTimerEnabled = false;
-            //IsTimerEnabled = true;
+            IsTimerEnabled = true;
             LevelTimers = GetFloatArrayFromString(levelTimersString);
         }
 

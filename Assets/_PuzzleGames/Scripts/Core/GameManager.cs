@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.SO;
+using HashiGame.Scripts.Runtime;
 using TemplateProject.Scripts.Runtime.Managers;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -15,7 +16,16 @@ public enum RuntimeLevelLoadMode
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Runtime Managers")]
+    [Header("Game Mode")]
+    [SerializeField] private bool useHashiGameplay = true;
+
+    [Header("Hashi Runtime Managers")]
+    [SerializeField] private BridgeBoardManager bridgeBoardManager;
+    [SerializeField] private BridgeInputController bridgeInputController;
+    [SerializeField] private BridgePreviewController bridgePreviewController;
+    [SerializeField] private HashiVisualSettings hashiVisualSettings;
+
+    [Header("Legacy Shooter Box Managers")]
     [SerializeField] private BottomSlotManager bottomSlotManager;
     [SerializeField] private MiddleSlotManager middleSlotManager;
     [SerializeField] private FlowerRouletteManager flowerRouletteManager;
@@ -27,17 +37,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GamePrefabs gamePrefabs;
 
     [Header("Level Loading")]
-    [SerializeField] private bool loadLevelOnStart = true;
-    [SerializeField] private RuntimeLevelLoadMode levelLoadMode = RuntimeLevelLoadMode.ExistingInScene;
+    [Tooltip("Enable this when AddressablePrefabLoader creates the level prefab.")]
+    [SerializeField] private bool externalLoaderOwnsLevel = true;
+    [SerializeField] private bool loadLevelOnStart;
+    [SerializeField]
+    private RuntimeLevelLoadMode levelLoadMode =
+        RuntimeLevelLoadMode.ExistingInScene;
     [SerializeField] private Transform levelParent;
 
     [Header("Level Index")]
     [SerializeField] private bool usePlayerPrefsLevelIndex = true;
-
-    [Tooltip("Eðer level prefab/data Level_0 / Level0 diye baþlýyorsa 0 kullan. Level_1 / Level1 diye baþlýyorsa 1 kullan.")]
-    [SerializeField] private int levelIndexOffset = 0;
-
-    [SerializeField] private int fallbackLevelIndex = 0;
+    [SerializeField] private int levelIndexOffset;
+    [SerializeField] private int fallbackLevelIndex;
 
     [Header("Addressables")]
     [SerializeField] private string addressableLevelPrefix = "Level_";
@@ -55,93 +66,283 @@ public class GameManager : MonoBehaviour
     private LevelData currentLevelData;
     private LevelContainer currentLevelContainer;
     private GameObject currentLevelObject;
-
     private bool isGameOver;
 
     private async void Start()
     {
         AutoAssignSceneManagers();
-        ConnectSceneManagers();
+        ConnectLegacySceneManagers();
 
-        if (!loadLevelOnStart)
+        if (externalLoaderOwnsLevel || !loadLevelOnStart)
+        {
             return;
+        }
 
         await LoadAndStartCurrentLevel();
     }
 
-    private void AutoAssignSceneManagers()
-    {
-        if (bottomSlotManager == null)
-            bottomSlotManager = FindFirstObjectByType<BottomSlotManager>();
-
-        if (middleSlotManager == null)
-            middleSlotManager = FindFirstObjectByType<MiddleSlotManager>();
-
-        if (flowerRouletteManager == null)
-            flowerRouletteManager = FindFirstObjectByType<FlowerRouletteManager>();
-
-        if (boxGridManager == null)
-            boxGridManager = FindFirstObjectByType<BoxGridManager>();
-
-        if (shooterTransferQueue == null)
-            shooterTransferQueue = FindFirstObjectByType<ShooterTransferQueue>();
-
-        if (bulletPool == null)
-            bulletPool = FindFirstObjectByType<BulletPool>();
-    }
-
- private void ConnectSceneManagers()
-{
-    if (flowerRouletteManager != null)
-    {
-        flowerRouletteManager.ConfigureRuntimeReferences(
-            middleSlotManager,
-            bottomSlotManager,
-            this
-        );
-    }
-
-    if (shooterTransferQueue != null)
-    {
-        shooterTransferQueue.ConfigureRuntimeReferences(flowerRouletteManager);
-    }
-
-    if (boxGridManager != null)
-    {
-        boxGridManager.ConfigureRuntimeReferences(this);
-    }
-}
-
     public async Task LoadAndStartCurrentLevel()
     {
         int levelIndex = GetRuntimeLevelIndex();
-        Debug.Log($"[GameManager me me me LEVEL CHECK] Runtime loading LevelData/Level{levelIndex}");
-        LevelData levelData = RuntimeLevelDataLoader.LoadLevel(levelIndex);
+        LevelData loadedLevelData = RuntimeLevelDataLoader.LoadLevel(levelIndex);
 
-        if (levelData == null)
+        if (loadedLevelData == null)
         {
-            Debug.LogError($"[GameManager] LevelData yüklenemedi. Level index: {levelIndex}");
+            Debug.LogError(
+                "[GameManager] LevelData could not be loaded. Index: " + levelIndex);
             return;
         }
 
-        LevelContainer levelContainer = await LoadLevelContainer(levelIndex);
+        LevelContainer loadedLevelContainer = await LoadLevelContainer(levelIndex);
 
-        if (levelContainer == null)
+        if (loadedLevelContainer == null)
         {
-            Debug.LogError($"[GameManager] LevelContainer bulunamadý. Level index: {levelIndex}");
+            Debug.LogError(
+                "[GameManager] LevelContainer could not be loaded. Index: " + levelIndex);
             return;
         }
 
-        ConnectSceneManagers();
-        StartGame(levelData, levelContainer);
+        StartGame(loadedLevelData, loadedLevelContainer);
+    }
+
+    public void StartGame(LevelData levelData, LevelContainer levelContainer)
+    {
+        currentLevelData = levelData;
+        currentLevelContainer = levelContainer;
+        isGameOver = false;
+
+        if (currentLevelData == null || currentLevelContainer == null)
+        {
+            Debug.LogError("[GameManager] LevelData or LevelContainer is null.");
+            return;
+        }
+
+        AutoAssignSceneManagers();
+
+        bool setupSucceeded = useHashiGameplay
+            ? StartHashiGame()
+            : StartLegacyShooterBoxGame();
+
+        if (!setupSucceeded)
+        {
+            return;
+        }
+
+        if (LevelManager.instance != null)
+        {
+            LevelManager.instance.isLevelFailed = false;
+            LevelManager.instance.isGamePlayable = setGamePlayableAfterSetup;
+
+            if (!externalLoaderOwnsLevel)
+            {
+                LevelManager.instance.onLevelLoadComplete?.Invoke();
+            }
+        }
+
+        Debug.Log("[GameManager] Runtime setup completed.");
+    }
+
+    public void GameLose()
+    {
+        if (isGameOver)
+        {
+            return;
+        }
+
+        isGameOver = true;
+
+        if (bridgeInputController != null)
+        {
+            bridgeInputController.SetInputEnabled(false);
+        }
+
+        if (GameplayManager.instance != null)
+        {
+            GameplayManager.instance.LoseGame(false);
+            return;
+        }
+
+        Debug.Log("GAME LOSE");
+    }
+
+    public void GameWin()
+    {
+        if (isGameOver)
+        {
+            return;
+        }
+
+        isGameOver = true;
+
+        if (bridgeInputController != null)
+        {
+            bridgeInputController.SetInputEnabled(false);
+        }
+
+        if (GameplayManager.instance != null)
+        {
+            GameplayManager.instance.WinGame();
+            return;
+        }
+
+        Debug.Log("GAME WIN");
+    }
+
+    private bool StartHashiGame()
+    {
+        if (bridgeBoardManager == null)
+        {
+            bridgeBoardManager = FindFirstObjectByType<BridgeBoardManager>();
+        }
+
+        if (bridgeInputController == null)
+        {
+            bridgeInputController = FindFirstObjectByType<BridgeInputController>();
+        }
+
+        if (bridgePreviewController == null)
+        {
+            bridgePreviewController = FindFirstObjectByType<BridgePreviewController>();
+        }
+
+        if (bridgeBoardManager == null)
+        {
+            Debug.LogError("[GameManager] BridgeBoardManager was not found.");
+            return false;
+        }
+
+        bool boardReady = bridgeBoardManager.Setup(
+            currentLevelData,
+            currentLevelContainer,
+            gamePrefabs,
+            hashiVisualSettings,
+            this);
+
+        if (!boardReady)
+        {
+            return false;
+        }
+
+        if (bridgeInputController == null)
+        {
+            Debug.LogError("[GameManager] BridgeInputController was not found.");
+            return false;
+        }
+
+        bridgeInputController.Setup(bridgeBoardManager);
+        bridgeInputController.SetInputEnabled(!bridgeBoardManager.HasWon);
+        return true;
+    }
+
+    private bool StartLegacyShooterBoxGame()
+    {
+        ConnectLegacySceneManagers();
+
+        if (middleSlotManager != null)
+        {
+            middleSlotManager.Setup();
+        }
+
+        if (boxGridManager != null)
+        {
+            boxGridManager.Setup(currentLevelContainer);
+        }
+
+        if (bottomSlotManager != null)
+        {
+            bottomSlotManager.Setup(
+                currentLevelData,
+                currentLevelContainer,
+                gamePrefabs);
+        }
+
+        if (flowerRouletteManager != null)
+        {
+            flowerRouletteManager.Setup(currentLevelContainer);
+        }
+
+        return true;
+    }
+
+    private void AutoAssignSceneManagers()
+    {
+        if (bridgeBoardManager == null)
+        {
+            bridgeBoardManager = FindFirstObjectByType<BridgeBoardManager>();
+        }
+
+        if (bridgeInputController == null)
+        {
+            bridgeInputController = FindFirstObjectByType<BridgeInputController>();
+        }
+
+        if (bridgePreviewController == null)
+        {
+            bridgePreviewController = FindFirstObjectByType<BridgePreviewController>();
+        }
+
+        if (bottomSlotManager == null)
+        {
+            bottomSlotManager = FindFirstObjectByType<BottomSlotManager>();
+        }
+
+        if (middleSlotManager == null)
+        {
+            middleSlotManager = FindFirstObjectByType<MiddleSlotManager>();
+        }
+
+        if (flowerRouletteManager == null)
+        {
+            flowerRouletteManager = FindFirstObjectByType<FlowerRouletteManager>();
+        }
+
+        if (boxGridManager == null)
+        {
+            boxGridManager = FindFirstObjectByType<BoxGridManager>();
+        }
+
+        if (shooterTransferQueue == null)
+        {
+            shooterTransferQueue = FindFirstObjectByType<ShooterTransferQueue>();
+        }
+
+        if (bulletPool == null)
+        {
+            bulletPool = FindFirstObjectByType<BulletPool>();
+        }
+    }
+
+    private void ConnectLegacySceneManagers()
+    {
+        if (flowerRouletteManager != null)
+        {
+            flowerRouletteManager.ConfigureRuntimeReferences(
+                middleSlotManager,
+                bottomSlotManager,
+                this);
+        }
+
+        if (shooterTransferQueue != null)
+        {
+            shooterTransferQueue.ConfigureRuntimeReferences(flowerRouletteManager);
+        }
+
+        if (boxGridManager != null)
+        {
+            boxGridManager.ConfigureRuntimeReferences(this);
+        }
     }
 
     private int GetRuntimeLevelIndex()
     {
         if (!usePlayerPrefsLevelIndex)
+        {
             return fallbackLevelIndex;
+        }
 
-        int savedLevelIndex = PlayerPrefs.GetInt("CurrentLevel", fallbackLevelIndex);
+        int savedLevelIndex = PlayerPrefs.GetInt(
+            "CurrentLevel",
+            fallbackLevelIndex);
         int resolvedLevelIndex = savedLevelIndex;
 
         if (ABManager.Levels != null && ABManager.Levels.Length > 0)
@@ -196,15 +397,17 @@ public class GameManager : MonoBehaviour
         }
 
         if (loadedLevelObject == null)
+        {
             return null;
+        }
 
         currentLevelObject = loadedLevelObject;
-
         currentLevelContainer = currentLevelObject.GetComponent<LevelContainer>();
 
         if (currentLevelContainer == null)
         {
-            currentLevelContainer = currentLevelObject.GetComponentInChildren<LevelContainer>(true);
+            currentLevelContainer =
+                currentLevelObject.GetComponentInChildren<LevelContainer>(true);
         }
 
         return currentLevelContainer;
@@ -212,109 +415,39 @@ public class GameManager : MonoBehaviour
 
     private async Task<GameObject> InstantiateAddressableLevel(int levelIndex)
     {
-        string addressKey = $"{addressableLevelPrefix}{levelIndex}";
+        string addressKey = addressableLevelPrefix + levelIndex;
 
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(
             addressKey,
-            levelParent
-        );
+            levelParent);
 
         await handle.Task;
 
         if (handle.Status != AsyncOperationStatus.Succeeded)
         {
-            Debug.LogError($"[GameManager] Addressable level yüklenemedi. Key: {addressKey}");
+            Debug.LogError(
+                "[GameManager] Addressable level could not be loaded. Key: " +
+                addressKey);
             return null;
         }
 
-        Debug.Log($"[GameManager] Addressable level yüklendi: {addressKey}");
         return handle.Result;
     }
 
     private GameObject InstantiateResourcesLevel(int levelIndex)
     {
-        string path = $"{resourcesLevelPathPrefix}{levelIndex}";
-
+        string path = resourcesLevelPathPrefix + levelIndex;
         GameObject prefab = Resources.Load<GameObject>(path);
 
         if (prefab == null)
         {
-            Debug.LogError($"[GameManager] Resources level prefab bulunamadý. Path: Resources/{path}");
+            Debug.LogError(
+                "[GameManager] Resources level prefab was not found: " + path);
             return null;
         }
 
-        GameObject instance = Instantiate(prefab, levelParent);
-        Debug.Log($"[GameManager] Resources level yüklendi: {path}");
-
-        return instance;
+        return Instantiate(prefab, levelParent);
     }
-
-    public void StartGame(LevelData levelData, LevelContainer levelContainer)
-    {
-        currentLevelData = levelData;
-        currentLevelContainer = levelContainer;
-        isGameOver = false;
-
-        if (currentLevelData == null)
-        {
-            Debug.LogError("[GameManager] LevelData null.");
-            return;
-        }
-
-        if (currentLevelContainer == null)
-        {
-            Debug.LogError("[GameManager] LevelContainer null.");
-            return;
-        }
-
-        ConnectSceneManagers();
-
-        if (middleSlotManager != null)
-        {
-            middleSlotManager.Setup();
-        }
-        else
-        {
-            Debug.LogError("[GameManager] MiddleSlotManager bulunamadý.");
-        }
-
-        if (boxGridManager != null)
-        {
-            boxGridManager.Setup(currentLevelContainer);
-        }
-        else
-        {
-            Debug.LogError("[GameManager] BoxGridManager bulunamadý.");
-        }
-
-        if (bottomSlotManager != null)
-        {
-            bottomSlotManager.Setup(currentLevelData, currentLevelContainer, gamePrefabs);
-        }
-        else
-        {
-            Debug.LogError("[GameManager] BottomSlotManager bulunamadý.");
-        }
-
-        if (flowerRouletteManager != null)
-        {
-            flowerRouletteManager.Setup(currentLevelContainer);
-        }
-        else
-        {
-            Debug.LogError("[GameManager] FlowerRouletteManager bulunamadý.");
-        }
-
-        if (LevelManager.instance != null)
-        {
-            LevelManager.instance.isLevelFailed = false;
-            LevelManager.instance.isGamePlayable = setGamePlayableAfterSetup;
-            LevelManager.instance.onLevelLoadComplete?.Invoke();
-        }
-
-        Debug.Log("[GameManager] LevelContainer yüklendi ve tüm runtime manager setup tamamlandý.");
-    }
-
 
     private async Task<LevelContainer> WaitForExistingLevelContainer()
     {
@@ -324,15 +457,10 @@ public class GameManager : MonoBehaviour
         {
             LevelContainer[] containers = FindObjectsByType<LevelContainer>(
                 FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None
-            );
+                FindObjectsSortMode.None);
 
             if (containers != null && containers.Length > 0)
             {
-                Debug.Log($"[GameManager] Existing LevelContainer bulundu. Count:{containers.Length}");
-
-                // En son oluþan genelde runtime clone olur.
-                // Ama birden fazla varsa ilkini kullanýp diðerlerini silebiliriz.
                 return containers[containers.Length - 1];
             }
 
@@ -340,7 +468,8 @@ public class GameManager : MonoBehaviour
             await Task.Yield();
         }
 
-        Debug.LogError("[GameManager] ExistingInScene modunda LevelContainer bulunamadý.");
+        Debug.LogError(
+            "[GameManager] No LevelContainer was found in ExistingInScene mode.");
         return null;
     }
 
@@ -348,51 +477,18 @@ public class GameManager : MonoBehaviour
     {
         LevelContainer[] containers = FindObjectsByType<LevelContainer>(
             FindObjectsInactive.Exclude,
-            FindObjectsSortMode.None
-        );
+            FindObjectsSortMode.None);
 
-        foreach (LevelContainer container in containers)
+        for (int i = 0; i < containers.Length; i++)
         {
-            if (container == null)
-                continue;
+            LevelContainer container = containers[i];
 
-            if (container == keepContainer)
+            if (container == null || container == keepContainer)
+            {
                 continue;
+            }
 
-            Debug.LogWarning($"[GameManager] Duplicate LevelContainer silindi: {container.name}");
             Destroy(container.gameObject);
         }
-    }
-
-    public void GameLose()
-    {
-        if (isGameOver)
-            return;
-
-        isGameOver = true;
-
-        if (GameplayManager.instance != null)
-        {
-            GameplayManager.instance.LoseGame(false);
-            return;
-        }
-
-        Debug.Log("GAME LOSE");
-    }
-
-    public void GameWin()
-    {
-        if (isGameOver)
-            return;
-
-        isGameOver = true;
-
-        if (GameplayManager.instance != null)
-        {
-            GameplayManager.instance.WinGame();
-            return;
-        }
-
-        Debug.Log("GAME WIN");
     }
 }

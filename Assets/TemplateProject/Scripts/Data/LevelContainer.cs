@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using HashiGame.Scripts.Runtime;
 using TemplateProject.Scripts.Runtime.Managers;
 using TemplateProject.Scripts.Runtime.Models;
 using Unity.Cinemachine;
@@ -9,46 +9,173 @@ namespace BoxPuller.Scripts.Data
 {
     public class LevelContainer : MonoBehaviour
     {
-        [Header("Cached References")]
-        [SerializeField]
-        private GridSaveClass[] levelGridBases;
-
+        [Header("Legacy Cached References")]
+        [SerializeField] private GridSaveClass[] levelGridBases;
         [SerializeField] private List<ObjectSpawner> objectSpawners;
-
         private List<BoxContainerChain> chains;
 
         [Header("Parameters")]
-        [SerializeField]
-        private int gridWidth;
-
+        [SerializeField] private int gridWidth;
         [SerializeField] private int gridHeight;
         [SerializeField] private Vector3 cameraPosition;
         [SerializeField] private Vector3 cameraEuler;
         [SerializeField] private float orthoVal;
 
-        [Header("New Runtime References")]
+        [Header("Hashi Grid Placement")]
+        [SerializeField] private float hashiHorizontalSpacing = 2f;
+        [SerializeField] private float hashiVerticalSpacing = 2f;
+        [SerializeField] private Vector3 hashiGridOrigin;
+        [SerializeField] private float hashiBaseHeight;
+
+        [Header("Hashi Runtime References")]
+        [SerializeField] private GameObject islandParent;
+        [SerializeField] private GameObject bridgeParent;
+        [SerializeField] private GameObject chainParent;
+        [SerializeField] private GameObject effectsParent;
+        [SerializeField] private List<IslandNode> generatedIslands = new List<IslandNode>();
+        [SerializeField] private List<BridgeConnection> generatedFixedBridges = new List<BridgeConnection>();
+        [SerializeField] private List<ChainBarrier> generatedChains = new List<ChainBarrier>();
+
+        [Header("Legacy Runtime References")]
         [SerializeField] private GameObject boxGridParent;
         [SerializeField] private GameObject bottomSlotParent;
         [SerializeField] private GameObject flowerParent;
-
         [SerializeField] private List<GameObject> generatedBoxes = new List<GameObject>();
         [SerializeField] private List<GameObject> generatedShooters = new List<GameObject>();
         [SerializeField] private List<GameObject> generatedBottomNodes = new List<GameObject>();
         [SerializeField] private List<GameObject> generatedFlowerPetals = new List<GameObject>();
 
+        public int GridWidth => gridWidth;
+        public int GridHeight => gridHeight;
+
+        public GameObject IslandParent => islandParent;
+        public GameObject BridgeParent => bridgeParent;
+        public GameObject ChainParent => chainParent;
+        public GameObject EffectsParent => effectsParent;
+
+        public Transform IslandParentTransform => islandParent != null ? islandParent.transform : transform;
+        public Transform BridgeParentTransform => bridgeParent != null ? bridgeParent.transform : transform;
+        public Transform ChainParentTransform => chainParent != null ? chainParent.transform : transform;
+        public Transform EffectsParentTransform => effectsParent != null ? effectsParent.transform : transform;
+
+        public IReadOnlyList<IslandNode> GeneratedIslands => generatedIslands;
+        public IReadOnlyList<BridgeConnection> GeneratedFixedBridges => generatedFixedBridges;
+        public IReadOnlyList<ChainBarrier> GeneratedChains => generatedChains;
+
         public GameObject BoxGridParent => boxGridParent;
         public GameObject BottomSlotParent => bottomSlotParent;
         public GameObject FlowerParent => flowerParent;
-
         public IReadOnlyList<GameObject> GeneratedBoxes => generatedBoxes;
         public IReadOnlyList<GameObject> GeneratedShooters => generatedShooters;
         public IReadOnlyList<GameObject> GeneratedBottomNodes => generatedBottomNodes;
         public IReadOnlyList<GameObject> GeneratedFlowerPetals => generatedFlowerPetals;
 
-        public void Init(int width, int height, GridBase[,] gridBases, List<BoxContainerChain> boxContainerChains,
+        public void InitHashiRuntimeReferences(
+            int width,
+            int height,
+            float horizontalSpacing,
+            float verticalSpacing,
+            Vector3 gridOrigin,
+            float baseHeight,
+            GameObject newIslandParent,
+            GameObject newBridgeParent,
+            GameObject newChainParent,
+            GameObject newEffectsParent,
+            List<IslandNode> islands,
+            List<BridgeConnection> fixedBridges,
+            List<ChainBarrier> chainsList)
+        {
+            gridWidth = width;
+            gridHeight = height;
+            hashiHorizontalSpacing = horizontalSpacing;
+            hashiVerticalSpacing = verticalSpacing;
+            hashiGridOrigin = gridOrigin;
+            hashiBaseHeight = baseHeight;
+
+            islandParent = newIslandParent;
+            bridgeParent = newBridgeParent;
+            chainParent = newChainParent;
+            effectsParent = newEffectsParent;
+
+            generatedIslands = islands ?? new List<IslandNode>();
+            generatedFixedBridges = fixedBridges ?? new List<BridgeConnection>();
+            generatedChains = chainsList ?? new List<ChainBarrier>();
+        }
+
+        public Vector3 GridCoordinateToWorld(Vector2Int coordinate)
+        {
+            float centeredX = coordinate.x - (gridWidth - 1) * 0.5f;
+            float centeredY = coordinate.y - (gridHeight - 1) * 0.5f;
+
+            return hashiGridOrigin + new Vector3(
+                centeredX * hashiHorizontalSpacing,
+                hashiBaseHeight,
+                centeredY * hashiVerticalSpacing);
+        }
+
+        public void SetCameraSettings(Vector3 position, Vector3 euler, float orthographicSize)
+        {
+            cameraPosition = position;
+            cameraEuler = euler;
+            orthoVal = orthographicSize;
+        }
+
+        public Vector3 GetCameraPos()
+        {
+            return cameraPosition;
+        }
+
+        public Vector3 GetCameraEuler()
+        {
+            return cameraEuler;
+        }
+
+        public float GetCameraOrthoSize()
+        {
+            return orthoVal;
+        }
+
+        public void InitializeVariables(
+            GameplayManager gameplayManager,
+            GridManager gridManager,
+            CinemachineCamera virtualCamera)
+        {
+            InitializeGameplayManager(gameplayManager);
+
+            if (gridManager != null)
+            {
+                InitializeGridManager(gridManager);
+            }
+
+            if (virtualCamera != null)
+            {
+                InitializeCamera(virtualCamera);
+            }
+        }
+
+        private void InitializeCamera(CinemachineCamera virtualCamera)
+        {
+            virtualCamera.transform.position = cameraPosition;
+            virtualCamera.transform.eulerAngles = cameraEuler;
+            virtualCamera.Lens.OrthographicSize = orthoVal;
+        }
+
+        private void InitializeGameplayManager(GameplayManager gameplayManager)
+        {
+        }
+
+        public void Init(
+            int width,
+            int height,
+            GridBase[,] gridBases,
+            List<BoxContainerChain> boxContainerChains,
             List<ObjectSpawner> spawners)
         {
-            CopyGridArray(gridBases);
+            if (gridBases != null)
+            {
+                CopyGridArray(gridBases);
+            }
+
             gridWidth = width;
             gridHeight = height;
             chains = boxContainerChains;
@@ -67,61 +194,28 @@ namespace BoxPuller.Scripts.Data
             boxGridParent = newBoxGridParent;
             bottomSlotParent = newBottomSlotParent;
             flowerParent = newFlowerParent;
-
             generatedBoxes = boxes ?? new List<GameObject>();
             generatedShooters = shooters ?? new List<GameObject>();
             generatedBottomNodes = bottomNodes ?? new List<GameObject>();
             generatedFlowerPetals = flowerPetals ?? new List<GameObject>();
         }
 
-        public void SetCameraSettings(Vector3 pos, Vector3 euler, float val)
-        {
-            cameraPosition = pos;
-            cameraEuler = euler;
-            orthoVal = val;
-        }
-
         private void CopyGridArray(GridBase[,] gridBases)
         {
             levelGridBases = new GridSaveClass[gridBases.GetLength(0)];
-            for (var x = 0; x < gridBases.GetLength(0); x++)
+
+            for (int x = 0; x < gridBases.GetLength(0); x++)
             {
                 levelGridBases[x] = new GridSaveClass
                 {
                     gridCells = new GridBase[gridBases.GetLength(1)]
                 };
-                for (var y = 0; y < gridBases.GetLength(1); y++)
+
+                for (int y = 0; y < gridBases.GetLength(1); y++)
                 {
                     levelGridBases[x].gridCells[y] = gridBases[x, y];
                 }
             }
-        }
-
-        public void InitializeVariables(GameplayManager gameplayManager,
-            GridManager gridManager, CinemachineCamera virtualCamera)
-        {
-            // InitializeInteractionManager(interactionManager);
-            InitializeGameplayManager(gameplayManager);
-            InitializeGridManager(gridManager);
-            InitializeCamera(virtualCamera);
-        }
-
-        private void InitializeCamera(CinemachineCamera virtualCamera)
-        {
-            virtualCamera.transform.position = cameraPosition;
-            virtualCamera.transform.eulerAngles = cameraEuler;
-            virtualCamera.Lens.OrthographicSize = orthoVal;
-        }
-
-        private void InitializeInteractionManager(InputManager inputManager)
-        {
-            // inputManager.SetLevelContainer(this);
-            // interactionManager.InitializeInteractionManager();
-        }
-
-        private void InitializeGameplayManager(GameplayManager gameplayManager)
-        {
-            //Initialize GameManager if needed   
         }
 
         private void InitializeGridManager(GridManager gridManager)
@@ -131,54 +225,59 @@ namespace BoxPuller.Scripts.Data
                 return;
             }
 
-            var gridBasesArray = MorphTo2DArray(levelGridBases);
+            GridBase[,] gridBasesArray = MorphTo2DArray(levelGridBases);
             gridManager.Init(gridBasesArray, this, chains, objectSpawners);
         }
 
         public GridBase[,] GetGridBases()
         {
-            var gridBasesArray = MorphTo2DArray(levelGridBases);
-            return gridBasesArray;
+            if (levelGridBases == null || levelGridBases.Length == 0)
+            {
+                return new GridBase[0, 0];
+            }
+
+            return MorphTo2DArray(levelGridBases);
         }
 
         public void HandleGridBasesPathfinding(GridBase[,] gridBasesArray)
         {
-            for (var i = 0; i < gridBasesArray.GetLength(0); i++)
+            if (gridBasesArray == null)
             {
-                for (var j = 0; j < gridBasesArray.GetLength(1); j++)
+                return;
+            }
+
+            for (int x = 0; x < gridBasesArray.GetLength(0); x++)
+            {
+                for (int y = 0; y < gridBasesArray.GetLength(1); y++)
                 {
-                    gridBasesArray[i, j].HandlePath();
+                    if (gridBasesArray[x, y] != null)
+                    {
+                        gridBasesArray[x, y].HandlePath();
+                    }
                 }
             }
         }
 
         private GridBase[,] MorphTo2DArray(GridSaveClass[] gridBases)
         {
-            var newGridBases = new GridBase[gridWidth, gridHeight];
-            for (var x = 0; x < gridBases.GetLength(0); x++)
+            GridBase[,] result = new GridBase[gridWidth, gridHeight];
+
+            for (int x = 0; x < gridBases.Length && x < gridWidth; x++)
             {
-                for (var y = 0; y < gridBases[x].gridCells.Length; y++)
+                if (gridBases[x] == null || gridBases[x].gridCells == null)
                 {
-                    newGridBases[x, y] = gridBases[x].gridCells[y];
+                    continue;
+                }
+
+                for (int y = 0;
+                     y < gridBases[x].gridCells.Length && y < gridHeight;
+                     y++)
+                {
+                    result[x, y] = gridBases[x].gridCells[y];
                 }
             }
 
-            return newGridBases;
-        }
-
-        public Vector3 GetCameraPos()
-        {
-            return cameraPosition;
-        }
-
-        public Vector3 GetCameraEuler()
-        {
-            return cameraEuler;
-        }
-
-        public float GetCameraOrthoSize()
-        {
-            return orthoVal;
+            return result;
         }
     }
 

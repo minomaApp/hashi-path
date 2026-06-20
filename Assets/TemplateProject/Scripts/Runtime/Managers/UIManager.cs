@@ -171,10 +171,24 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         public void HandleTimer()
         {
-            //if (TimeManager.instance.GetIsTimerActive()) return;
-            //TimeManager.instance.StartTimer();
-            //clockAnimator.speed = 1;
-            //StopBlinkTimer();
+            if (TimeManager.instance == null)
+            {
+                return;
+            }
+
+            if (TimeManager.instance.GetIsTimerActive())
+            {
+                return;
+            }
+
+            TimeManager.instance.StartTimer();
+
+            if (clockAnimator != null)
+            {
+                clockAnimator.speed = 1;
+            }
+
+            StopBlinkTimer();
         }
 
         public void OpenLoseScreen()
@@ -228,8 +242,21 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         public void OpenTimer()
         {
-            //timerParent.SetActive(true);
-            //timerParent.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+            if (timerParent == null)
+            {
+                return;
+            }
+
+            timerParent.SetActive(true);
+            timerParent.transform.localScale = Vector3.zero;
+            timerParent.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
+
+            if (clockAnimator != null)
+            {
+                clockAnimator.speed = 1;
+            }
+
+            StopBlinkTimer();
         }
 
         private void CloseTimer()
@@ -313,8 +340,10 @@ namespace TemplateProject.Scripts.Runtime.Managers
             settingsPanel.transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack).OnComplete(() =>
             {
                 settingsPanel.transform.parent.gameObject.SetActive(false);
-                // TimeManager.instance.StartTimer();
-
+                if (TimeManager.instance != null)
+                {
+                    TimeManager.instance.StartTimer();
+                }
                 LevelManager.instance.isGamePlayable = true;
             });
         }
@@ -414,9 +443,18 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         public void StartBlinkTimer()
         {
-            //if (isTimerBlinking) return;
-            //isTimerBlinking = true;
-            //StartCoroutine(BlinkTimer());
+            if (isTimerBlinking)
+            {
+                return;
+            }
+
+            if (timerTMP == null)
+            {
+                return;
+            }
+
+            isTimerBlinking = true;
+            StartCoroutine(BlinkTimer());
         }
 
         public TextMeshProUGUI GetStartLevelTMP()

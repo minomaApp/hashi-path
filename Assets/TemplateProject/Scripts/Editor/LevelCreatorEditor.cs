@@ -1,1363 +1,780 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
-using System.Text;
 using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.Enums;
 using BoxPuller.Scripts.Runtime.LevelCreation;
+using HashiGame.Scripts.Runtime;
 using UnityEditor;
 using UnityEngine;
 
 namespace TemplateProject.Scripts.Editor
 {
     [CustomEditor(typeof(LevelCreator))]
-    public class LevelCreatorEditor : GridEditor
+    public class LevelCreatorEditor : UnityEditor.Editor
     {
-        private LevelCreator _levelCreator;
-        private Vector2 colorScrollPosition;
-        private Vector2 directionScrollPosition;
+        private LevelCreator levelCreator;
         private Vector2 gridScrollPosition;
-        private Vector2 conveyorScrollPosition;
-        private Vector2 targetQueueScrollPosition;
-        private Vector2 colorEnumScrollPosition;
-        private GridCellData savedCellToCarry;
-        private BasePlaceableData savedPlaceableToCarry;
-        private bool isGridPaintDragging;
-        private int lastPaintedX = -1;
-        private int lastPaintedY = -1;
-        private bool isGridEraseDragging;
+        private Vector2 definitionScrollPosition;
+        private EnumHolder.HashiEditorMode editorMode = EnumHolder.HashiEditorMode.Island;
+        private bool hasPendingCoordinate;
+        private Vector2Int pendingCoordinate;
+        private string editorMessage;
+        private MessageType editorMessageType = MessageType.Info;
 
-        private bool showPrefabs;
-        private bool showTargetQueueSettings;
-        private bool showMatchAreaSettings;
-        private bool showGridSettings = true;
-        private bool showGridSpaceSettings;
-        private bool displayColorAndObjectCount = true;
+        private SerializedProperty prefabSaverProperty;
+        private SerializedProperty prefabLoaderProperty;
+        private SerializedProperty prefabLoaderOldProperty;
+        private SerializedProperty vCamProperty;
 
         private void OnEnable()
         {
-            _levelCreator = (LevelCreator)target;
+            levelCreator = (LevelCreator)target;
+            prefabSaverProperty = serializedObject.FindProperty("prefabSaver");
+            prefabLoaderProperty = serializedObject.FindProperty("prefabLoader");
+            prefabLoaderOldProperty = serializedObject.FindProperty("prefabLoaderOld");
+            vCamProperty = serializedObject.FindProperty("vCam");
+            levelCreator.EnsureLevelData();
         }
-
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
             serializedObject.Update();
-            BeginChangeCheck();
+            levelCreator.EnsureLevelData();
 
-            DisplayPrefabs();
-            DisplayGridSettings();
-            DisplayLevelButtons();
-
-            if (_levelCreator.GetLevelData() == null) _levelCreator.LoadLevel();
-            if (_levelCreator.GetLevelData().GridData == null) _levelCreator.LoadLevel();
-
-            if (!IsLevelDataAvailable())
-            {
-                DisplayHelpBox("Please Reset the Grid!", MessageType.Error);
-                return;
-            }
-
-            DisplayEnumButtons();
-            DisplayBottomShooterLanes();
-            DisplayGrid();
-
-            // Eski conveyor/color mismatch sistemi yeni oyunda generate'i kilitlemesin.
-            // DisplayColorCounts();
-
-            if (EndChangeCheck())
-            {
-                Undo.RecordObject(_levelCreator, "Change Level Index");
-                EditorUtility.SetDirty(_levelCreator);
-            }
+            DrawReferenceSection();
+            DrawGridSettings();
+            DrawLevelButtons();
+            DrawRuleSettings();
+            DrawEditingMode();
+            DrawGrid();
+            DrawDefinitionLists();
+            DrawValidationPanel();
 
             serializedObject.ApplyModifiedProperties();
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(levelCreator);
+            }
         }
 
-
-        #region Display Prefabs
-
-        private void DisplayPrefabs()
+        private void DrawReferenceSection()
         {
-            Space(3);
-            BeginVerticalBoxed("Prefabs");
-            EditorGUI.indentLevel++;
-            showPrefabs = DisplayFoldout("", showPrefabs);
-            if (showPrefabs)
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Game References", EditorStyles.boldLabel);
+
+            levelCreator.prefabs = (BoxPuller.Scripts.Data.SO.GamePrefabs)
+                EditorGUILayout.ObjectField(
+                    "Game Prefabs",
+                    levelCreator.prefabs,
+                    typeof(BoxPuller.Scripts.Data.SO.GamePrefabs),
+                    false);
+
+            levelCreator.visualSettings = (BoxPuller.Scripts.Data.SO.HashiVisualSettings)
+                EditorGUILayout.ObjectField(
+                    "Hashi Visual Settings",
+                    levelCreator.visualSettings,
+                    typeof(BoxPuller.Scripts.Data.SO.HashiVisualSettings),
+                    false);
+
+            levelCreator.currentLevelContainer = (LevelContainer)
+                EditorGUILayout.ObjectField(
+                    "Current Level Container",
+                    levelCreator.currentLevelContainer,
+                    typeof(LevelContainer),
+                    true);
+
+            EditorGUILayout.PropertyField(prefabSaverProperty);
+            EditorGUILayout.PropertyField(prefabLoaderProperty);
+            EditorGUILayout.PropertyField(prefabLoaderOldProperty);
+            EditorGUILayout.PropertyField(vCamProperty);
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawGridSettings()
+        {
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Grid Settings", EditorStyles.boldLabel);
+
+            levelCreator.levelIndex = EditorGUILayout.IntField(
+                "Level Index",
+                levelCreator.levelIndex);
+
+            EditorGUILayout.BeginHorizontal();
+            levelCreator.gridWidth = Mathf.Max(
+                1,
+                EditorGUILayout.IntField("Grid Width", levelCreator.gridWidth));
+            levelCreator.expandGridToLeft = EditorGUILayout.ToggleLeft(
+                "Resize From Left",
+                levelCreator.expandGridToLeft,
+                GUILayout.Width(120f));
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            levelCreator.gridHeight = Mathf.Max(
+                1,
+                EditorGUILayout.IntField("Grid Height", levelCreator.gridHeight));
+            levelCreator.expandGridToUp = EditorGUILayout.ToggleLeft(
+                "Resize From Bottom",
+                levelCreator.expandGridToUp,
+                GUILayout.Width(120f));
+            EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Apply Grid Size", GUILayout.Height(28f)))
             {
-                EditorGUI.indentLevel++;
-                DisplayObjectField("Normal Object Prefab", ref _levelCreator.normalObjectPrefab);
-                DisplayObjectField("Spawner Prefab", ref _levelCreator.spawnerObjectPrefab);
-                DisplayObjectField("Locked Object Prefab", ref _levelCreator.lockedObjectPrefab);
-                DisplayObjectField("Hidden Object Prefab", ref _levelCreator.hiddenObjectPrefab);
-                Space(5);
-                DisplayObjectField("Match Area Prefab", ref _levelCreator.matchAreaPrefab);
-                Space(5);
-                DisplayObjectField("Target Object Prefab", ref _levelCreator.targetObjectPrefab);
-                EditorGUI.indentLevel--;
+                levelCreator.ResizeGrid();
+                CancelPendingSelection();
             }
 
-            EditorGUI.indentLevel--;
-            EndVerticalBoxed();
+            EditorGUILayout.Space(4f);
+            levelCreator.horizontalSpaceModifier = Mathf.Max(
+                0.01f,
+                EditorGUILayout.FloatField(
+                    "Horizontal Spacing",
+                    levelCreator.horizontalSpaceModifier));
+
+            levelCreator.verticalSpaceModifier = Mathf.Max(
+                0.01f,
+                EditorGUILayout.FloatField(
+                    "Vertical Spacing",
+                    levelCreator.verticalSpaceModifier));
+
+            levelCreator.gridOriginOffset = EditorGUILayout.Vector3Field(
+                "Grid Origin Offset",
+                levelCreator.gridOriginOffset);
+
+            levelCreator.islandBaseHeight = EditorGUILayout.FloatField(
+                "Island Base Height",
+                levelCreator.islandBaseHeight);
+
+            levelCreator.islandEulerAngles = EditorGUILayout.Vector3Field(
+                "Island Euler Angles",
+                levelCreator.islandEulerAngles);
+
+            EditorGUILayout.EndVertical();
         }
 
-        #endregion
-
-
-        #region Display Settings Functions
-
-        private void DisplayGridSettings()
+        private void DrawLevelButtons()
         {
-            Space(3);
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginHorizontal();
 
-            BeginVerticalBoxed("Grid Settings");
-            EditorGUI.indentLevel++;
+            Color oldColor = GUI.backgroundColor;
 
-            showGridSettings = DisplayFoldout("", showGridSettings);
-            if (showGridSettings)
+            GUI.backgroundColor = new Color(0.35f, 0.75f, 0.4f);
+            if (GUILayout.Button("Generate Level", GUILayout.Height(36f)))
             {
-                EditorGUI.indentLevel++;
-                DisplayEnum("Grid Type", ref _levelCreator.gridType);
-                showGridSpaceSettings = DisplayFoldout("Grid Space Settings", showGridSpaceSettings);
-                if (showGridSpaceSettings)
-                {
-                    EditorGUI.indentLevel++;
-                    DisplayFloatField("Horizontal Space", ref _levelCreator.horizontalSpaceModifier);
-                    DisplayFloatField("Vertical Space", ref _levelCreator.verticalSpaceModifier);
-                    DisplayFloatField("Empty Area Space", ref _levelCreator.emptyAreaSpaceModifier);
-                    EditorGUI.indentLevel--;
-                }
-
-                EditorGUI.indentLevel--;
-                Space(5);
-                DisplayIntFieldWithIncrementDecrementButton("Level Index", ref _levelCreator.levelIndex);
-
-                BeginHorizontal();
-                DisplayIntFieldWithIncrementDecrementButton("Grid Width", ref _levelCreator.gridWidth,
-                    () => OnGridSizeChanged());
-                DisplayButton(_levelCreator.expandGridToLeft ? "\u2b05" : "\u27a1",
-                    () => _levelCreator.expandGridToLeft = !_levelCreator.expandGridToLeft,
-                    20, 40);
-                EndHorizontal();
-
-                BeginHorizontal();
-                DisplayIntFieldWithIncrementDecrementButton("Grid Height", ref _levelCreator.gridHeight,
-                    OnGridSizeChanged);
-                DisplayButton(_levelCreator.expandGridToUp ? "\u2b07" : "\u2b06",
-                    () => _levelCreator.expandGridToUp = !_levelCreator.expandGridToUp,
-                    20, 40);
-                EndHorizontal();
-
-                _levelCreator.conveyorLength = 0;
+                levelCreator.GenerateLevel();
+                GUIUtility.ExitGUI();
             }
 
-            EditorGUI.indentLevel--;
-            EndVerticalBoxed();
-        }
-
-        #endregion
-
-
-        #region Display Level Buttons
-
-        private void DisplayLevelButtons()
-        {
-            DisplayMiniSeparator();
-            BeginHorizontalBoxed();
-
-            bool mismatch = HasColorMismatch();
-
-            // Eğer mismatch varsa bu üçü disable et
-            GUI.enabled = !mismatch;
-            SetBackgroundColor(LIGHT_GREEN);
-            DisplayButton("Generate Level", () => _levelCreator.GenerateLevel(), 35);
-            SetBackgroundColor(LIGHT_YELLOW);
-            DisplayButton("Save", () =>
+            GUI.backgroundColor = new Color(0.75f, 0.7f, 0.4f);
+            if (GUILayout.Button("Save", GUILayout.Height(36f)))
             {
-                _levelCreator.SaveLevel();
-                // _levelCreator.LoadLevel();
-            }, 35);
-            SetBackgroundColor(LIGHT_BLUE);
-            DisplayButton("Load", () => _levelCreator.LoadLevel(), 35);
+                levelCreator.SaveLevel();
+            }
 
-            // Sonra restore enabled ve draw Reset
-            GUI.enabled = true;
-            SetBackgroundColor(LIGHT_RED);
-            DisplayButton("Reset", () =>
+            GUI.backgroundColor = new Color(0.4f, 0.65f, 0.75f);
+            if (GUILayout.Button("Load", GUILayout.Height(36f)))
             {
-                // Confirmation popup
-                if (EditorUtility.DisplayDialog(
-                        "Reset Level",
-                        "Are you sure you want to reset the level?",
-                        "Yes",
-                        "No"))
+                levelCreator.LoadLevel();
+                CancelPendingSelection();
+                GUIUtility.ExitGUI();
+            }
+
+            GUI.backgroundColor = new Color(0.75f, 0.35f, 0.35f);
+            if (GUILayout.Button("Reset", GUILayout.Height(36f)))
+            {
+                bool confirmed = EditorUtility.DisplayDialog(
+                    "Reset Level",
+                    "Delete the current level data and generated prefab?",
+                    "Reset",
+                    "Cancel");
+
+                if (confirmed)
                 {
-                    _levelCreator.ResetLevel();
+                    levelCreator.ResetLevel();
+                    CancelPendingSelection();
+                    GUIUtility.ExitGUI();
                 }
-            }, 35);
+            }
 
-            // Restore defaults
-            ResetBackgroundColor();
-            GUI.enabled = true;
-            EndHorizontalBoxed();
+            GUI.backgroundColor = oldColor;
+            EditorGUILayout.EndHorizontal();
         }
 
-        #endregion
-
-
-        #region Display Enum Buttons
-
-        private void DisplayEnumButtons()
+        private void DrawRuleSettings()
         {
-            Space(5);
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Level Rules", EditorStyles.boldLabel);
 
-            BeginVerticalBoxed("Paint Settings");
+            levelCreator.blockBridgeThroughIsland = EditorGUILayout.Toggle(
+                "Block Through Islands",
+                levelCreator.blockBridgeThroughIsland);
 
-            DisplayEnumButtons(ref _levelCreator.color, "Colors", _levelCreator.gameColors.editorColors);
-            SetEnumWithKeyboardInput(ref _levelCreator.color);
+            levelCreator.blockBridgeCrossing = EditorGUILayout.Toggle(
+                "Block Bridge Crossing",
+                levelCreator.blockBridgeCrossing);
 
-            Space(10);
-            DisplayMiniSeparator();
+            levelCreator.requireAllIslandsConnected = EditorGUILayout.Toggle(
+                "Require One Connected Network",
+                levelCreator.requireAllIslandsConnected);
 
-            _levelCreator.boxMoldGroupId = EditorGUILayout.IntField("Box Mold Group Id (-1 = None)", _levelCreator.boxMoldGroupId);
+            levelCreator.islandBlockingRadius = Mathf.Max(
+                0.01f,
+                EditorGUILayout.FloatField(
+                    "Island Blocking Radius",
+                    levelCreator.islandBlockingRadius));
 
-            Space(10);
-            DisplayMiniSeparator();
-
-            _levelCreator.shooterBulletCount = EditorGUILayout.IntField("Shooter Bullet Count", _levelCreator.shooterBulletCount);
-            _levelCreator.shooterLinkGroupId = EditorGUILayout.IntField("Shooter Link Group Id (-1 = None)", _levelCreator.shooterLinkGroupId);
-            _levelCreator.shooterIsHidden = EditorGUILayout.Toggle("Shooter Hidden", _levelCreator.shooterIsHidden);
-
-            ResetAllColors();
-            EndVerticalBoxed();
+            EditorGUILayout.EndVertical();
         }
-        #endregion
 
-
-        #region Grid Functions
-
-        private void DisplayConveyors()
+        private void DrawEditingMode()
         {
-            Space(5);
-            BeginVerticalBoxed();
-            var conveyorData = _levelCreator.GetLevelData().ConveyorData;
-            if (conveyorData == null || conveyorData.Length == 0)
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Paint Settings", EditorStyles.boldLabel);
+
+            EnumHolder.HashiEditorMode previousMode = editorMode;
+            editorMode = (EnumHolder.HashiEditorMode)GUILayout.Toolbar(
+                (int)editorMode,
+                new[] { "Island", "Fixed Bridge", "Chain" },
+                GUILayout.Height(30f));
+
+            if (previousMode != editorMode)
             {
-                EditorGUILayout.HelpBox("Conveyor Length is zero.", MessageType.Info);
-                EndVerticalBoxed();
+                CancelPendingSelection();
+            }
+
+            EditorGUILayout.Space(6f);
+
+            switch (editorMode)
+            {
+                case EnumHolder.HashiEditorMode.Island:
+                    DrawIslandPaintSettings();
+                    EditorGUILayout.HelpBox(
+                        "Left click places or updates an island. Right click removes the island.",
+                        MessageType.Info);
+                    break;
+
+                case EnumHolder.HashiEditorMode.FixedBridge:
+                    levelCreator.fixedBridgeCount = EditorGUILayout.IntPopup(
+                        "Fixed Bridge Count",
+                        Mathf.Clamp(levelCreator.fixedBridgeCount, 1, 2),
+                        new[] { "Single", "Double" },
+                        new[] { 1, 2 });
+
+                    DrawPendingSelectionHelp(
+                        "Select two island cells. The generated bridge cannot be removed during play.");
+                    break;
+
+                case EnumHolder.HashiEditorMode.Chain:
+                    levelCreator.chainUnlockRequirement = Mathf.Max(
+                        0,
+                        EditorGUILayout.IntField(
+                            "Unlock After Completed Islands",
+                            levelCreator.chainUnlockRequirement));
+
+                    DrawPendingSelectionHelp(
+                        "Select any two grid points. An active chain blocks every bridge that crosses it.");
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(editorMessage))
+            {
+                EditorGUILayout.HelpBox(editorMessage, editorMessageType);
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawIslandPaintSettings()
+        {
+            levelCreator.islandRequiredBridgeCount = Mathf.Max(
+                1,
+                EditorGUILayout.IntField(
+                    "Required Bridge Count",
+                    levelCreator.islandRequiredBridgeCount));
+
+            levelCreator.islandBridgeMode =
+                (EnumHolder.IslandBridgeMode)EditorGUILayout.EnumPopup(
+                    "Bridge Mode Emblem",
+                    levelCreator.islandBridgeMode);
+
+            levelCreator.islandStartsLocked = EditorGUILayout.Toggle(
+                "Starts Locked",
+                levelCreator.islandStartsLocked);
+
+            using (new EditorGUI.DisabledScope(!levelCreator.islandStartsLocked))
+            {
+                levelCreator.islandUnlockRequirement = Mathf.Max(
+                    0,
+                    EditorGUILayout.IntField(
+                        "Unlock After Completed Islands",
+                        levelCreator.islandUnlockRequirement));
+            }
+        }
+
+        private void DrawPendingSelectionHelp(string helpText)
+        {
+            EditorGUILayout.HelpBox(helpText, MessageType.Info);
+
+            if (hasPendingCoordinate)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(
+                    "First Point: " + pendingCoordinate,
+                    EditorStyles.boldLabel);
+
+                if (GUILayout.Button("Cancel Selection", GUILayout.Width(130f)))
+                {
+                    CancelPendingSelection();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        private void DrawGrid()
+        {
+            LevelData data = levelCreator.GetLevelData();
+            if (data == null || data.GridData == null)
+            {
+                EditorGUILayout.HelpBox("LevelData is not available.", MessageType.Error);
                 return;
             }
 
-            float cellW = 50f, cellH = 50f;
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Grid", EditorStyles.boldLabel);
 
-            BeginHorizontal();
-            DisplayLabelField("Conveyor Preview", 18, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
-            DisplayWindowPopup();
-            EndHorizontal();
-            Space(10);
+            List<IslandCellData> islands = data.GetIslandCells();
+            EditorGUILayout.LabelField(
+                "Islands: " + islands.Count +
+                "   Fixed Bridges: " + data.fixedBridges.Count +
+                "   Chains: " + data.chainBarriers.Count);
 
-            DrawNormalGrid(
-                _levelCreator.gridWidth,
-                _levelCreator.conveyorLength,
-                (x, y) => DisplayConveyorCell(x, y, cellW, cellH),
-                ref conveyorScrollPosition
-            );
+            const float cellWidth = 82f;
+            const float cellHeight = 82f;
+            float viewHeight = Mathf.Clamp(data.Height * 86f + 20f, 180f, 720f);
 
-            EndVerticalBoxed();
+            gridScrollPosition = EditorGUILayout.BeginScrollView(
+                gridScrollPosition,
+                true,
+                true,
+                GUILayout.Height(viewHeight));
+
+            for (int y = data.Height - 1; y >= 0; y--)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                for (int x = 0; x < data.Width; x++)
+                {
+                    DrawGridCell(
+                        new Vector2Int(x, y),
+                        cellWidth,
+                        cellHeight,
+                        data);
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
         }
 
-        private void DisplayConveyorCell(int x, int y, float width, float height)
+        private void DrawGridCell(
+            Vector2Int coordinate,
+            float width,
+            float height,
+            LevelData data)
         {
-            if (x >= _levelCreator.GetLevelData().Width)
+            Rect rect = GUILayoutUtility.GetRect(
+                width,
+                height,
+                GUILayout.Width(width),
+                GUILayout.Height(height));
+
+            IslandCellData island =
+                data.GridData[coordinate.x, coordinate.y].BasePlaceable as IslandCellData;
+
+            Color background = new Color(0.35f, 0.35f, 0.35f);
+
+            if (island != null)
             {
-                _levelCreator.conveyorLength = 0;
+                background = island.startsLocked
+                    ? new Color(0.45f, 0.45f, 0.45f)
+                    : new Color(0.35f, 0.6f, 0.38f);
             }
-            var cell = _levelCreator.GetLevelData().ConveyorData[x, y];
 
-            SetColor(Color.white);
-            SetBackgroundColor(cell.isActive ? Color.white : Color.gray);
-
-            int fontSize = 8;
-            string cellText = GetConveyorCellText(x, y, ref fontSize);
-            var style = new GUIStyle(GUI.skin.button)
+            if (hasPendingCoordinate && pendingCoordinate == coordinate)
             {
-                richText = true,
-                fontSize = fontSize,
-                fontStyle = FontStyle.Bold,
+                background = new Color(0.8f, 0.65f, 0.2f);
+            }
+
+            EditorGUI.DrawRect(rect, background);
+
+            GUIStyle style = new GUIStyle(GUI.skin.box)
+            {
                 alignment = TextAnchor.UpperCenter,
-                wordWrap = true
+                fontSize = 10,
+                fontStyle = FontStyle.Bold,
+                wordWrap = true,
+                normal = { textColor = Color.white }
             };
 
-            DisplayButton(
-                cellText, width, height,
-                direction => ConveyorButtonAction(x, y, direction, _levelCreator.isSecret),
-                () => ConveyorRemoveButtonAction(x, y),
-                () => savedPlaceableToCarry = cell.BasePlaceable,
-                null,
-                null,
-                style
-            );
-
-            ResetBackgroundColor();
-            ResetColor();
+            GUI.Box(rect, BuildCellText(coordinate, island, data), style);
+            HandleGridCellInput(rect, coordinate, island);
         }
 
-        private string GetConveyorCellText(int x, int y, ref int fontSize)
+        private string BuildCellText(
+            Vector2Int coordinate,
+            IslandCellData island,
+            LevelData data)
         {
-            var cell = _levelCreator.GetLevelData().ConveyorData[x, y];
-            var placeable = cell.BasePlaceable;
-            string txt = "";
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            builder.AppendLine(coordinate.x + "," + coordinate.y);
 
-            if (!cell.isActive)
+            if (island != null)
             {
-            }
-            else if (cell.blockCount > 0)
-            {
-                txt = "\nLOCK\n" + cell.blockCount;
-                SetBackgroundColor(Color.black);
-            }
-            else if (placeable is ConveyorItemData itemData)
-            {
-                txt += GetColoredRichText("📦", GetEditorColor((int)itemData.Color)) + "\n";
-                if (itemData.isSecret) txt += GetColoredRichText("S", Color.black) + "\n";
-                SetBackgroundColor(GetEditorColor((int)itemData.Color));
-                fontSize = 22;
-            }
-            else if (placeable is ChainData chain)
-            {
-                if (chain.isHead) txt += "H";
-                if (chain.isFrozen) txt += "❄️" + chain.BlockCount;
-                txt += GetColoredRichText("🔗", GetEditorColor((int)chain.Color)) + "\n";
-                txt += DirectionToEmoji(chain.direction);
-                SetBackgroundColor(GetEditorColor((int)chain.Color));
-                fontSize = 22;
-            }
-            else if (placeable is KeyFoodData kf)
-            {
-                txt = GetColoredRichText($"{kf.id}🔑🥝\n", GetEditorColor((int)kf.Color));
-                fontSize = 15;
-                SetBackgroundColor(GetEditorColor((int)kf.Color));
-            }
-            else if (placeable is LockFoodData lf)
-            {
-                txt = GetColoredRichText($"{lf.id}🔒🥝\n", GetEditorColor((int)lf.Color));
-                fontSize = 15;
-                SetBackgroundColor(GetEditorColor((int)lf.Color));
-            }
-            else if (placeable is FoodData f)
-            {
-                if (f.isFrozen) txt += "❄️\n";
-                txt += GetColoredRichText("🥝\n", GetEditorColor((int)f.Color));
-                SetBackgroundColor(GetEditorColor((int)f.Color));
-                fontSize = 18;
-                return txt;
-            }
-            else if (placeable is SingleObjectData so)
-            {
-                txt = GetSingleObjectText(so, x, y);
-                SetBackgroundColor(GetEditorColor((int)so.Color));
-            }
-            else if (placeable is StackedObjectData sod)
-            {
-                for (int i = sod.Stack.Count - 1; i >= 0; i--)
-                    txt += "\n" + GetCellTextForStacked(sod.Stack[i], x, y);
+                string mode = island.bridgeMode == EnumHolder.IslandBridgeMode.DoubleAllowed
+                    ? "DOUBLE"
+                    : "SINGLE";
+
+                builder.AppendLine("ISLAND " + island.requiredBridgeCount);
+                builder.AppendLine(mode);
+
+                if (island.startsLocked)
+                {
+                    builder.AppendLine("LOCK " + island.unlockAfterCompletedIslandCount);
+                }
             }
 
-            return txt;
+            for (int i = 0; i < data.fixedBridges.Count; i++)
+            {
+                FixedBridgeDefinitionData bridge = data.fixedBridges[i];
+
+                if (bridge.startCoordinate == coordinate)
+                {
+                    builder.AppendLine("F" + bridge.id + " A x" + bridge.bridgeCount);
+                }
+                else if (bridge.endCoordinate == coordinate)
+                {
+                    builder.AppendLine("F" + bridge.id + " B x" + bridge.bridgeCount);
+                }
+            }
+
+            for (int i = 0; i < data.chainBarriers.Count; i++)
+            {
+                ChainBarrierData chain = data.chainBarriers[i];
+
+                if (chain.startCoordinate == coordinate)
+                {
+                    builder.AppendLine("C" + chain.id + " A");
+                }
+                else if (chain.endCoordinate == coordinate)
+                {
+                    builder.AppendLine("C" + chain.id + " B");
+                }
+            }
+
+            return builder.ToString();
         }
 
-
-        private void DisplayGrid()
-        {
-            Space(5);
-            BeginVerticalBoxed();
-            Space(20);
-            var gridData = _levelCreator.GetLevelData().GridData;
-            if (ReferenceEquals(gridData, null) || gridData.Length.Equals(0)) return;
-
-            float cellWidth = 50f;
-            float cellHeight = 50f;
-
-            BeginHorizontal();
-            DisplayLabelField("Grid", 20, Color.white, TextAnchor.UpperCenter, FontStyle.Bold);
-            Space(20);
-            DisplayWindowPopup();
-            EndHorizontal();
-
-            Space(10);
-            DisplayBoxColorCounts();
-            Space(15);
-
-            switch (_levelCreator.gridType)
-            {
-                case EnumHolder.GridType.Normal:
-                    DrawNormalGrid(_levelCreator.gridWidth, _levelCreator.gridHeight,
-                        (x, y) => DisplayGridCell(x, y, cellWidth, cellHeight), ref gridScrollPosition);
-                    break;
-                case EnumHolder.GridType.DynamicSpaced:
-                    DrawScrollableDynamicSpacedGrid(_levelCreator.gridWidth, _levelCreator.gridHeight,
-                        cellWidth, cellHeight, (x, y) => DisplayGridCell(x, y, cellWidth, cellHeight),
-                        _levelCreator.GetLevelData(), ref gridScrollPosition);
-                    break;
-
-                case EnumHolder.GridType.Hexagon:
-                    DrawHexagonGrid(_levelCreator.gridWidth, _levelCreator.gridHeight,
-                        (x, y, rect) => DisplayGridCell(x, y, cellWidth, cellHeight));
-                    break;
-            }
-
-            Space(20);
-            SetBackgroundColor(Color.grey);
-
-            ResetBackgroundColor();
-            ResetContentColor();
-            ResetColor();
-            EndVerticalBoxed();
-        }
-
-        private void DisplayGridCell(int x, int y, float buttonWidth, float buttonHeight, Rect buttonRect = default)
-        {
-            var cell = _levelCreator.GetLevelData().GridData[x, y];
-
-            SetColor(Color.white);
-            SetBackgroundColor(Color.white);
-
-            int fontSize = 8;
-            var cellText = GetCellText(x, y, ref fontSize);
-
-            var style = new GUIStyle(GUI.skin.button)
-            {
-                richText = true,
-                fontSize = fontSize,
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.UpperCenter,
-                wordWrap = true
-            };
-
-            Rect cellRect = buttonRect != default
-                ? buttonRect
-                : GUILayoutUtility.GetRect(
-                    buttonWidth,
-                    buttonHeight,
-                    GUILayout.Width(buttonWidth),
-                    GUILayout.Height(buttonHeight)
-                );
-
-            HandleGridDragPaint(x, y, cellRect);
-
-            // ÖNEMLİ:
-            // GUI.Button kullanmıyoruz, çünkü mouse drag eventini yutabiliyor.
-            // Sadece görsel çiziyoruz.
-            GUI.Box(cellRect, cellText, style);
-
-            SetColor(Color.white);
-            SetBackgroundColor(Color.white);
-            SetContentColor(Color.white);
-        }
-        private void HandleGridDragPaint(int x, int y, Rect cellRect)
+        private void HandleGridCellInput(
+            Rect rect,
+            Vector2Int coordinate,
+            IslandCellData island)
         {
             Event currentEvent = Event.current;
 
-            if (currentEvent == null)
-                return;
-
-            if (currentEvent.type == EventType.MouseUp)
+            if (currentEvent.type != EventType.MouseDown ||
+                !rect.Contains(currentEvent.mousePosition))
             {
-                isGridPaintDragging = false;
-                isGridEraseDragging = false;
-                lastPaintedX = -1;
-                lastPaintedY = -1;
                 return;
             }
 
-            if (!cellRect.Contains(currentEvent.mousePosition))
-                return;
-
-            if (currentEvent.type == EventType.MouseDown)
+            if (currentEvent.button == 1)
             {
-                if (currentEvent.button == 0)
+                if (island != null)
                 {
-                    isGridPaintDragging = true;
-                    isGridEraseDragging = false;
-                }
-                else if (currentEvent.button == 1)
-                {
-                    isGridPaintDragging = true;
-                    isGridEraseDragging = true;
-                }
-                else
-                {
-                    return;
+                    levelCreator.RemoveIslandAt(coordinate);
+                    SetEditorMessage(
+                        "Island removed at " + coordinate + ".",
+                        MessageType.Info);
                 }
 
-                lastPaintedX = -1;
-                lastPaintedY = -1;
-
-                PaintGridCellByMouseButton(x, y, isGridEraseDragging);
-
+                CancelPendingSelection(false);
                 currentEvent.Use();
-                GUI.changed = true;
                 Repaint();
                 return;
             }
 
-            if (currentEvent.type == EventType.MouseDrag && isGridPaintDragging)
+            if (currentEvent.button != 0)
             {
-                if (lastPaintedX == x && lastPaintedY == y)
-                    return;
-
-                PaintGridCellByMouseButton(x, y, isGridEraseDragging);
-
-                currentEvent.Use();
-                GUI.changed = true;
-                Repaint();
-            }
-        }
-        private void PaintGridCellByMouseButton(int x, int y, bool remove)
-        {
-            Undo.RecordObject(_levelCreator, remove ? "Erase Grid Cell" : "Paint Grid Cell");
-
-            if (remove)
-            {
-                GridRemoveButtonAction(x, y);
-            }
-            else
-            {
-                GridButtonAction(x, y, EnumHolder.Direction.None);
-            }
-
-            lastPaintedX = x;
-            lastPaintedY = y;
-
-            EditorUtility.SetDirty(_levelCreator);
-        }
-        private void DisplayWindowPopup()
-        {
-            /*if (GUILayout.Button(EditorGUIUtility.IconContent("_Popup"), GUILayout.Width(40), GUILayout.Height(20)))
-            {
-                GenericMenu menu = new GenericMenu();
-                menu.AddItem(new GUIContent("Open Color Window"), false,
-                    () => CustomEnumWindowPublisher<ColorWindow>.ShowWindow(CreateInstance<ColorWindow>(),
-                        _levelCreator,
-                        "Colors"));
-                menu.AddItem(new GUIContent("Open Objects Window"), false,
-                    () => CustomEnumWindowPublisher<ObjectWindow>.ShowWindow(CreateInstance<ObjectWindow>(),
-                        _levelCreator,
-                        "Objects"));
-
-                menu.ShowAsContext();
-            }*/
-        }
-
-        private void DisplayBoxColorCounts()
-        {
-            var levelData = _levelCreator.GetLevelData();
-
-            if (levelData == null || levelData.GridData == null)
                 return;
-
-            Dictionary<EnumHolder.GameColor, int> colorCounts = new Dictionary<EnumHolder.GameColor, int>();
-
-            int totalBoxCount = 0;
-
-            for (int x = 0; x < _levelCreator.gridWidth; x++)
-            {
-                for (int y = 0; y < _levelCreator.gridHeight; y++)
-                {
-                    var cell = levelData.GridData[x, y];
-
-                    if (cell == null)
-                        continue;
-
-                    if (cell.BasePlaceable is not BoxCellData boxCell)
-                        continue;
-
-                    if (boxCell.color == EnumHolder.GameColor.None)
-                        continue;
-
-                    if (!colorCounts.ContainsKey(boxCell.color))
-                    {
-                        colorCounts.Add(boxCell.color, 0);
-                    }
-
-                    colorCounts[boxCell.color]++;
-                    totalBoxCount++;
-                }
             }
 
-            BeginVerticalBoxed("Box Color Counts");
-
-            EditorGUILayout.LabelField($"Total Boxes: {totalBoxCount}", EditorStyles.boldLabel);
-
-            foreach (var pair in colorCounts)
+            switch (editorMode)
             {
-                EnumHolder.GameColor color = pair.Key;
-                int count = pair.Value;
+                case EnumHolder.HashiEditorMode.Island:
+                    levelCreator.SetIslandAt(coordinate);
+                    SetEditorMessage(
+                        "Island placed at " + coordinate + ".",
+                        MessageType.Info);
+                    break;
 
-                Color editorColor = Color.white;
+                case EnumHolder.HashiEditorMode.FixedBridge:
+                    HandleFixedBridgePoint(coordinate, island);
+                    break;
 
-                int colorIndex = (int)color;
-
-                if (_levelCreator.gameColors != null &&
-                    _levelCreator.gameColors.editorColors != null &&
-                    colorIndex >= 0 &&
-                    colorIndex < _levelCreator.gameColors.editorColors.Length)
-                {
-                    editorColor = _levelCreator.gameColors.editorColors[colorIndex];
-                }
-
-                GUIStyle style = new GUIStyle(EditorStyles.label)
-                {
-                    fontStyle = FontStyle.Bold,
-                    normal =
-            {
-                textColor = editorColor
-            }
-                };
-
-                EditorGUILayout.LabelField($"{color}: {count}", style);
+                case EnumHolder.HashiEditorMode.Chain:
+                    HandleChainPoint(coordinate);
+                    break;
             }
 
-            if (colorCounts.Count == 0)
+            currentEvent.Use();
+            Repaint();
+        }
+
+        private void HandleFixedBridgePoint(
+            Vector2Int coordinate,
+            IslandCellData island)
+        {
+            if (island == null)
             {
-                EditorGUILayout.LabelField("No boxes painted yet.");
+                SetEditorMessage(
+                    "Fixed bridge points must contain islands.",
+                    MessageType.Error);
+                return;
             }
 
-            EndVerticalBoxed();
-        }
-
-        #endregion
-
-
-        #region Button Actions
-
-        private void GridButtonAction(int x, int y, EnumHolder.Direction newDirection)
-        {
-            var levelData = _levelCreator.GetLevelData();
-
-            levelData.SetBoxCell(
-                x,
-                y,
-                _levelCreator.color,
-                _levelCreator.boxMoldGroupId
-            );
-        }
-
-        private void GridRemoveButtonAction(int x, int y)
-        {
-            _levelCreator.GetLevelData().RemoveBoxCell(x, y);
-        }
-
-        private void ConveyorButtonAction(int x, int y, EnumHolder.Direction newDirection, bool isSecret)
-        {
-            var levelData = _levelCreator.GetLevelData();
-
-            if (_levelCreator.isDirection)
-                _levelCreator.direction = newDirection;
-            else
-                _levelCreator.direction = EnumHolder.Direction.None;
-
-            levelData.SetConveyorCellStack(
-                x,
-                y,
-                _levelCreator.color,
-                isSecret
-            );
-        }
-
-        private void ConveyorRemoveButtonAction(int x, int y)
-        {
-            _levelCreator
-                .GetLevelData()
-                .RemoveConveyorCellStack(x, y);
-        }
-
-
-        private void SpawnerQueueButtonAction(int x, int y, int order)
-        {
-            var level = _levelCreator.GetLevelData();
-            level.SetSpawnerCellStack(x, y, order, _levelCreator.color, _levelCreator.direction);
-        }
-
-
-        private void SpawnerQueueRemoveButtonAction(int x, int y, int order)
-        {
-            _levelCreator.GetLevelData().RemoveSpawnerCellStack(x, y, order);
-        }
-
-
-        private void TargetQueueButtonAction(int x)
-        {
-            var level = _levelCreator.GetLevelData();
-            level.SetQueueCellStack(x, _levelCreator.color, level.TargetQueue);
-        }
-
-
-        private void TargetQueueRemoveButtonAction(int x)
-        {
-            var level = _levelCreator.GetLevelData();
-            _levelCreator.GetLevelData().RemoveQueueCellStack(x, level.TargetQueue);
-        }
-
-
-        private void OnGridSizeChanged()
-        {
-            var levelData = _levelCreator.GetLevelData();
-            if (_levelCreator.gridHeight <= 0 && _levelCreator.gridWidth <= 0 &&
-                _levelCreator.GetLevelData().GridData.GetLength(0) <= 0 &&
-                levelData.GridData.GetLength(1) <= 0) return;
-            levelData.ResizeGridCells(_levelCreator.gridWidth, _levelCreator.gridHeight, _levelCreator.expandGridToUp,
-                _levelCreator.expandGridToLeft);
-            // Yeni oyunda tek grid kullanılacak, conveyor grid resize edilmeyecek.
-            // levelData.ResizeConveyorCells(_levelCreator.gridWidth, _levelCreator.gridHeight,
-            //     _levelCreator.expandConveyorToUp, _levelCreator.expandConveyorToLeft);
-        }
-
-        private void OnConveyorSizeChanged()
-        {
-            var data = _levelCreator.GetLevelData();
-            if (data == null) return;
-
-            data.ResizeConveyorCells(
-                _levelCreator.gridWidth,
-                _levelCreator.conveyorLength,
-                _levelCreator.expandConveyorToUp,
-                _levelCreator.expandConveyorToLeft
-            );
-            EditorUtility.SetDirty(_levelCreator);
-        }
-
-
-        private void OnTargetGridSizeChanged(int targetQueueLength)
-        {
-            var levelData = _levelCreator.GetLevelData();
-            if (levelData.TargetQueue.Count < 0) return;
-            levelData.ResizeList(levelData.TargetQueue, targetQueueLength, levelData.levelDataDefaultObjectType);
-        }
-
-
-        private void OnSpawnerSizeChanged(int x, int y, int spawnerCount, SpawnerObjectData spawnerObject)
-        {
-            var levelData = _levelCreator.GetLevelData();
-
-            if ((spawnerCount <= 0))
+            if (!hasPendingCoordinate)
             {
-                levelData.RemoveSpawner(x, y);
+                pendingCoordinate = coordinate;
+                hasPendingCoordinate = true;
+                SetEditorMessage(
+                    "Select the second island for the fixed bridge.",
+                    MessageType.Info);
+                return;
+            }
+
+            if (pendingCoordinate == coordinate)
+            {
+                SetEditorMessage(
+                    "Select a different island.",
+                    MessageType.Warning);
+                return;
+            }
+
+            bool success = levelCreator.TryAddFixedBridge(
+                pendingCoordinate,
+                coordinate,
+                out string error);
+
+            if (success)
+            {
+                SetEditorMessage("Fixed bridge added.", MessageType.Info);
+                CancelPendingSelection(false);
             }
             else
             {
-                levelData.ResizeList(spawnerObject.Stack, spawnerCount, EnumHolder.LevelDataDefaultObjectType.Single);
+                SetEditorMessage(error, MessageType.Error);
             }
         }
 
-        #endregion
-
-
-        #region Utility
-
-        private bool IsLevelDataAvailable()
+        private void HandleChainPoint(Vector2Int coordinate)
         {
-            if (_levelCreator.gridWidth * _levelCreator.gridHeight != _levelCreator.GetLevelData().GridData.Length)
+            if (!hasPendingCoordinate)
             {
-                Debug.Log("Sizes Doesn't Match: " + _levelCreator.GetLevelData().GridData.Length + " " +
-                          _levelCreator.gridWidth + " " + _levelCreator.gridHeight);
+                pendingCoordinate = coordinate;
+                hasPendingCoordinate = true;
+                SetEditorMessage(
+                    "Select the second grid point for the chain.",
+                    MessageType.Info);
+                return;
             }
 
-            return _levelCreator.gridWidth * _levelCreator.gridHeight == _levelCreator.GetLevelData().GridData.Length &&
-                   _levelCreator.gridWidth * _levelCreator.gridHeight != 0;
-        }
-
-
-        // This function is used to get the text for cells Single or Stacked type of objects
-        private string GetCellText(int x, int y, ref int fontSize)
-        {
-            var cell = _levelCreator.GetLevelData().GridData[x, y];
-            //string cellText = ""; //$"{cell.coordinates.x} x {cell.coordinates.y} \n";
-            string cellText = $"{x},{y}\n";
-            var placable = cell.BasePlaceable;
-
-
-            if (!cell.isActive)
+            if (pendingCoordinate == coordinate)
             {
-                cellText += "NON ACTIVE";
-                SetBackgroundColor(Color.gray);
-            }
-            else if (cell.blockCount > 0)
-            {
-                cellText += "\n LOCK \n" + cell.blockCount;
-                SetBackgroundColor(Color.black);
-            }
-            else if (placable is BoxCellData boxCell)
-            {
-                cellText += GetColoredRichText("BOX\n", GetEditorColor((int)boxCell.color));
-                cellText += boxCell.color + "\n";
-
-                if (boxCell.moldGroupId >= 0)
-                {
-                    cellText += "M:" + boxCell.moldGroupId;
-                }
-
-                SetBackgroundColor(GetEditorColor((int)boxCell.color));
-                fontSize = 10;
-            }
-            else if (placable is ChainData chainData)
-            {
-                if (chainData.isHead)
-                {
-                    cellText += "H";
-                }
-
-                if (chainData.isFrozen) cellText += "❄️" + chainData.BlockCount;
-                else cellText += "";
-
-                cellText += GetColoredRichText("🔗", GetEditorColor((int)chainData.Color)) + "\n";
-                cellText += DirectionToEmoji(chainData.direction);
-                SetBackgroundColor(GetEditorColor((int)chainData.Color));
-                fontSize = 22;
-            }
-            else if (placable is KeyFoodData foodK)
-            {
-                cellText += GetColoredRichText($"{foodK.id}🔑🥝\n", GetEditorColor((int)foodK.Color));
-                fontSize = 15;
-                SetBackgroundColor(GetEditorColor((int)foodK.Color));
-            }
-            else if (placable is LockFoodData foodL)
-            {
-                cellText += GetColoredRichText($"{foodL.id}🔒🥝\n", GetEditorColor((int)foodL.Color));
-                fontSize = 15;
-                SetBackgroundColor(GetEditorColor((int)foodL.Color));
-            }
-            else if (placable is FoodData food)
-            {
-                if (food.isFrozen) cellText += "❄️\n";
-                cellText += GetColoredRichText("🥝\n", GetEditorColor((int)food.Color));
-                SetBackgroundColor(GetEditorColor((int)food.Color));
-
-                fontSize = 18;
-                return cellText;
-            }
-            else if (placable is SingleObjectData)
-            {
-                return GetSingleObjectText(placable, x, y);
-            }
-            else if (placable is StackedObjectData stackedPlacable)
-            {
-                if (stackedPlacable.Stack == null) return $"{x} x {y}";
-                cellText = $"{x} x {y}";
-                for (var i = stackedPlacable.Stack.Count - 1; i >= 0; i--)
-                {
-                    cellText += "\n" + GetCellTextForStacked(stackedPlacable.Stack[i], x, y);
-                }
-
-                return cellText;
+                SetEditorMessage(
+                    "Select a different grid point.",
+                    MessageType.Warning);
+                return;
             }
 
-            return cellText;
-        }
+            bool success = levelCreator.TryAddChain(
+                pendingCoordinate,
+                coordinate,
+                out string error);
 
-
-        // This function is used to get the text for Stacked type of objects
-        private string GetCellTextForStacked(BasePlaceableData placable, int x, int y)
-        {
-            var cellText = "";
-
-            if (placable is HiddenObjectData)
+            if (success)
             {
-                cellText = GetColoredRichText("[H]", BLACK) + GetSingleObjectText(placable, x, y);
-            }
-            else if (placable is SingleObjectData)
-            {
-                return GetSingleObjectText(placable, x, y);
-            }
-
-            return cellText;
-        }
-
-
-        // This function is used to get the text for Single type of objects
-        private string GetSingleObjectText(BasePlaceableData placable, int x, int y)
-        {
-            var singleObject = (SingleObjectData)placable;
-            if (singleObject == null) return $"";
-            var color = GetEditorColor((int)singleObject.Color);
-
-
-            return GetColoredRichText(singleObject.Color.ToString(), color);
-        }
-
-
-        private string DirectionToEmoji(EnumHolder.Direction direction)
-        {
-            switch (direction)
-            {
-                case EnumHolder.Direction.Up:
-                    return "\u2b06";
-
-                case EnumHolder.Direction.Down:
-                    return "\u2b07";
-
-                case EnumHolder.Direction.Left:
-                    return "\u2b05";
-
-                case EnumHolder.Direction.Right:
-                    return "\u27a1";
-
-                default:
-                    return "";
-            }
-        }
-        private bool HasColorMismatch()
-        {
-            return false;
-        }
-        //private bool HasColorMismatch()
-        //{
-        //    var data = _levelCreator.GetLevelData();
-        //    if (data == null || data.GridData == null) return false;
-
-        //    // 1) Grid sayımları
-        //    var gridCounts = new Dictionary<EnumHolder.GameColor, int>();
-        //    for (int x = 0; x < _levelCreator.gridWidth; x++)
-        //    {
-        //        for (int y = 0; y < _levelCreator.gridHeight; y++)
-        //        {
-        //            var cell = data.GridData[x, y];
-        //            if (cell == null || cell.BasePlaceable == null) continue;
-
-        //            if (cell.BasePlaceable is SingleObjectData so)
-        //            {
-        //                gridCounts[so.Color] = gridCounts.GetValueOrDefault(so.Color) + 1;
-        //            }
-        //            else if (cell.BasePlaceable is StackedObjectData st && st.Stack != null)
-        //            {
-        //                foreach (var elt in st.Stack)
-        //                {
-        //                    if (elt == null) continue;
-        //                    gridCounts[elt.Color] = gridCounts.GetValueOrDefault(elt.Color) + 1;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    // 2) Conveyor sayımları
-        //    var convCounts = new Dictionary<EnumHolder.GameColor, int>();
-        //    var conveyorData = data.ConveyorData;
-        //    if (conveyorData != null)
-        //    {
-        //        int w = conveyorData.GetLength(0), h = conveyorData.GetLength(1);
-        //        for (var x = 0; x < w; x++)
-        //        {
-        //            for (var y = 0; y < h; y++)
-        //            {
-        //                var cell = conveyorData[x, y];
-        //                if (cell == null || cell.BasePlaceable == null) continue;
-
-        //                if (cell.BasePlaceable is ConveyorItemData so)
-        //                {
-        //                    convCounts[so.Color] = convCounts.GetValueOrDefault(so.Color) + 1;
-        //                }
-        //                else if (cell.BasePlaceable is ConveyorItemData st && st.Stack != null)
-        //                {
-        //                    foreach (var elt in st.Stack)
-        //                    {
-        //                        if (elt == null) continue;
-        //                        convCounts[elt.Color] = convCounts.GetValueOrDefault(elt.Color) + 1;
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    // 3) Karşılaştır
-        //    var allColors = new HashSet<EnumHolder.GameColor>(gridCounts.Keys);
-        //    foreach (var c in convCounts.Keys) allColors.Add(c);
-
-        //    foreach (var color in allColors)
-        //    {
-        //        if (gridCounts.GetValueOrDefault(color) != convCounts.GetValueOrDefault(color))
-        //            return true;
-        //    }
-
-        //    return false;
-        //}
-
-        private void DisplayColorCounts()
-        {
-            Space(20);
-            BeginVerticalBoxed();
-            var gridData = _levelCreator.GetLevelData().GridData;
-            var gridCounts = new Dictionary<EnumHolder.GameColor, int>();
-            for (int x = 0; x < _levelCreator.gridWidth; x++)
-                for (int y = 0; y < _levelCreator.gridHeight; y++)
-                {
-                    var cell = gridData[x, y];
-                    if (cell.BasePlaceable is SingleObjectData so)
-                        gridCounts[so.Color] = gridCounts.GetValueOrDefault(so.Color) + 1;
-                    else if (cell.BasePlaceable is StackedObjectData st)
-                        foreach (var elt in st.Stack)
-                            gridCounts[elt.Color] = gridCounts.GetValueOrDefault(elt.Color) + 1;
-                }
-
-            var conveyorData = _levelCreator.GetLevelData().ConveyorData;
-            var convCounts = new Dictionary<EnumHolder.GameColor, int>();
-            if (conveyorData != null)
-            {
-                for (int x = 0; x < conveyorData.GetLength(0); x++)
-                {
-                    for (int y = 0; y < conveyorData.GetLength(1); y++)
-                    {
-                        var cell = conveyorData[x, y];
-                        var p = cell.BasePlaceable;
-                        if (p == null) continue;
-
-                        // 1) ConveyorItemData ise doğrudan oku
-                        if (p is ConveyorItemData ci)
-                        {
-                            convCounts[ci.Color] = convCounts.GetValueOrDefault(ci.Color) + 1;
-                        }
-                        // 2) SingleObjectData (eğer conveyor'ınızda SingleObjectData da kullanıyorsanız)
-                        else if (p is SingleObjectData so)
-                        {
-                            convCounts[so.Color] = convCounts.GetValueOrDefault(so.Color) + 1;
-                        }
-                        // 3) StackedObjectData için yığılı tüm elemanları say
-                        else if (p is StackedObjectData st && st.Stack != null)
-                        {
-                            foreach (var elt in st.Stack)
-                            {
-                                if (elt == null) continue;
-                                convCounts[elt.Color] = convCounts.GetValueOrDefault(elt.Color) + 1;
-                            }
-                        }
-                        // 4) (Opsiyonel) Eğer ChainData ya da başka tip conveyor'da duruyorsa:
-                        else if (p is ChainData ch)
-                        {
-                            convCounts[ch.Color] = convCounts.GetValueOrDefault(ch.Color) + 1;
-                        }
-                    }
-                }
-            }
-
-            // Sonra ekrana bastığınız kısım aynı kalabilir:
-            // g: gridCounts, c: convCounts
-            var allColors = new HashSet<EnumHolder.GameColor>(gridCounts.Keys);
-            foreach (var c in convCounts.Keys) allColors.Add(c);
-
-            foreach (var color in allColors)
-            {
-                int g = gridCounts.GetValueOrDefault(color);
-                int c = convCounts.GetValueOrDefault(color);
-                bool match = g == c;
-                string label = $"{color}: {g}  Conv: {c}";
-                if (!match) label = StrikeThrough(label);
-
-                var style = new GUIStyle(GUI.skin.label)
-                {
-                    richText = true,
-                    fontStyle = FontStyle.Bold,
-                    normal =
-                    {
-                        textColor = match
-                            ? _levelCreator.gameColors.editorColors[(int)color]
-                            : Color.red
-                    }
-                };
-
-                EditorGUILayout.LabelField(label, style, GUILayout.Height(20));
-            }
-
-            EndVerticalBoxed();
-            SetBackgroundColor(Color.white);
-        }
-
-        private string StrikeThrough(string input)
-        {
-            var sb = new StringBuilder();
-            foreach (char ch in input)
-            {
-                sb.Append(ch).Append('\u0336');
-            }
-
-            return sb.ToString();
-        }
-
-
-        private void SwapQueueCells<T>(int x, List<T> listToSwap) where T : BasePlaceableData
-        {
-            BasePlaceableData temp = savedPlaceableToCarry;
-            int index = listToSwap.IndexOf(savedPlaceableToCarry as T);
-            listToSwap[index] = listToSwap[x];
-            listToSwap[x] = temp as T;
-        }
-
-
-        private void SwapGridCells(int x, int y)
-        {
-            var levelData = _levelCreator.GetLevelData();
-            (levelData.GridData[x, y].BasePlaceable, savedCellToCarry.BasePlaceable) = (savedCellToCarry.BasePlaceable,
-                levelData.GridData[x, y].BasePlaceable);
-        }
-
-
-        private Color GetEditorColor(int i)
-        {
-            return _levelCreator.gameColors.editorColors[i];
-        }
-
-        #endregion
-
-        private void DisplayBottomShooterLanes()
-        {
-            var levelData = _levelCreator.GetLevelData();
-            if (levelData == null) return;
-
-            Space(5);
-            BeginVerticalBoxed("Bottom Shooter Lanes");
-
-            EditorGUI.BeginChangeCheck();
-
-            BeginVerticalBoxed("Dynamic Bottom Slot Layout");
-
-            _levelCreator.useDynamicBottomSlotLayout =
-                EditorGUILayout.Toggle("Use Dynamic Bottom Slot Layout", _levelCreator.useDynamicBottomSlotLayout);
-
-            if (_levelCreator.useDynamicBottomSlotLayout)
-            {
-                _levelCreator.bottomSlotStartReference =
-                    (Transform)EditorGUILayout.ObjectField(
-                        "Bottom Slot Start Reference",
-                        _levelCreator.bottomSlotStartReference,
-                        typeof(Transform),
-                        true
-                    );
-
-                _levelCreator.bottomLaneOffset =
-                    EditorGUILayout.Vector3Field("Bottom Lane Offset", _levelCreator.bottomLaneOffset);
-
-                _levelCreator.bottomNodeOffset =
-                    EditorGUILayout.Vector3Field("Bottom Node Offset", _levelCreator.bottomNodeOffset);
-
-                _levelCreator.bottomSlotEulerOffset =
-                    EditorGUILayout.Vector3Field("Bottom Slot Euler Offset", _levelCreator.bottomSlotEulerOffset);
-
-                EditorGUILayout.HelpBox(
-                    "Dynamic açıkken Generate, BottomLaneReferences listesini kullanmaz. " +
-                    "Lane Count ve Visible Shooter Count değerlerine göre bottom node/shooter pozisyonlarını otomatik üretir.",
-                    MessageType.Info
-                );
+                SetEditorMessage("Chain added.", MessageType.Info);
+                CancelPendingSelection(false);
             }
             else
+            {
+                SetEditorMessage(error, MessageType.Error);
+            }
+        }
+
+        private void DrawDefinitionLists()
+        {
+            LevelData data = levelCreator.GetLevelData();
+            if (data == null)
+            {
+                return;
+            }
+
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Connection Definitions", EditorStyles.boldLabel);
+
+            definitionScrollPosition = EditorGUILayout.BeginScrollView(
+                definitionScrollPosition,
+                GUILayout.MaxHeight(360f));
+
+            DrawFixedBridgeList(data);
+            EditorGUILayout.Space(8f);
+            DrawChainList(data);
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawFixedBridgeList(LevelData data)
+        {
+            EditorGUILayout.LabelField("Fixed Bridges", EditorStyles.boldLabel);
+
+            if (data.fixedBridges.Count == 0)
+            {
+                EditorGUILayout.LabelField("None");
+                return;
+            }
+
+            for (int i = 0; i < data.fixedBridges.Count; i++)
+            {
+                FixedBridgeDefinitionData bridge = data.fixedBridges[i];
+                EditorGUILayout.BeginHorizontal("box");
+                EditorGUILayout.LabelField(
+                    "ID " + bridge.id + "   " +
+                    bridge.startCoordinate + " -> " + bridge.endCoordinate,
+                    GUILayout.MinWidth(250f));
+
+                int newCount = EditorGUILayout.IntPopup(
+                    bridge.bridgeCount,
+                    new[] { "Single", "Double" },
+                    new[] { 1, 2 },
+                    GUILayout.Width(90f));
+
+                if (newCount != bridge.bridgeCount)
+                {
+                    bridge.bridgeCount = newCount;
+                    EditorUtility.SetDirty(levelCreator);
+                }
+
+                if (GUILayout.Button("Remove", GUILayout.Width(70f)))
+                {
+                    levelCreator.RemoveFixedBridge(bridge.id);
+                    GUIUtility.ExitGUI();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        private void DrawChainList(LevelData data)
+        {
+            EditorGUILayout.LabelField("Chains", EditorStyles.boldLabel);
+
+            if (data.chainBarriers.Count == 0)
+            {
+                EditorGUILayout.LabelField("None");
+                return;
+            }
+
+            for (int i = 0; i < data.chainBarriers.Count; i++)
+            {
+                ChainBarrierData chain = data.chainBarriers[i];
+                EditorGUILayout.BeginHorizontal("box");
+                EditorGUILayout.LabelField(
+                    "ID " + chain.id + "   " +
+                    chain.startCoordinate + " -> " + chain.endCoordinate,
+                    GUILayout.MinWidth(250f));
+
+                int newRequirement = Mathf.Max(
+                    0,
+                    EditorGUILayout.IntField(
+                        chain.unlockAfterCompletedIslandCount,
+                        GUILayout.Width(55f)));
+
+                if (newRequirement != chain.unlockAfterCompletedIslandCount)
+                {
+                    chain.unlockAfterCompletedIslandCount = newRequirement;
+                    EditorUtility.SetDirty(levelCreator);
+                }
+
+                if (GUILayout.Button("Remove", GUILayout.Width(70f)))
+                {
+                    levelCreator.RemoveChain(chain.id);
+                    GUIUtility.ExitGUI();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        private void DrawValidationPanel()
+        {
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Validation", EditorStyles.boldLabel);
+
+            HashiValidationResult validation = levelCreator.GetValidationResult();
+
+            if (validation.issues.Count == 0)
             {
                 EditorGUILayout.HelpBox(
-                    "Dynamic kapalıyken eski sistem kullanılır. Bu durumda BottomLaneReferences listesindeki node transformları gerekir.",
-                    MessageType.Warning
-                );
+                    "No level data errors were found.",
+                    MessageType.Info);
             }
-
-            EndVerticalBoxed();
-
-            Space(10);
-
-            int laneCount = EditorGUILayout.IntField("Lane Count", _levelCreator.bottomLaneCount);
-            laneCount = Mathf.Max(0, laneCount);
-
-            int visibleCount = EditorGUILayout.IntField("Visible Shooter Count Per Lane", _levelCreator.visibleShooterCountPerLane);
-            visibleCount = Mathf.Max(1, visibleCount);
-
-
-            if (laneCount != _levelCreator.bottomLaneCount)
+            else
             {
-                _levelCreator.bottomLaneCount = laneCount;
-                levelData.bottomLaneCount = laneCount;
-                levelData.EnsureBottomLaneCount(laneCount);
-            }
-
-            if (visibleCount != _levelCreator.visibleShooterCountPerLane)
-            {
-                _levelCreator.visibleShooterCountPerLane = visibleCount;
-                levelData.visibleShooterCountPerLane = visibleCount;
-            }
-
-            levelData.EnsureBottomLaneCount(_levelCreator.bottomLaneCount);
-            levelData.RefreshBottomShooterIndexes();
-
-            Space(10);
-
-            for (int laneIndex = 0; laneIndex < levelData.bottomShooterLanes.Count; laneIndex++)
-            {
-                var lane = levelData.bottomShooterLanes[laneIndex];
-                lane.shooters ??= new List<ShooterSpawnData>();
-
-                BeginVerticalBoxed($"Lane {laneIndex}");
-
-                BeginHorizontal();
-                DisplayLabelField($"Shooters: {lane.shooters.Count}", 13, Color.white, TextAnchor.MiddleLeft, FontStyle.Bold);
-
-                if (GUILayout.Button("+ Add Shooter", GUILayout.Height(25)))
+                for (int i = 0; i < validation.issues.Count; i++)
                 {
-                    Undo.RecordObject(_levelCreator, "Add Bottom Shooter");
+                    HashiValidationIssue issue = validation.issues[i];
+                    MessageType messageType =
+                        issue.severity == HashiValidationSeverity.Error
+                            ? MessageType.Error
+                            : MessageType.Warning;
 
-                    levelData.AddShooterToLane(
-                          laneIndex,
-                          _levelCreator.color,
-                          Mathf.Max(0, _levelCreator.shooterBulletCount),
-                          _levelCreator.shooterLinkGroupId,
-                          _levelCreator.shooterIsHidden
-                      );
-
-                    levelData.RefreshBottomShooterIndexes();
-                    EditorUtility.SetDirty(_levelCreator);
-                    Repaint();
+                    EditorGUILayout.HelpBox(issue.message, messageType);
                 }
-
-                EndHorizontal();
-
-                Space(5);
-
-                for (int orderIndex = 0; orderIndex < lane.shooters.Count; orderIndex++)
-                {
-                    var shooter = lane.shooters[orderIndex];
-
-                    BeginHorizontal();
-
-                    EditorGUILayout.LabelField($"#{orderIndex}", GUILayout.Width(35));
-
-                    shooter.color = (EnumHolder.GameColor)EditorGUILayout.EnumPopup(shooter.color, GUILayout.Width(100));
-                    shooter.bulletCount = EditorGUILayout.IntField(shooter.bulletCount, GUILayout.Width(50));
-                    shooter.linkGroupId = EditorGUILayout.IntField(shooter.linkGroupId, GUILayout.Width(50));
-                    shooter.isHidden = EditorGUILayout.ToggleLeft("Hidden", shooter.isHidden, GUILayout.Width(75));
-
-                    if (GUILayout.Button("↑", GUILayout.Width(25)) && orderIndex > 0)
-                    {
-                        (lane.shooters[orderIndex - 1], lane.shooters[orderIndex]) =
-                            (lane.shooters[orderIndex], lane.shooters[orderIndex - 1]);
-                        levelData.RefreshBottomShooterIndexes();
-                        EndHorizontal();
-                        break;
-                    }
-
-                    if (GUILayout.Button("↓", GUILayout.Width(25)) && orderIndex < lane.shooters.Count - 1)
-                    {
-                        (lane.shooters[orderIndex + 1], lane.shooters[orderIndex]) =
-                            (lane.shooters[orderIndex], lane.shooters[orderIndex + 1]);
-                        levelData.RefreshBottomShooterIndexes();
-                        EndHorizontal();
-                        break;
-                    }
-
-                    if (GUILayout.Button("-", GUILayout.Width(25)))
-                    {
-                        Undo.RecordObject(_levelCreator, "Remove Bottom Shooter");
-
-                        levelData.RemoveShooterFromLane(laneIndex, orderIndex);
-                        levelData.RefreshBottomShooterIndexes();
-                        EditorUtility.SetDirty(_levelCreator);
-                        Repaint();
-
-                        EndHorizontal();
-                        break;
-                    }
-
-                    EndHorizontal();
-                }
-
-                EndVerticalBoxed();
-                Space(5);
             }
 
-            Space(10);
-            DisplayShooterColorCounts(levelData);
-
-            if (EditorGUI.EndChangeCheck())
-            {
-                levelData.RefreshBottomShooterIndexes();
-                EditorUtility.SetDirty(_levelCreator);
-            }
-
-            EndVerticalBoxed();
+            EditorGUILayout.EndVertical();
         }
 
-        private void DisplayShooterColorCounts(LevelData levelData)
+        private void SetEditorMessage(string message, MessageType messageType)
         {
-            if (levelData == null || levelData.bottomShooterLanes == null)
-                return;
+            editorMessage = message;
+            editorMessageType = messageType;
+        }
 
-            Dictionary<EnumHolder.GameColor, int> bulletCountsByColor = new Dictionary<EnumHolder.GameColor, int>();
-            Dictionary<EnumHolder.GameColor, int> shooterCountsByColor = new Dictionary<EnumHolder.GameColor, int>();
+        private void CancelPendingSelection(bool clearMessage = true)
+        {
+            hasPendingCoordinate = false;
+            pendingCoordinate = default;
 
-            int totalShooterCount = 0;
-            int totalBulletCount = 0;
-
-            foreach (BottomShooterLaneData lane in levelData.bottomShooterLanes)
+            if (clearMessage)
             {
-                if (lane == null || lane.shooters == null)
-                    continue;
-
-                foreach (ShooterSpawnData shooter in lane.shooters)
-                {
-                    if (shooter == null)
-                        continue;
-
-                    if (shooter.color == EnumHolder.GameColor.None)
-                        continue;
-
-                    if (!bulletCountsByColor.ContainsKey(shooter.color))
-                    {
-                        bulletCountsByColor.Add(shooter.color, 0);
-                        shooterCountsByColor.Add(shooter.color, 0);
-                    }
-
-                    int bulletCount = Mathf.Max(0, shooter.bulletCount);
-
-                    bulletCountsByColor[shooter.color] += bulletCount;
-                    shooterCountsByColor[shooter.color]++;
-
-                    totalBulletCount += bulletCount;
-                    totalShooterCount++;
-                }
+                editorMessage = string.Empty;
             }
-
-            BeginVerticalBoxed("Shooter Bullet Counts");
-
-            EditorGUILayout.LabelField($"Total Shooters: {totalShooterCount}", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"Total Bullets: {totalBulletCount}", EditorStyles.boldLabel);
-
-            if (bulletCountsByColor.Count == 0)
-            {
-                EditorGUILayout.LabelField("No shooters added yet.");
-                EndVerticalBoxed();
-                return;
-            }
-
-            foreach (var pair in bulletCountsByColor)
-            {
-                EnumHolder.GameColor color = pair.Key;
-                int bulletTotal = pair.Value;
-                int shooterCount = shooterCountsByColor[color];
-
-                Color editorColor = Color.white;
-                int colorIndex = (int)color;
-
-                if (_levelCreator.gameColors != null &&
-                    _levelCreator.gameColors.editorColors != null &&
-                    colorIndex >= 0 &&
-                    colorIndex < _levelCreator.gameColors.editorColors.Length)
-                {
-                    editorColor = _levelCreator.gameColors.editorColors[colorIndex];
-                }
-
-                GUIStyle style = new GUIStyle(EditorStyles.label)
-                {
-                    fontStyle = FontStyle.Bold,
-                    normal =
-            {
-                textColor = editorColor
-            }
-                };
-
-                EditorGUILayout.LabelField($"{color}: {bulletTotal} bullets ({shooterCount} shooters)", style);
-            }
-
-            EndVerticalBoxed();
         }
     }
 }
+#endif

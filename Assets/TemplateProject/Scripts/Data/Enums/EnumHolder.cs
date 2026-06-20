@@ -16,14 +16,13 @@ namespace BoxPuller.Scripts.Data.Enums
             Purple,
             Red,
             Teal,
-            Yellow,
-      
+            Yellow
         }
 
         public enum MaterialType
         {
             Default,
-            Other,
+            Other
         }
 
         public enum Direction
@@ -32,7 +31,7 @@ namespace BoxPuller.Scripts.Data.Enums
             Up,
             Down,
             Left,
-            Right,
+            Right
         }
 
         public enum ObjectType
@@ -49,7 +48,7 @@ namespace BoxPuller.Scripts.Data.Enums
         {
             Ice,
             Box,
-            Lock,
+            Lock
         }
 
         public enum WallType
@@ -59,8 +58,7 @@ namespace BoxPuller.Scripts.Data.Enums
             Corner,
             Straight,
             OneSideEmpty,
-            NoSidesEmpty,
-       
+            NoSidesEmpty
         }
 
         public enum GridType
@@ -74,6 +72,19 @@ namespace BoxPuller.Scripts.Data.Enums
         {
             Single,
             Stacked
+        }
+
+        public enum IslandBridgeMode
+        {
+            SingleOnly,
+            DoubleAllowed
+        }
+
+        public enum HashiEditorMode
+        {
+            Island,
+            FixedBridge,
+            Chain
         }
     }
 }
