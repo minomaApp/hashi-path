@@ -78,8 +78,8 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
 
         [Header("Level")]
         public int levelIndex;
-        public int gridWidth = 8;
-        public int gridHeight = 12;
+        public int gridWidth = 13;
+        public int gridHeight = 20;
         public bool expandGridToLeft;
         public bool expandGridToUp;
 

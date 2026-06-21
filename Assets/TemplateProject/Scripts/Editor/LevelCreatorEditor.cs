@@ -346,9 +346,22 @@ namespace TemplateProject.Scripts.Editor
                 return;
             }
 
+            //EditorGUILayout.Space(4f);
+            //EditorGUILayout.BeginVertical("box");
+            //EditorGUILayout.LabelField("Grid", EditorStyles.boldLabel);
+
             EditorGUILayout.Space(4f);
             EditorGUILayout.BeginVertical("box");
+
+            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Grid", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Open Large Grid Editor", GUILayout.Width(190f)))
+            {
+                HashiGridEditorWindow.Open(levelCreator);
+            }
+
+            EditorGUILayout.EndHorizontal();
 
             List<IslandCellData> islands = data.GetIslandCells();
             EditorGUILayout.LabelField(
@@ -356,8 +369,8 @@ namespace TemplateProject.Scripts.Editor
                 "   Fixed Bridges: " + data.fixedBridges.Count +
                 "   Chains: " + data.chainBarriers.Count);
 
-            const float cellWidth = 82f;
-            const float cellHeight = 82f;
+            const float cellWidth = 80f;
+            const float cellHeight = 80f;
             float viewHeight = Mathf.Clamp(data.Height * 86f + 20f, 180f, 720f);
 
             gridScrollPosition = EditorGUILayout.BeginScrollView(
