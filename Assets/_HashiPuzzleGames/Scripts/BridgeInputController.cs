@@ -31,10 +31,22 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private bool useBasicDeviceVibration;
         [SerializeField] private HashiStringUnityEvent onInvalidMove;
 
+        [Header("Cut Gesture")]
+        [SerializeField] private float cutPlaneHeight = 0f;
+        [SerializeField] private float minimumCutScreenDistance = 25f;
+        [SerializeField] private float minimumCutWorldDistance = 0.25f;
+        [SerializeField] private bool showCutPreview = true;
+
         private IslandNode dragStartIsland;
         private Coroutine invalidPreviewCoroutine;
         private bool inputEnabled;
         private bool isDragging;
+
+        private bool isCutting;
+        private Vector3 cutStartWorldPoint;
+        private Vector3 lastCutWorldPoint;
+        private Vector2 cutStartScreenPosition;
+        private bool cutCompletedThisGesture;
 
         public void Setup(BridgeBoardManager newBoardManager)
         {
@@ -92,9 +104,21 @@ namespace HashiGame.Scripts.Runtime
                 HandlePointerDragged(pointerFrame.screenPosition);
             }
 
-            if (pointerFrame.releasedThisFrame && isDragging)
+            if (pointerFrame.isPressed && isCutting)
             {
-                HandlePointerReleased(pointerFrame.screenPosition);
+                HandleCutDragged(pointerFrame.screenPosition);
+            }
+
+            if (pointerFrame.releasedThisFrame)
+            {
+                if (isDragging)
+                {
+                    HandlePointerReleased(pointerFrame.screenPosition);
+                }
+                else if (isCutting)
+                {
+                    HandleCutReleased(pointerFrame.screenPosition);
+                }
             }
         }
 
@@ -107,6 +131,7 @@ namespace HashiGame.Scripts.Runtime
 
             if (!TryRaycastIsland(pointerFrame.screenPosition, out IslandNode island))
             {
+                StartCutGesture(pointerFrame.screenPosition);
                 return;
             }
 
@@ -121,6 +146,8 @@ namespace HashiGame.Scripts.Runtime
 
             dragStartIsland = island;
             isDragging = true;
+            isCutting = false;
+            cutCompletedThisGesture = false;
 
             if (previewController != null)
             {
@@ -140,7 +167,10 @@ namespace HashiGame.Scripts.Runtime
             }
 
             IslandNode hoveredIsland = null;
-            Vector3 endPoint = GetPointerWorldPoint(screenPosition, dragStartIsland.ConnectionPosition.y);
+            Vector3 endPoint = GetPointerWorldPoint(
+                screenPosition,
+                dragStartIsland.ConnectionPosition.y);
+
             bool isValid = false;
 
             if (TryRaycastIsland(screenPosition, out hoveredIsland))
@@ -199,6 +229,86 @@ namespace HashiGame.Scripts.Runtime
                 startIsland.ConnectionPosition,
                 endIsland.ConnectionPosition,
                 reason);
+        }
+
+        private void StartCutGesture(Vector2 screenPosition)
+        {
+            isCutting = true;
+            isDragging = false;
+            dragStartIsland = null;
+            cutCompletedThisGesture = false;
+
+            cutStartScreenPosition = screenPosition;
+            cutStartWorldPoint = GetPointerWorldPoint(
+                screenPosition,
+                cutPlaneHeight);
+
+            lastCutWorldPoint = cutStartWorldPoint;
+
+            if (showCutPreview && previewController != null)
+            {
+                previewController.Show(
+                    cutStartWorldPoint,
+                    cutStartWorldPoint,
+                    false);
+            }
+        }
+
+        private void HandleCutDragged(Vector2 screenPosition)
+        {
+            if (cutCompletedThisGesture)
+            {
+                return;
+            }
+
+            Vector3 currentWorldPoint = GetPointerWorldPoint(
+                screenPosition,
+                cutPlaneHeight);
+
+            if (showCutPreview && previewController != null)
+            {
+                previewController.Show(
+                    cutStartWorldPoint,
+                    currentWorldPoint,
+                    false);
+            }
+
+            float screenDistance = Vector2.Distance(
+                cutStartScreenPosition,
+                screenPosition);
+
+            Vector3 totalWorldDistance = currentWorldPoint - cutStartWorldPoint;
+            totalWorldDistance.y = 0f;
+
+            if (screenDistance < minimumCutScreenDistance ||
+                totalWorldDistance.magnitude < minimumCutWorldDistance)
+            {
+                lastCutWorldPoint = currentWorldPoint;
+                return;
+            }
+
+            bool success = boardManager.TryCutConnection(
+                lastCutWorldPoint,
+                currentWorldPoint,
+                out _);
+
+            lastCutWorldPoint = currentWorldPoint;
+
+            if (!success)
+            {
+                return;
+            }
+
+            cutCompletedThisGesture = true;
+            isCutting = false;
+            HidePreview();
+        }
+
+        private void HandleCutReleased(Vector2 screenPosition)
+        {
+            isCutting = false;
+            cutCompletedThisGesture = false;
+            HidePreview();
         }
 
         private bool TryRaycastIsland(Vector2 screenPosition, out IslandNode island)
@@ -291,6 +401,8 @@ namespace HashiGame.Scripts.Runtime
         private void CancelDrag()
         {
             isDragging = false;
+            isCutting = false;
+            cutCompletedThisGesture = false;
             dragStartIsland = null;
 
             if (invalidPreviewCoroutine != null)

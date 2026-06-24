@@ -16,6 +16,9 @@ namespace HashiGame.Scripts.Runtime
         [Header("Events")]
         [SerializeField] private UnityEvent<int> onCompletedIslandMilestoneChanged;
 
+        [Header("Cut Settings")]
+        [SerializeField] private float cutDetectionThickness = 0.18f;
+
         private readonly Dictionary<Vector2Int, IslandNode> islandsByCoordinate =
             new Dictionary<Vector2Int, IslandNode>();
 
@@ -130,13 +133,27 @@ namespace HashiGame.Scripts.Runtime
 
             if (connectionsByPair.TryGetValue(key, out BridgeConnection existingConnection))
             {
-                if (existingConnection != null && existingConnection.IsFixed)
+                if (existingConnection == null)
+                {
+                    reason = "Bridge data is invalid.";
+                    return false;
+                }
+
+                if (existingConnection.IsFixed)
                 {
                     reason = "A fixed bridge cannot be changed.";
                     return false;
                 }
 
-                return existingConnection != null;
+                int maximumCount = firstIsland.GetMaximumBridgeCountWith(secondIsland);
+
+                if (existingConnection.BridgeCount >= maximumCount)
+                {
+                    reason = "Bridge is already at maximum. Cut it to remove it.";
+                    return false;
+                }
+
+                return true;
             }
 
             return CanCreateNewConnection(firstIsland, secondIsland, out reason);
@@ -173,17 +190,147 @@ namespace HashiGame.Scripts.Runtime
             else
             {
                 int maximumCount = firstIsland.GetMaximumBridgeCountWith(secondIsland);
+                int nextCount = Mathf.Min(connection.BridgeCount + 1, maximumCount);
+                connection.SetBridgeCount(nextCount, visualSettings);
+            }
 
-                if (connection.BridgeCount == 1 && maximumCount >= 2)
+            RefreshBoardState();
+            return true;
+        }
+
+        public bool TryCutConnection(
+            Vector3 cutStartPoint,
+            Vector3 cutEndPoint,
+            out string reason)
+        {
+            reason = string.Empty;
+
+            if (!isSetup)
+            {
+                reason = "Board is not ready.";
+                return false;
+            }
+
+            Vector3 flatCut = cutEndPoint - cutStartPoint;
+            flatCut.y = 0f;
+
+            if (flatCut.magnitude <= 0.001f)
+            {
+                reason = "Cut gesture is too short.";
+                return false;
+            }
+
+            BridgeConnection bestConnection = null;
+            float bestDistance = float.MaxValue;
+            Vector3 cutMidPoint = (cutStartPoint + cutEndPoint) * 0.5f;
+
+            foreach (BridgeConnection connection in connectionsByPair.Values)
+            {
+                if (connection == null)
                 {
-                    connection.SetBridgeCount(2, visualSettings);
+                    continue;
                 }
-                else
+
+                if (connection.IsFixed)
                 {
-                    RemoveConnection(connection);
+                    continue;
+                }
+
+                if (connection.BridgeCount <= 0)
+                {
+                    continue;
+                }
+
+                float segmentDistance = BridgeGeometryUtility.DistanceSegmentToSegment(
+                    cutStartPoint,
+                    cutEndPoint,
+                    connection.StartWorldPosition,
+                    connection.EndWorldPosition);
+
+                if (segmentDistance > cutDetectionThickness)
+                {
+                    continue;
+                }
+
+                float midDistance = BridgeGeometryUtility.DistancePointToSegment(
+                    cutMidPoint,
+                    connection.StartWorldPosition,
+                    connection.EndWorldPosition);
+
+                if (midDistance < bestDistance)
+                {
+                    bestDistance = midDistance;
+                    bestConnection = connection;
                 }
             }
 
+            if (bestConnection == null)
+            {
+                reason = "No bridge was cut.";
+                return false;
+            }
+
+            CutBridgeConnection(bestConnection);
+            RefreshBoardState();
+            return true;
+        }
+
+        public bool TryCutConnectionAtPoint(
+            Vector3 cutPoint,
+            out string reason)
+        {
+            reason = string.Empty;
+
+            if (!isSetup)
+            {
+                reason = "Board is not ready.";
+                return false;
+            }
+
+            BridgeConnection bestConnection = null;
+            float bestDistance = float.MaxValue;
+
+            foreach (BridgeConnection connection in connectionsByPair.Values)
+            {
+                if (connection == null)
+                {
+                    continue;
+                }
+
+                if (connection.IsFixed)
+                {
+                    continue;
+                }
+
+                if (connection.BridgeCount <= 0)
+                {
+                    continue;
+                }
+
+                float distance = BridgeGeometryUtility.DistancePointToSegment(
+                    cutPoint,
+                    connection.StartWorldPosition,
+                    connection.EndWorldPosition);
+
+                if (distance > cutDetectionThickness)
+                {
+                    continue;
+                }
+
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    bestConnection = connection;
+                }
+            }
+
+            if (bestConnection == null)
+            {
+                reason = "No bridge was cut.";
+                return false;
+            }
+
+            CutBridgeConnection(bestConnection);
             RefreshBoardState();
             return true;
         }
@@ -200,6 +347,30 @@ namespace HashiGame.Scripts.Runtime
                 secondIsland.Coordinate);
 
             return connectionsByPair.ContainsKey(key);
+        }
+
+        private void CutBridgeConnection(BridgeConnection connection)
+        {
+            if (connection == null)
+            {
+                return;
+            }
+
+            if (connection.IsFixed)
+            {
+                return;
+            }
+
+            if (connection.BridgeCount > 1)
+            {
+                connection.SetBridgeCount(
+                    connection.BridgeCount - 1,
+                    visualSettings);
+            }
+            else
+            {
+                RemoveConnection(connection);
+            }
         }
 
         private bool RegisterIslands()
@@ -253,7 +424,8 @@ namespace HashiGame.Scripts.Runtime
 
         private void RegisterGeneratedFixedBridges()
         {
-            IReadOnlyList<BridgeConnection> generatedBridges = levelContainer.GeneratedFixedBridges;
+            IReadOnlyList<BridgeConnection> generatedBridges =
+                levelContainer.GeneratedFixedBridges;
 
             if (generatedBridges == null)
             {
@@ -263,6 +435,7 @@ namespace HashiGame.Scripts.Runtime
             for (int i = 0; i < generatedBridges.Count; i++)
             {
                 BridgeConnection connection = generatedBridges[i];
+
                 if (connection == null)
                 {
                     continue;
@@ -324,7 +497,8 @@ namespace HashiGame.Scripts.Runtime
 
         private void RegisterGeneratedChains()
         {
-            IReadOnlyList<ChainBarrier> generatedChains = levelContainer.GeneratedChains;
+            IReadOnlyList<ChainBarrier> generatedChains =
+                levelContainer.GeneratedChains;
 
             if (generatedChains == null)
             {
@@ -334,6 +508,7 @@ namespace HashiGame.Scripts.Runtime
             for (int i = 0; i < generatedChains.Count; i++)
             {
                 ChainBarrier chain = generatedChains[i];
+
                 if (chain == null)
                 {
                     continue;
@@ -389,8 +564,11 @@ namespace HashiGame.Scripts.Runtime
             else
             {
                 bridgeObject = new GameObject("Bridge Runtime Fallback");
-                bridgeObject.transform.SetParent(levelContainer.BridgeParentTransform, false);
+                bridgeObject.transform.SetParent(
+                    levelContainer.BridgeParentTransform,
+                    false);
                 bridgeObject.AddComponent<BridgeVisual>();
+
                 Debug.LogWarning(
                     "[BridgeBoardManager] bridgePrefab is missing. A visual fallback object was created.");
             }
@@ -487,8 +665,10 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
-            Vector3 firstWorldPosition = levelContainer.GridCoordinateToWorld(data.startCoordinate);
-            Vector3 secondWorldPosition = levelContainer.GridCoordinateToWorld(data.endCoordinate);
+            Vector3 firstWorldPosition =
+                levelContainer.GridCoordinateToWorld(data.startCoordinate);
+            Vector3 secondWorldPosition =
+                levelContainer.GridCoordinateToWorld(data.endCoordinate);
 
             GameObject chainObject;
 
@@ -501,7 +681,10 @@ namespace HashiGame.Scripts.Runtime
             else
             {
                 chainObject = new GameObject("Chain Runtime Fallback");
-                chainObject.transform.SetParent(levelContainer.ChainParentTransform, false);
+                chainObject.transform.SetParent(
+                    levelContainer.ChainParentTransform,
+                    false);
+
                 Debug.LogWarning(
                     "[BridgeBoardManager] chainBarrierPrefab is missing. A fallback object was created.");
             }
@@ -528,6 +711,7 @@ namespace HashiGame.Scripts.Runtime
             out string reason)
         {
             reason = string.Empty;
+
             Vector3 startPoint = firstIsland.ConnectionPosition;
             Vector3 endPoint = secondIsland.ConnectionPosition;
 
@@ -688,6 +872,7 @@ namespace HashiGame.Scripts.Runtime
         private bool AreAllIslandsConnected()
         {
             IslandNode firstIsland = null;
+
             foreach (IslandNode island in islandsByCoordinate.Values)
             {
                 firstIsland = island;
@@ -701,6 +886,7 @@ namespace HashiGame.Scripts.Runtime
 
             HashSet<IslandNode> visited = new HashSet<IslandNode>();
             Queue<IslandNode> queue = new Queue<IslandNode>();
+
             visited.Add(firstIsland);
             queue.Enqueue(firstIsland);
 
@@ -712,6 +898,7 @@ namespace HashiGame.Scripts.Runtime
                 for (int i = 0; i < connections.Count; i++)
                 {
                     BridgeConnection connection = connections[i];
+
                     if (connection == null || connection.BridgeCount <= 0)
                     {
                         continue;
@@ -733,7 +920,8 @@ namespace HashiGame.Scripts.Runtime
 
         private void RemoveOldDynamicBridgeObjects()
         {
-            if (levelContainer == null || levelContainer.BridgeParentTransform == null)
+            if (levelContainer == null ||
+                levelContainer.BridgeParentTransform == null)
             {
                 return;
             }
