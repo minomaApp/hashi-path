@@ -186,12 +186,14 @@ namespace HashiGame.Scripts.Runtime
                     reason = "Bridge object could not be created.";
                     return false;
                 }
+                connection.PlayBuildWave();
             }
             else
             {
                 int maximumCount = firstIsland.GetMaximumBridgeCountWith(secondIsland);
                 int nextCount = Mathf.Min(connection.BridgeCount + 1, maximumCount);
                 connection.SetBridgeCount(nextCount, visualSettings);
+                connection.PlayBuildWave();
             }
 
             RefreshBoardState();
@@ -270,7 +272,12 @@ namespace HashiGame.Scripts.Runtime
                 return false;
             }
 
-            CutBridgeConnection(bestConnection);
+            Vector3 cutPoint = BridgeGeometryUtility.ClosestPointOnSegment(
+    cutMidPoint,
+    bestConnection.StartWorldPosition,
+    bestConnection.EndWorldPosition);
+
+            CutBridgeConnection(bestConnection, cutPoint);
             RefreshBoardState();
             return true;
         }
@@ -330,7 +337,12 @@ namespace HashiGame.Scripts.Runtime
                 return false;
             }
 
-            CutBridgeConnection(bestConnection);
+            Vector3 snappedCutPoint = BridgeGeometryUtility.ClosestPointOnSegment(
+     cutPoint,
+     bestConnection.StartWorldPosition,
+     bestConnection.EndWorldPosition);
+
+            CutBridgeConnection(bestConnection, snappedCutPoint);
             RefreshBoardState();
             return true;
         }
@@ -349,7 +361,9 @@ namespace HashiGame.Scripts.Runtime
             return connectionsByPair.ContainsKey(key);
         }
 
-        private void CutBridgeConnection(BridgeConnection connection)
+        private void CutBridgeConnection(
+      BridgeConnection connection,
+      Vector3 cutWorldPoint)
         {
             if (connection == null)
             {
@@ -363,13 +377,15 @@ namespace HashiGame.Scripts.Runtime
 
             if (connection.BridgeCount > 1)
             {
+                connection.PlayCutAnimation(cutWorldPoint);
+
                 connection.SetBridgeCount(
                     connection.BridgeCount - 1,
                     visualSettings);
             }
             else
             {
-                RemoveConnection(connection);
+                RemoveConnection(connection, cutWorldPoint);
             }
         }
 
@@ -632,7 +648,9 @@ namespace HashiGame.Scripts.Runtime
             return true;
         }
 
-        private void RemoveConnection(BridgeConnection connection)
+        private void RemoveConnection(
+     BridgeConnection connection,
+     Vector3 cutWorldPoint)
         {
             if (connection == null || connection.IsFixed)
             {
@@ -655,7 +673,7 @@ namespace HashiGame.Scripts.Runtime
                 connection.EndIsland.UnregisterConnection(connection);
             }
 
-            DestroyObject(connection.gameObject);
+            connection.PlayCutAndDestroy(cutWorldPoint);
         }
 
         private void CreateChainBarrier(ChainBarrierData data)

@@ -40,6 +40,13 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private string breakTriggerName = "Break";
         [SerializeField] private float breakVisualDelay = 0.35f;
 
+        [Header("Line Shrink Animation")]
+        [SerializeField] private bool useLineShrinkAnimation = true;
+        [SerializeField] private float lineShrinkDuration = 0.25f;
+        [SerializeField]
+        private AnimationCurve lineShrinkCurve =
+            AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
         private HashiVisualSettings visualSettings;
         private bool isBlocking = true;
         private bool disableParticlesPlayed;
@@ -160,6 +167,15 @@ namespace HashiGame.Scripts.Runtime
         private IEnumerator DisableVisualAfterDelay()
         {
             yield return new WaitForSeconds(breakVisualDelay);
+
+            if (useLineShrinkAnimation &&
+                chainLine != null &&
+                chainLine.enabled &&
+                chainLine.positionCount >= 2)
+            {
+                yield return ShrinkLineToCenter();
+            }
+
             SetVisualActive(false);
         }
 
@@ -335,6 +351,42 @@ namespace HashiGame.Scripts.Runtime
             }
         }
 
+        private IEnumerator ShrinkLineToCenter()
+        {
+            if (chainLine == null || chainLine.positionCount < 2)
+            {
+                yield break;
+            }
+
+            Vector3 startPoint = chainLine.GetPosition(0);
+            Vector3 endPoint = chainLine.GetPosition(1);
+            Vector3 centerPoint = (startPoint + endPoint) * 0.5f;
+
+            float duration = Mathf.Max(0.01f, lineShrinkDuration);
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+
+                float time = Mathf.Clamp01(elapsed / duration);
+                float t = lineShrinkCurve != null
+                    ? lineShrinkCurve.Evaluate(time)
+                    : time;
+
+                Vector3 currentStart = Vector3.Lerp(startPoint, centerPoint, t);
+                Vector3 currentEnd = Vector3.Lerp(endPoint, centerPoint, t);
+
+                chainLine.SetPosition(0, currentStart);
+                chainLine.SetPosition(1, currentEnd);
+
+                yield return null;
+            }
+
+            chainLine.SetPosition(0, centerPoint);
+            chainLine.SetPosition(1, centerPoint);
+        }
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -346,6 +398,9 @@ namespace HashiGame.Scripts.Runtime
             verticalOffset = Mathf.Max(0f, verticalOffset);
             endpointPadding = Mathf.Max(0f, endpointPadding);
             blockingThickness = Mathf.Max(0f, blockingThickness);
+
+            breakVisualDelay = Mathf.Max(0f, breakVisualDelay);
+            lineShrinkDuration = Mathf.Max(0.01f, lineShrinkDuration);
 
             EnsureLineRenderer();
         }

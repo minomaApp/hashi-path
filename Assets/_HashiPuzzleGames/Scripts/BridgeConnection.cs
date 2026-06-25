@@ -1,5 +1,6 @@
 using BoxPuller.Scripts.Data.SO;
 using UnityEngine;
+using System.Collections;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -94,6 +95,69 @@ namespace HashiGame.Scripts.Runtime
             }
         }
 
+        public void PlayBuildWave()
+        {
+            EnsureVisual();
+
+            if (bridgeVisual != null)
+            {
+                bridgeVisual.PlayBuildWave();
+            }
+        }
+
+        public float PlayCutAnimation(Vector3 cutWorldPoint)
+        {
+            EnsureVisual();
+
+            if (bridgeVisual == null)
+            {
+                return 0f;
+            }
+
+            return bridgeVisual.PlayCutAnimation(cutWorldPoint);
+        }
+
+        public void PlayCutAndDestroy(Vector3 cutWorldPoint)
+        {
+            float delay = PlayCutAnimation(cutWorldPoint);
+
+            if (bridgeVisual != null)
+            {
+                bridgeVisual.HideAllLines();
+            }
+
+            if (Application.isPlaying && delay > 0f)
+            {
+                StartCoroutine(DestroyAfterDelay(delay));
+            }
+            else
+            {
+                DestroyNow();
+            }
+        }
+
+        private IEnumerator DestroyAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            DestroyNow();
+        }
+
+        private void DestroyNow()
+        {
+            if (gameObject == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                DestroyImmediate(gameObject);
+            }
+        }
         public bool Connects(IslandNode first, IslandNode second)
         {
             return (startIsland == first && endIsland == second) ||

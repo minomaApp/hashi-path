@@ -231,7 +231,7 @@ MonoBehaviour:
   startWorldPosition: {x: 0, y: 0, z: 0}
   endWorldPosition: {x: 0, y: 0, z: 0}
   chainLine: {fileID: 7744958093965138976}
-  lineWidth: 0.14
+  lineWidth: 0.4
   verticalOffset: 0.15
   endpointPadding: 0
   blockingThickness: 0.12
@@ -246,6 +246,32 @@ MonoBehaviour:
   animator: {fileID: 0}
   breakTriggerName: Break
   breakVisualDelay: 0.35
+  useLineShrinkAnimation: 1
+  lineShrinkDuration: 0.25
+  lineShrinkCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &5851340979852961946
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +525,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 17546f62eeb2e7d4aa68c548629c9b7e, type: 2}
+      objectReference: {fileID: 2100000, guid: 48641a3073737614192468285dc5a276, type: 2}
     - target: {fileID: -7511558181221131132, guid: 435c425469bcdee45afe2aca175a42c6,
         type: 3}
       propertyPath: 'm_Materials.Array.data[1]'

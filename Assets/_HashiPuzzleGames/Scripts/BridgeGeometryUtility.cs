@@ -139,5 +139,32 @@ namespace HashiGame.Scripts.Runtime
                    point.y >= Mathf.Min(start.y, end.y) - Epsilon &&
                    point.y <= Mathf.Max(start.y, end.y) + Epsilon;
         }
+
+        public static Vector3 ClosestPointOnSegment(
+    Vector3 point,
+    Vector3 segmentStart,
+    Vector3 segmentEnd)
+        {
+            Vector3 flatPoint = point;
+            Vector3 flatStart = segmentStart;
+            Vector3 flatEnd = segmentEnd;
+
+            flatPoint.y = 0f;
+            flatStart.y = 0f;
+            flatEnd.y = 0f;
+
+            Vector3 segment = flatEnd - flatStart;
+            float lengthSquared = segment.sqrMagnitude;
+
+            if (lengthSquared <= Epsilon)
+            {
+                return segmentStart;
+            }
+
+            float t = Vector3.Dot(flatPoint - flatStart, segment) / lengthSquared;
+            t = Mathf.Clamp01(t);
+
+            return Vector3.Lerp(segmentStart, segmentEnd, t);
+        }
     }
 }
