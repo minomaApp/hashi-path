@@ -160,13 +160,14 @@ namespace TemplateProject.Scripts.Utilities
             }
 
             gameManager.StartGame(levelData, levelContainer);
-            HandleTransitions(levelDataIndex);
+            //HandleTransitions(levelDataIndex);
+            HandleTransitions(levelData);
 
             Debug.Log(
                 "[AddressablePrefabLoader] Instantiated prefab: " + prefab.name);
         }
 
-        private void HandleTransitions(int levelDataIndex)
+        private void HandleTransitions(LevelData levelData)
         {
             if (LevelManager.instance == null || UIManager.instance == null)
             {
@@ -175,13 +176,31 @@ namespace TemplateProject.Scripts.Utilities
 
             LevelManager.instance.InitializeAfterLevelLoaded();
 
+            //if (useTimer && TimeManager.instance != null)
+            //{
+            //    int timerValue = ABManager.GetTimerSeconds(levelDataIndex);
+            //    TimeManager.instance.SetTimer(timerValue);
+            //    TimeManager.instance.SetTimerTMP(
+            //        UIManager.instance.GetTimerTMP(),
+            //        UIManager.instance.GetStartLevelTimeTMP());
+            //}
+
             if (useTimer && TimeManager.instance != null)
             {
-                int timerValue = ABManager.GetTimerSeconds(levelDataIndex);
+                int timerValue = LevelData.DefaultLevelTimeSeconds;
+
+                if (levelData != null)
+                {
+                    levelData.EnsureHashiData();
+                    timerValue = Mathf.Max(1, levelData.levelTimeSeconds);
+                }
+
                 TimeManager.instance.SetTimer(timerValue);
                 TimeManager.instance.SetTimerTMP(
                     UIManager.instance.GetTimerTMP(),
                     UIManager.instance.GetStartLevelTimeTMP());
+
+                UIManager.instance.ShowTimerReady();
             }
 
             LevelManager.instance.SetLevelTMP(
@@ -198,14 +217,18 @@ namespace TemplateProject.Scripts.Utilities
                     {
                         LevelManager.instance.onLevelLoadComplete?.Invoke();
 
+                        //if (useTimer)
+                        //{
+                        //    UIManager.instance.OpenTimer();
+
+                        //    if (TimeManager.instance != null)
+                        //    {
+                        //        TimeManager.instance.StartTimer();
+                        //    }
+                        //}
                         if (useTimer)
                         {
-                            UIManager.instance.OpenTimer();
-
-                            if (TimeManager.instance != null)
-                            {
-                                TimeManager.instance.StartTimer();
-                            }
+                            UIManager.instance.ShowTimerReady();
                         }
 
                         UIManager.instance.OpenLevelText();

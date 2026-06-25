@@ -14,6 +14,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
         [Header("Parameters")]
         [SerializeField] private float levelTime;
         [SerializeField] private bool isTimerActive;
+        [SerializeField] private bool hasTimerStarted;
 
         private bool lowTimeBlinkStarted;
 
@@ -83,6 +84,8 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public void SetTimer(int time)
         {
             levelTime = Mathf.Max(0, time);
+            isTimerActive = false;
+            hasTimerStarted = false;
             lowTimeBlinkStarted = false;
             RefreshTimerText();
         }
@@ -94,6 +97,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
                 return;
             }
 
+            hasTimerStarted = true;
             isTimerActive = true;
             RefreshTimerText();
         }
@@ -111,6 +115,10 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public bool GetIsTimerActive()
         {
             return isTimerActive;
+        }
+        public bool HasTimerStarted()
+        {
+            return hasTimerStarted;
         }
 
         public void SetTimerTMP(

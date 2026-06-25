@@ -24,8 +24,24 @@ namespace BoxPuller.Scripts.Data.SO
         [Space(15)]
         [Header("Hashi Game Prefabs")]
         public GameObject islandPrefab;
+        public GameObject oneBridgeIslandPrefab;
+        public GameObject twoBridgeIslandPrefab;
         public GameObject bridgePrefab;
         public GameObject chainBarrierPrefab;
+
+        public GameObject GetIslandPrefab(EnumHolder.IslandBridgeMode bridgeMode)
+        {
+            if (bridgeMode == EnumHolder.IslandBridgeMode.DoubleAllowed)
+            {
+                return twoBridgeIslandPrefab != null
+                    ? twoBridgeIslandPrefab
+                    : islandPrefab;
+            }
+
+            return oneBridgeIslandPrefab != null
+                ? oneBridgeIslandPrefab
+                : islandPrefab;
+        }
 
         [Space(15)]
         [Header("Legacy Shooter Box Game Prefabs")]

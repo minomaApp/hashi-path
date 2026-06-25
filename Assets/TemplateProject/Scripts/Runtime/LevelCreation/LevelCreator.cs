@@ -83,6 +83,10 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         public bool expandGridToLeft;
         public bool expandGridToUp;
 
+        [Header("Level Time")]
+        public int levelTimeMinutes = 2;
+        [Range(0, 59)] public int levelTimeSecondsPart;
+
         [Header("Grid Placement")]
         public float horizontalSpaceModifier = 2f;
         public float verticalSpaceModifier = 2f;
@@ -126,6 +130,19 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         {
             return levelData;
         }
+        public int GetEditorLevelTimeTotalSeconds()
+        {
+            int totalSeconds = levelTimeMinutes * 60 + levelTimeSecondsPart;
+            return Mathf.Max(1, totalSeconds);
+        }
+
+        private void SetEditorLevelTimeFromTotalSeconds(int totalSeconds)
+        {
+            totalSeconds = Mathf.Max(1, totalSeconds);
+
+            levelTimeMinutes = totalSeconds / 60;
+            levelTimeSecondsPart = totalSeconds % 60;
+        }
 
         public void EnsureLevelData()
         {
@@ -149,6 +166,8 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
                     Mathf.Max(1, gridHeight),
                     0,
                     0);
+
+                levelData.levelTimeSeconds = LevelData.DefaultLevelTimeSeconds;
             }
 
             activeDataLevelIndex = levelIndex;
@@ -423,6 +442,7 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         {
             gridWidth = Mathf.Max(1, gridWidth);
             gridHeight = Mathf.Max(1, gridHeight);
+            SetEditorLevelTimeFromTotalSeconds(LevelData.DefaultLevelTimeSeconds);
 
             levelData = new LevelData(gridWidth, gridHeight, 0, 0);
             activeDataLevelIndex = levelIndex;
@@ -472,8 +492,12 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             for (int i = 0; i < islandCells.Count; i++)
             {
                 IslandCellData islandData = islandCells[i];
+
+                GameObject selectedIslandPrefab =
+                    prefabs.GetIslandPrefab(islandData.bridgeMode);
+
                 GameObject islandObject = PrefabUtility.InstantiatePrefab(
-                    prefabs.islandPrefab) as GameObject;
+                    selectedIslandPrefab) as GameObject;
 
                 if (islandObject == null)
                 {
@@ -483,8 +507,15 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
                 islandObject.transform.SetParent(islandParentObject.transform, true);
                 islandObject.transform.position = GridCoordinateToWorld(islandData.Coordinate);
                 islandObject.transform.eulerAngles = islandEulerAngles;
+
+                string islandTypeName =
+                    islandData.bridgeMode == EnumHolder.IslandBridgeMode.DoubleAllowed
+                        ? "TwoBridge"
+                        : "OneBridge";
+
                 islandObject.name =
                     "Island_" + islandData.x + "_" + islandData.y +
+                    "_" + islandTypeName +
                     "_Target_" + islandData.requiredBridgeCount;
 
                 IslandNode islandNode = islandObject.GetComponent<IslandNode>();
@@ -597,6 +628,9 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             levelData.hashiRules.requireAllIslandsConnected = requireAllIslandsConnected;
             levelData.hashiRules.islandBlockingRadius =
                 Mathf.Max(0.01f, islandBlockingRadius);
+
+            levelData.levelTimeSeconds = GetEditorLevelTimeTotalSeconds();
+
         }
 
         private void ApplyLoadedLevelDataToEditor()
@@ -609,12 +643,13 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             levelData.EnsureHashiData();
             gridWidth = levelData.Width;
             gridHeight = levelData.Height;
+            SetEditorLevelTimeFromTotalSeconds(levelData.levelTimeSeconds);
+
             blockBridgeThroughIsland = levelData.hashiRules.blockBridgeThroughIsland;
             blockBridgeCrossing = levelData.hashiRules.blockBridgeCrossing;
             requireAllIslandsConnected = levelData.hashiRules.requireAllIslandsConnected;
             islandBlockingRadius = levelData.hashiRules.islandBlockingRadius;
         }
-
         private bool ValidateRequiredPrefabs(out string error)
         {
             if (prefabs == null)
@@ -623,9 +658,15 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
                 return false;
             }
 
-            if (prefabs.islandPrefab == null)
+            if (prefabs.oneBridgeIslandPrefab == null)
             {
-                error = "GamePrefabs.islandPrefab is not assigned.";
+                error = "GamePrefabs.oneBridgeIslandPrefab is not assigned.";
+                return false;
+            }
+
+            if (prefabs.twoBridgeIslandPrefab == null)
+            {
+                error = "GamePrefabs.twoBridgeIslandPrefab is not assigned.";
                 return false;
             }
 
@@ -732,6 +773,15 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             chainUnlockRequirement = Mathf.Max(0, chainUnlockRequirement);
             fixedBridgeCount = Mathf.Clamp(fixedBridgeCount, 1, 2);
             islandBlockingRadius = Mathf.Max(0.01f, islandBlockingRadius);
+
+            levelTimeMinutes = Mathf.Max(0, levelTimeMinutes);
+            levelTimeSecondsPart = Mathf.Clamp(levelTimeSecondsPart, 0, 59);
+
+            if (levelTimeMinutes == 0 && levelTimeSecondsPart == 0)
+            {
+                levelTimeMinutes = 0;
+                levelTimeSecondsPart = 1;
+            }
         }
 #endif
     }

@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
-
+using TemplateProject.Scripts.Runtime.Managers;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -37,6 +37,15 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private float minimumCutWorldDistance = 0.25f;
         [SerializeField] private bool showCutPreview = true;
 
+        [Header("Cut Trail")]
+        [SerializeField] private TrailRenderer cutTrailRenderer;
+        [SerializeField] private float cutTrailVerticalOffset = 0.25f;
+        [SerializeField] private float cutTrailDisableDelay = 0.2f;
+
+        [SerializeField] private float cutTrailFollowSpeed = 35f;
+        private Vector3 smoothedCutTrailPosition;
+        private bool hasSmoothedCutTrailPosition;
+
         private IslandNode dragStartIsland;
         private Coroutine invalidPreviewCoroutine;
         private bool inputEnabled;
@@ -47,6 +56,7 @@ namespace HashiGame.Scripts.Runtime
         private Vector3 lastCutWorldPoint;
         private Vector2 cutStartScreenPosition;
         private bool cutCompletedThisGesture;
+        private Coroutine cutTrailDisableCoroutine;
 
         public void Setup(BridgeBoardManager newBoardManager)
         {
@@ -131,6 +141,7 @@ namespace HashiGame.Scripts.Runtime
 
             if (!TryRaycastIsland(pointerFrame.screenPosition, out IslandNode island))
             {
+                StartTimerOnFirstGameplayInput();
                 StartCutGesture(pointerFrame.screenPosition);
                 return;
             }
@@ -144,6 +155,8 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
+            StartTimerOnFirstGameplayInput();
+
             dragStartIsland = island;
             isDragging = true;
             isCutting = false;
@@ -156,6 +169,26 @@ namespace HashiGame.Scripts.Runtime
                     dragStartIsland.ConnectionPosition,
                     true);
             }
+        }
+
+        private void StartTimerOnFirstGameplayInput()
+        {
+            if (UIManager.instance == null)
+            {
+                return;
+            }
+
+            if (TimeManager.instance == null)
+            {
+                return;
+            }
+
+            if (TimeManager.instance.HasTimerStarted())
+            {
+                return;
+            }
+
+            UIManager.instance.HandleTimer();
         }
 
         private void HandlePointerDragged(Vector2 screenPosition)
@@ -244,6 +277,7 @@ namespace HashiGame.Scripts.Runtime
                 cutPlaneHeight);
 
             lastCutWorldPoint = cutStartWorldPoint;
+            StartCutTrail(cutStartWorldPoint);
 
             if (showCutPreview && previewController != null)
             {
@@ -256,14 +290,11 @@ namespace HashiGame.Scripts.Runtime
 
         private void HandleCutDragged(Vector2 screenPosition)
         {
-            if (cutCompletedThisGesture)
-            {
-                return;
-            }
-
             Vector3 currentWorldPoint = GetPointerWorldPoint(
                 screenPosition,
                 cutPlaneHeight);
+
+            UpdateCutTrail(currentWorldPoint);
 
             if (showCutPreview && previewController != null)
             {
@@ -299,8 +330,6 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
-            cutCompletedThisGesture = true;
-            isCutting = false;
             HidePreview();
         }
 
@@ -309,6 +338,7 @@ namespace HashiGame.Scripts.Runtime
             isCutting = false;
             cutCompletedThisGesture = false;
             HidePreview();
+            StopCutTrail(false);
         }
 
         private bool TryRaycastIsland(Vector2 screenPosition, out IslandNode island)
@@ -412,6 +442,7 @@ namespace HashiGame.Scripts.Runtime
             }
 
             HidePreview();
+            StopCutTrail(true);
         }
 
         private static bool IsPointerOverUi(int pointerId)
@@ -424,6 +455,102 @@ namespace HashiGame.Scripts.Runtime
             return pointerId >= 0
                 ? EventSystem.current.IsPointerOverGameObject(pointerId)
                 : EventSystem.current.IsPointerOverGameObject();
+        }
+
+        private void StartCutTrail(Vector3 worldPoint)
+        {
+            if (cutTrailRenderer == null)
+            {
+                return;
+            }
+
+            if (cutTrailDisableCoroutine != null)
+            {
+                StopCoroutine(cutTrailDisableCoroutine);
+                cutTrailDisableCoroutine = null;
+            }
+
+            cutTrailRenderer.gameObject.SetActive(true);
+            cutTrailRenderer.transform.position = GetCutTrailPosition(worldPoint);
+            smoothedCutTrailPosition = GetCutTrailPosition(worldPoint);
+            hasSmoothedCutTrailPosition = true;
+
+            cutTrailRenderer.Clear();
+            cutTrailRenderer.emitting = true;
+        }
+
+        private void UpdateCutTrail(Vector3 worldPoint)
+        {
+            if (cutTrailRenderer == null)
+            {
+                return;
+            }
+
+            if (!cutTrailRenderer.gameObject.activeSelf)
+            {
+                cutTrailRenderer.gameObject.SetActive(true);
+            }
+
+            Vector3 targetPosition = GetCutTrailPosition(worldPoint);
+
+            if (!hasSmoothedCutTrailPosition)
+            {
+                smoothedCutTrailPosition = targetPosition;
+                hasSmoothedCutTrailPosition = true;
+            }
+
+            float t = 1f - Mathf.Exp(-cutTrailFollowSpeed * Time.deltaTime);
+            smoothedCutTrailPosition = Vector3.Lerp(
+                smoothedCutTrailPosition,
+                targetPosition,
+                t);
+
+            cutTrailRenderer.transform.position = smoothedCutTrailPosition;
+        }
+
+        private void StopCutTrail(bool clearImmediately)
+        {
+            if (cutTrailRenderer == null)
+            {
+                return;
+            }
+
+            cutTrailRenderer.emitting = false;
+            hasSmoothedCutTrailPosition = false;
+            if (cutTrailDisableCoroutine != null)
+            {
+                StopCoroutine(cutTrailDisableCoroutine);
+                cutTrailDisableCoroutine = null;
+            }
+
+            if (clearImmediately)
+            {
+                cutTrailRenderer.Clear();
+                cutTrailRenderer.gameObject.SetActive(false);
+                return;
+            }
+
+            float delay = Mathf.Max(cutTrailDisableDelay, cutTrailRenderer.time);
+            cutTrailDisableCoroutine = StartCoroutine(DisableCutTrailAfterDelay(delay));
+        }
+
+        private IEnumerator DisableCutTrailAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (cutTrailRenderer != null)
+            {
+                cutTrailRenderer.Clear();
+                cutTrailRenderer.gameObject.SetActive(false);
+            }
+
+            cutTrailDisableCoroutine = null;
+        }
+
+        private Vector3 GetCutTrailPosition(Vector3 worldPoint)
+        {
+            worldPoint.y += cutTrailVerticalOffset;
+            return worldPoint;
         }
 
         private bool TryReadPointerFrame(out PointerFrame frame)

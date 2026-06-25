@@ -231,6 +231,10 @@ namespace BoxPuller.Scripts.Data
         public int visibleShooterCountPerLane = 4;
         //****
 
+        [Header("Level Time")]
+        public const int DefaultLevelTimeSeconds = 120;
+        public int levelTimeSeconds = DefaultLevelTimeSeconds;
+
         [Header("Hashi Level Data")]
         public List<FixedBridgeDefinitionData> fixedBridges = new List<FixedBridgeDefinitionData>();
         public List<ChainBarrierData> chainBarriers = new List<ChainBarrierData>();
@@ -1043,6 +1047,11 @@ namespace BoxPuller.Scripts.Data
             if (hashiRules.islandBlockingRadius <= 0f)
             {
                 hashiRules.islandBlockingRadius = 0.45f;
+            }
+
+            if (levelTimeSeconds <= 0)
+            {
+                levelTimeSeconds = DefaultLevelTimeSeconds;
             }
         }
 

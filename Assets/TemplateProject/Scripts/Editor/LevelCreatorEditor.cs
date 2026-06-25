@@ -44,6 +44,7 @@ namespace TemplateProject.Scripts.Editor
             DrawReferenceSection();
             DrawGridSettings();
             DrawLevelButtons();
+            DrawLevelTimeSettings();
             DrawRuleSettings();
             DrawEditingMode();
             DrawGrid();
@@ -203,7 +204,56 @@ namespace TemplateProject.Scripts.Editor
             GUI.backgroundColor = oldColor;
             EditorGUILayout.EndHorizontal();
         }
+        private void DrawLevelTimeSettings()
+        {
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Level Time", EditorStyles.boldLabel);
 
+            EditorGUI.BeginChangeCheck();
+
+            levelCreator.levelTimeMinutes = Mathf.Max(
+                0,
+                EditorGUILayout.IntField(
+                    "Minutes",
+                    levelCreator.levelTimeMinutes));
+
+            levelCreator.levelTimeSecondsPart = Mathf.Clamp(
+                EditorGUILayout.IntField(
+                    "Seconds",
+                    levelCreator.levelTimeSecondsPart),
+                0,
+                59);
+
+            if (levelCreator.levelTimeMinutes == 0 &&
+                levelCreator.levelTimeSecondsPart == 0)
+            {
+                levelCreator.levelTimeSecondsPart = 1;
+            }
+
+            int totalSeconds = levelCreator.GetEditorLevelTimeTotalSeconds();
+
+            EditorGUILayout.LabelField(
+                "Total",
+                FormatTime(totalSeconds) + " (" + totalSeconds + " sec)");
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(levelCreator);
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private static string FormatTime(int totalSeconds)
+        {
+            totalSeconds = Mathf.Max(0, totalSeconds);
+
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+
+            return minutes.ToString("00") + ":" + seconds.ToString("00");
+        }
         private void DrawRuleSettings()
         {
             EditorGUILayout.Space(4f);
@@ -299,9 +349,9 @@ namespace TemplateProject.Scripts.Editor
                     levelCreator.islandRequiredBridgeCount));
 
             levelCreator.islandBridgeMode =
-                (EnumHolder.IslandBridgeMode)EditorGUILayout.EnumPopup(
-                    "Bridge Mode Emblem",
-                    levelCreator.islandBridgeMode);
+             (EnumHolder.IslandBridgeMode)EditorGUILayout.EnumPopup(
+                 "Island Type",
+                 levelCreator.islandBridgeMode);
 
             levelCreator.islandStartsLocked = EditorGUILayout.Toggle(
                 "Starts Locked",

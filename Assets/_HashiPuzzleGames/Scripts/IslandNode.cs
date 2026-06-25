@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.Enums;
@@ -7,12 +8,21 @@ using UnityEngine;
 
 namespace HashiGame.Scripts.Runtime
 {
+    [Serializable]
+    public class IslandMaterialTarget
+    {
+        public Renderer renderer;
+        [Min(0)] public int materialIndex;
+    }
+
     public class IslandNode : MonoBehaviour
     {
         [Header("Level Data")]
         [SerializeField] private Vector2Int coordinate;
         [SerializeField] private int requiredBridgeCount = 1;
-        [SerializeField] private EnumHolder.IslandBridgeMode bridgeMode = EnumHolder.IslandBridgeMode.SingleOnly;
+        [SerializeField]
+        private EnumHolder.IslandBridgeMode bridgeMode =
+            EnumHolder.IslandBridgeMode.SingleOnly;
         [SerializeField] private bool startsLocked;
         [SerializeField] private int unlockAfterCompletedIslandCount;
 
@@ -25,17 +35,28 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private TMP_Text lockRequirementText;
         [SerializeField] private bool showCurrentOverRequired = true;
 
-        [Header("Visuals")]
-        [SerializeField] private Renderer[] islandRenderers;
-        [SerializeField] private GameObject lockVisual;
-        [SerializeField] private GameObject singleBridgeEmblem;
-        [SerializeField] private GameObject doubleBridgeEmblem;
+        [Header("Material Targets")]
+        [SerializeField] private IslandMaterialTarget[] materialTargets;
 
-        private readonly List<BridgeConnection> connections = new List<BridgeConnection>();
+        [Header("Lock Visual State")]
+        [SerializeField] private GameObject lockVisual;
+        [SerializeField] private GameObject[] visibleWhenLocked;
+        [SerializeField] private GameObject[] visibleWhenUnlocked;
+
+        [Header("Unlock Particle")]
+        [SerializeField] private ParticleSystem[] unlockParticles;
+
+        [HideInInspector]
+        [SerializeField] private Renderer[] islandRenderers;
+
+        private readonly List<BridgeConnection> connections =
+            new List<BridgeConnection>();
+
         private HashiVisualSettings visualSettings;
         private bool isLocked;
         private bool isCompleted;
         private int currentBridgeCount;
+        private bool unlockParticlesPlayed;
 
         public bool IsOverfilled => currentBridgeCount > requiredBridgeCount;
         public Vector2Int Coordinate => coordinate;
@@ -48,7 +69,10 @@ namespace HashiGame.Scripts.Runtime
         public bool IsCompleted => isCompleted;
         public int UnlockAfterCompletedIslandCount => unlockAfterCompletedIslandCount;
         public float ConnectionBlockRadius => connectionBlockRadius;
-        public Vector3 ConnectionPosition => connectionPoint != null ? connectionPoint.position : transform.position;
+
+        public Vector3 ConnectionPosition =>
+            connectionPoint != null ? connectionPoint.position : transform.position;
+
         public IReadOnlyList<BridgeConnection> Connections => connections;
 
         public void ConfigureLevelData(
@@ -64,7 +88,8 @@ namespace HashiGame.Scripts.Runtime
             requiredBridgeCount = Mathf.Max(1, data.requiredBridgeCount);
             bridgeMode = data.bridgeMode;
             startsLocked = data.startsLocked;
-            unlockAfterCompletedIslandCount = Mathf.Max(0, data.unlockAfterCompletedIslandCount);
+            unlockAfterCompletedIslandCount =
+                Mathf.Max(0, data.unlockAfterCompletedIslandCount);
             visualSettings = settings;
 
             ResetRuntimeState();
@@ -121,10 +146,13 @@ namespace HashiGame.Scripts.Runtime
         public bool SetCurrentBridgeCount(int value)
         {
             bool wasCompleted = isCompleted;
+
             currentBridgeCount = Mathf.Max(0, value);
             isCompleted = currentBridgeCount == requiredBridgeCount;
+
             UpdateProgressText();
             ApplyVisualState();
+
             return !wasCompleted && isCompleted;
         }
 
@@ -155,8 +183,10 @@ namespace HashiGame.Scripts.Runtime
 
             isLocked = false;
             ApplyVisualState();
+            PlayUnlockParticles();
 
-            if (visualSettings != null && visualSettings.islandUnlockEffectPrefab != null)
+            if (visualSettings != null &&
+                visualSettings.islandUnlockEffectPrefab != null)
             {
                 Instantiate(
                     visualSettings.islandUnlockEffectPrefab,
@@ -179,33 +209,47 @@ namespace HashiGame.Scripts.Runtime
             return bothAllowDouble ? 2 : 1;
         }
 
+        public void RefreshLockRequirementText(int completedIslandMilestoneCount)
+        {
+            if (lockRequirementText == null)
+            {
+                return;
+            }
+
+            int remainingCount = Mathf.Max(
+                0,
+                unlockAfterCompletedIslandCount - completedIslandMilestoneCount);
+
+            lockRequirementText.text = remainingCount.ToString();
+        }
+
         private void ResetRuntimeState()
         {
             connections.Clear();
             currentBridgeCount = 0;
             isCompleted = false;
             isLocked = startsLocked;
+            unlockParticlesPlayed = false;
             UpdateProgressText();
         }
 
         private void ApplyVisualState()
         {
-            if (lockVisual != null)
-            {
-                lockVisual.SetActive(isLocked);
-            }
+            ApplyLockVisualState();
 
-            if (singleBridgeEmblem != null)
-            {
-                singleBridgeEmblem.SetActive(
-                    bridgeMode == EnumHolder.IslandBridgeMode.SingleOnly);
-            }
+            Material targetMaterial = GetTargetMaterial();
 
-            if (doubleBridgeEmblem != null)
+            if (targetMaterial != null)
             {
-                doubleBridgeEmblem.SetActive(
-                    bridgeMode == EnumHolder.IslandBridgeMode.DoubleAllowed);
+                ApplyMaterial(targetMaterial);
             }
+        }
+
+        private void ApplyLockVisualState()
+        {
+            SetObjectActive(lockVisual, isLocked);
+            SetObjectArrayActive(visibleWhenLocked, isLocked);
+            SetObjectArrayActive(visibleWhenUnlocked, !isLocked);
 
             if (lockRequirementText != null)
             {
@@ -216,30 +260,83 @@ namespace HashiGame.Scripts.Runtime
                     RefreshLockRequirementText(0);
                 }
             }
-
-            Material targetMaterial = null;
-
-            if (visualSettings != null)
+        }
+        private void PlayUnlockParticles()
+        {
+            if (unlockParticles == null)
             {
-                if (isLocked)
+                return;
+            }
+
+            for (int i = 0; i < unlockParticles.Length; i++)
+            {
+                ParticleSystem particle = unlockParticles[i];
+
+                if (particle == null)
                 {
-                    targetMaterial = visualSettings.lockedIslandMaterial;
+                    continue;
                 }
-                else if (currentBridgeCount > requiredBridgeCount)
+
+                particle.gameObject.SetActive(true);
+                particle.Clear(true);
+                particle.Play(true);
+            }
+        }
+        private Material GetTargetMaterial()
+        {
+            if (visualSettings == null)
+            {
+                return null;
+            }
+
+            if (isLocked)
+            {
+                return visualSettings.lockedIslandMaterial;
+            }
+
+            if (currentBridgeCount > requiredBridgeCount)
+            {
+                return visualSettings.failedIslandMaterial;
+            }
+
+            if (isCompleted)
+            {
+                return visualSettings.completedIslandMaterial;
+            }
+
+            return visualSettings.normalIslandMaterial;
+        }
+
+        private void ApplyMaterial(Material targetMaterial)
+        {
+            bool usedMaterialTargets = false;
+
+            if (materialTargets != null)
+            {
+                for (int i = 0; i < materialTargets.Length; i++)
                 {
-                    targetMaterial = visualSettings.failedIslandMaterial;
-                }
-                else if (isCompleted)
-                {
-                    targetMaterial = visualSettings.completedIslandMaterial;
-                }
-                else
-                {
-                    targetMaterial = visualSettings.normalIslandMaterial;
+                    IslandMaterialTarget target = materialTargets[i];
+
+                    if (target == null || target.renderer == null)
+                    {
+                        continue;
+                    }
+
+                    ApplyMaterialToRendererSlot(
+                        target.renderer,
+                        target.materialIndex,
+                        targetMaterial);
+
+                    usedMaterialTargets = true;
                 }
             }
 
-            if (targetMaterial == null || islandRenderers == null)
+            if (usedMaterialTargets)
+            {
+                return;
+            }
+
+            if (islandRenderers == null)
             {
                 return;
             }
@@ -250,6 +347,53 @@ namespace HashiGame.Scripts.Runtime
                 {
                     islandRenderers[i].sharedMaterial = targetMaterial;
                 }
+            }
+        }
+
+        private static void ApplyMaterialToRendererSlot(
+            Renderer targetRenderer,
+            int materialIndex,
+            Material targetMaterial)
+        {
+            if (targetRenderer == null || targetMaterial == null)
+            {
+                return;
+            }
+
+            Material[] materials = targetRenderer.sharedMaterials;
+
+            if (materials == null || materials.Length == 0)
+            {
+                return;
+            }
+
+            int safeIndex = Mathf.Clamp(
+                materialIndex,
+                0,
+                materials.Length - 1);
+
+            materials[safeIndex] = targetMaterial;
+            targetRenderer.sharedMaterials = materials;
+        }
+
+        private static void SetObjectActive(GameObject target, bool value)
+        {
+            if (target != null)
+            {
+                target.SetActive(value);
+            }
+        }
+
+        private static void SetObjectArrayActive(GameObject[] targets, bool value)
+        {
+            if (targets == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < targets.Length; i++)
+            {
+                SetObjectActive(targets[i], value);
             }
         }
 
@@ -265,27 +409,13 @@ namespace HashiGame.Scripts.Runtime
                 : requiredBridgeCount.ToString();
         }
 
-        public void RefreshLockRequirementText(int completedIslandMilestoneCount)
-        {
-            if (lockRequirementText == null)
-            {
-                return;
-            }
-
-            int remainingCount = Mathf.Max(
-                0,
-                unlockAfterCompletedIslandCount - completedIslandMilestoneCount);
-
-            lockRequirementText.text = remainingCount.ToString();
-        }
-
 #if UNITY_EDITOR
         private void OnValidate()
         {
             requiredBridgeCount = Mathf.Max(1, requiredBridgeCount);
-            unlockAfterCompletedIslandCount = Mathf.Max(0, unlockAfterCompletedIslandCount);
+            unlockAfterCompletedIslandCount =
+                Mathf.Max(0, unlockAfterCompletedIslandCount);
             connectionBlockRadius = Mathf.Max(0.01f, connectionBlockRadius);
-            UpdateProgressText();
         }
 #endif
     }

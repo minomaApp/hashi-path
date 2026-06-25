@@ -175,6 +175,7 @@ namespace TemplateProject.Scripts.Editor
             EditorGUILayout.Space(8f);
 
             DrawLevelInfo();
+            DrawLevelTimeSettings();
             DrawMessage();
             DrawDefinitions();
 
@@ -282,6 +283,59 @@ namespace TemplateProject.Scripts.Editor
             EditorGUILayout.LabelField("Islands: " + islands.Count);
             EditorGUILayout.LabelField("Fixed Bridges: " + data.fixedBridges.Count);
             EditorGUILayout.LabelField("Chains: " + data.chainBarriers.Count);
+        }
+
+        private void DrawLevelTimeSettings()
+        {
+            if (levelCreator == null)
+            {
+                return;
+            }
+
+            EditorGUILayout.Space(8f);
+            EditorGUILayout.LabelField("Level Time", EditorStyles.boldLabel);
+
+            EditorGUI.BeginChangeCheck();
+
+            levelCreator.levelTimeMinutes = Mathf.Max(
+                0,
+                EditorGUILayout.IntField(
+                    "Minutes",
+                    levelCreator.levelTimeMinutes));
+
+            levelCreator.levelTimeSecondsPart = Mathf.Clamp(
+                EditorGUILayout.IntField(
+                    "Seconds",
+                    levelCreator.levelTimeSecondsPart),
+                0,
+                59);
+
+            if (levelCreator.levelTimeMinutes == 0 &&
+                levelCreator.levelTimeSecondsPart == 0)
+            {
+                levelCreator.levelTimeSecondsPart = 1;
+            }
+
+            int totalSeconds = levelCreator.GetEditorLevelTimeTotalSeconds();
+
+            EditorGUILayout.LabelField(
+                "Total",
+                FormatTime(totalSeconds) + " (" + totalSeconds + " sec)");
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(levelCreator);
+            }
+        }
+
+        private static string FormatTime(int totalSeconds)
+        {
+            totalSeconds = Mathf.Max(0, totalSeconds);
+
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+
+            return minutes.ToString("00") + ":" + seconds.ToString("00");
         }
 
         private void DrawMessage()

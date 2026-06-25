@@ -37,6 +37,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         [SerializeField] private TextMeshProUGUI timerTMP;
         private bool isTimerBlinking;
+        private bool wasTimerActiveBeforeSettings;
 
         [Header("Start Screen References")] [SerializeField]
         private TextMeshProUGUI startScreenLevelTMP;
@@ -181,13 +182,10 @@ namespace TemplateProject.Scripts.Runtime.Managers
                 return;
             }
 
+            ShowTimerReady();
+
             TimeManager.instance.StartTimer();
-
-            if (clockAnimator != null)
-            {
-                clockAnimator.speed = 1;
-            }
-
+            SetClockAnimation(true);
             StopBlinkTimer();
         }
 
@@ -247,16 +245,46 @@ namespace TemplateProject.Scripts.Runtime.Managers
                 return;
             }
 
+            timerParent.transform.DOKill();
             timerParent.SetActive(true);
             timerParent.transform.localScale = Vector3.zero;
             timerParent.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
 
-            if (clockAnimator != null)
+            bool shouldAnimate =
+                TimeManager.instance != null &&
+                TimeManager.instance.GetIsTimerActive();
+
+            SetClockAnimation(shouldAnimate);
+            StopBlinkTimer();
+        }
+
+        public void ShowTimerReady()
+        {
+            if (timerParent != null)
             {
-                clockAnimator.speed = 1;
+                timerParent.transform.DOKill();
+                timerParent.SetActive(true);
+                timerParent.transform.localScale = Vector3.one;
             }
 
+            if (timerTMP != null)
+            {
+                timerTMP.gameObject.SetActive(true);
+            }
+
+            SetClockAnimation(false);
             StopBlinkTimer();
+        }
+
+        private void SetClockAnimation(bool isPlaying)
+        {
+            if (clockAnimator == null)
+            {
+                return;
+            }
+
+            clockAnimator.speed = isPlaying ? 1f : 0f;
+            clockAnimator.enabled = isPlaying;
         }
 
         private void CloseTimer()
@@ -329,9 +357,23 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public void OpenSettingsMenu()
         {
             RefreshSettingsButtonSprites();
+
+            wasTimerActiveBeforeSettings =
+                TimeManager.instance != null &&
+                TimeManager.instance.GetIsTimerActive();
+
             settingsPanel.transform.parent.gameObject.SetActive(true);
             settingsPanel.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.OutBack);
-            TimeManager.instance.PauseTimer();
+
+            if (TimeManager.instance != null)
+            {
+                TimeManager.instance.PauseTimer();
+            }
+            else
+            {
+                SetClockAnimation(false);
+            }
+
             LevelManager.instance.isGamePlayable = false;
         }
 
@@ -340,10 +382,19 @@ namespace TemplateProject.Scripts.Runtime.Managers
             settingsPanel.transform.DOScale(Vector3.zero, 0.15f).SetEase(Ease.InBack).OnComplete(() =>
             {
                 settingsPanel.transform.parent.gameObject.SetActive(false);
-                if (TimeManager.instance != null)
+
+                if (TimeManager.instance != null &&
+                    TimeManager.instance.HasTimerStarted() &&
+                    wasTimerActiveBeforeSettings)
                 {
                     TimeManager.instance.StartTimer();
+                    SetClockAnimation(true);
                 }
+                else
+                {
+                    SetClockAnimation(false);
+                }
+
                 LevelManager.instance.isGamePlayable = true;
             });
         }
@@ -513,10 +564,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         public void PauseTimer()
         {
-            if (clockAnimator != null)
-            {
-                clockAnimator.speed = 0;
-            }
+            SetClockAnimation(false);
         }
 
         public void EnableCoinParent()

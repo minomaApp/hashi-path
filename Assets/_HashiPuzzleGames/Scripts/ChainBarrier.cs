@@ -28,6 +28,13 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private float textVerticalOffset = 0.25f;
         [SerializeField] private Vector3 textEulerAngles = new Vector3(90f, 0f, 0f);
 
+        [Header("Extra Visual Objects")]
+        [SerializeField] private GameObject[] visualObjectsControlledByChainState;
+
+        [Header("Disable Effect")]
+        [SerializeField] private ParticleSystem[] particlesToPlayWhenDisabled;
+        [SerializeField] private bool playDisableParticlesOnlyOnce = true;
+
         [Header("Animation")]
         [SerializeField] private Animator animator;
         [SerializeField] private string breakTriggerName = "Break";
@@ -35,6 +42,7 @@ namespace HashiGame.Scripts.Runtime
 
         private HashiVisualSettings visualSettings;
         private bool isBlocking = true;
+        private bool disableParticlesPlayed;
 
         public int BarrierId => barrierId;
         public Vector2Int StartCoordinate => startCoordinate;
@@ -67,6 +75,7 @@ namespace HashiGame.Scripts.Runtime
             endWorldPosition = secondWorldPosition;
             visualSettings = settings;
             isBlocking = true;
+            disableParticlesPlayed = false;
 
             ApplyGeometry();
             ApplyVisualState();
@@ -76,6 +85,7 @@ namespace HashiGame.Scripts.Runtime
         {
             visualSettings = settings;
             isBlocking = true;
+            disableParticlesPlayed = false;
 
             ApplyGeometry();
             ApplyVisualState();
@@ -229,10 +239,14 @@ namespace HashiGame.Scripts.Runtime
             unlockRequirementText.transform.position = textPosition;
             unlockRequirementText.transform.eulerAngles = textEulerAngles;
         }
-
         private void SetVisualActive(bool value)
         {
             EnsureLineRenderer();
+
+            if (!value && !isBlocking)
+            {
+                PlayDisableParticles();
+            }
 
             if (chainLine != null)
             {
@@ -243,6 +257,8 @@ namespace HashiGame.Scripts.Runtime
             {
                 unlockRequirementText.gameObject.SetActive(value);
             }
+
+            SetObjectArrayActive(visualObjectsControlledByChainState, value);
         }
 
         private void EnsureLineRenderer()
@@ -270,6 +286,53 @@ namespace HashiGame.Scripts.Runtime
                 endWorldPosition.y) + verticalOffset;
 
             return midpoint;
+        }
+
+        private static void SetObjectArrayActive(GameObject[] targets, bool value)
+        {
+            if (targets == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < targets.Length; i++)
+            {
+                if (targets[i] == null)
+                {
+                    continue;
+                }
+
+                targets[i].SetActive(value);
+            }
+        }
+
+        private void PlayDisableParticles()
+        {
+            if (playDisableParticlesOnlyOnce && disableParticlesPlayed)
+            {
+                return;
+            }
+
+            disableParticlesPlayed = true;
+
+            if (particlesToPlayWhenDisabled == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < particlesToPlayWhenDisabled.Length; i++)
+            {
+                ParticleSystem particle = particlesToPlayWhenDisabled[i];
+
+                if (particle == null)
+                {
+                    continue;
+                }
+
+                particle.gameObject.SetActive(true);
+                particle.Clear(true);
+                particle.Play(true);
+            }
         }
 
 #if UNITY_EDITOR
