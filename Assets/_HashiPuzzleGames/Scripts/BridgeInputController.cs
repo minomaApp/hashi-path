@@ -146,8 +146,19 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
+            //if (island.IsLocked)
+            //{
+            //    ShowInvalidFeedback(
+            //        island.ConnectionPosition,
+            //        island.ConnectionPosition,
+            //        "This island is locked.");
+            //    return;
+            //}
+
             if (island.IsLocked)
             {
+                island.PlayLockedShake();
+
                 ShowInvalidFeedback(
                     island.ConnectionPosition,
                     island.ConnectionPosition,

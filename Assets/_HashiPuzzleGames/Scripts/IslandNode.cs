@@ -5,6 +5,7 @@ using BoxPuller.Scripts.Data.Enums;
 using BoxPuller.Scripts.Data.SO;
 using TMPro;
 using UnityEngine;
+using System.Collections;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -46,6 +47,13 @@ namespace HashiGame.Scripts.Runtime
         [Header("Unlock Particle")]
         [SerializeField] private ParticleSystem[] unlockParticles;
 
+        [Header("Locked Feedback")]
+        [SerializeField] private Transform lockedShakeTarget;
+        [SerializeField] private float lockedShakeDuration = 0.3f;
+        [SerializeField] private float lockedShakeStrength = 0.08f;
+        [SerializeField] private int lockedShakeVibrations =2;
+        [SerializeField] private Vector3 lockedShakeLocalAxis = Vector3.right;
+
         [HideInInspector]
         [SerializeField] private Renderer[] islandRenderers;
 
@@ -57,6 +65,9 @@ namespace HashiGame.Scripts.Runtime
         private bool isCompleted;
         private int currentBridgeCount;
         private bool unlockParticlesPlayed;
+
+        private Coroutine lockedShakeCoroutine;
+        private Vector3 lockedShakeStartLocalPosition;
 
         public bool IsOverfilled => currentBridgeCount > requiredBridgeCount;
         public Vector2Int Coordinate => coordinate;
@@ -194,6 +205,72 @@ namespace HashiGame.Scripts.Runtime
                     Quaternion.identity);
             }
         }
+        public void PlayLockedShake()
+        {
+            Transform target = GetLockedShakeTarget();
+
+            if (target == null)
+            {
+                return;
+            }
+
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (lockedShakeCoroutine != null)
+            {
+                StopCoroutine(lockedShakeCoroutine);
+                target.localPosition = lockedShakeStartLocalPosition;
+            }
+
+            lockedShakeStartLocalPosition = target.localPosition;
+            lockedShakeCoroutine = StartCoroutine(LockedShakeRoutine(target));
+        }
+
+        private IEnumerator LockedShakeRoutine(Transform target)
+        {
+            Vector3 axis = lockedShakeLocalAxis;
+
+            if (axis.sqrMagnitude <= 0.0001f)
+            {
+                axis = Vector3.right;
+            }
+
+            axis.Normalize();
+
+            float duration = Mathf.Max(0.01f, lockedShakeDuration);
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+
+                float time = Mathf.Clamp01(elapsed / duration);
+                float fade = 1f - time;
+                float wave = Mathf.Sin(
+                    time *
+                    lockedShakeVibrations *
+                    Mathf.PI *
+                    2f);
+
+                target.localPosition =
+                    lockedShakeStartLocalPosition +
+                    axis * wave * lockedShakeStrength * fade;
+
+                yield return null;
+            }
+
+            target.localPosition = lockedShakeStartLocalPosition;
+            lockedShakeCoroutine = null;
+        }
+        private Transform GetLockedShakeTarget()
+        {
+            return lockedShakeTarget != null
+                ? lockedShakeTarget
+                : transform;
+        }
 
         public int GetMaximumBridgeCountWith(IslandNode other)
         {
@@ -223,8 +300,20 @@ namespace HashiGame.Scripts.Runtime
             lockRequirementText.text = remainingCount.ToString();
         }
 
+        //private void ResetRuntimeState()
+        //{
+        //    connections.Clear();
+        //    currentBridgeCount = 0;
+        //    isCompleted = false;
+        //    isLocked = startsLocked;
+        //    unlockParticlesPlayed = false;
+        //    UpdateProgressText();
+        //}
+
         private void ResetRuntimeState()
         {
+            StopLockedShake(false);
+
             connections.Clear();
             currentBridgeCount = 0;
             isCompleted = false;
@@ -233,6 +322,21 @@ namespace HashiGame.Scripts.Runtime
             UpdateProgressText();
         }
 
+        private void StopLockedShake(bool restorePosition)
+        {
+            Transform target = GetLockedShakeTarget();
+
+            if (lockedShakeCoroutine != null)
+            {
+                StopCoroutine(lockedShakeCoroutine);
+                lockedShakeCoroutine = null;
+            }
+
+            if (restorePosition && target != null)
+            {
+                target.localPosition = lockedShakeStartLocalPosition;
+            }
+        }
         private void ApplyVisualState()
         {
             ApplyLockVisualState();
@@ -416,6 +520,15 @@ namespace HashiGame.Scripts.Runtime
             unlockAfterCompletedIslandCount =
                 Mathf.Max(0, unlockAfterCompletedIslandCount);
             connectionBlockRadius = Mathf.Max(0.01f, connectionBlockRadius);
+
+            lockedShakeDuration = Mathf.Max(0.01f, lockedShakeDuration);
+            lockedShakeStrength = Mathf.Max(0f, lockedShakeStrength);
+            lockedShakeVibrations = Mathf.Max(1, lockedShakeVibrations);
+
+            if (lockedShakeLocalAxis.sqrMagnitude <= 0.0001f)
+            {
+                lockedShakeLocalAxis = Vector3.right;
+            }
         }
 #endif
     }
