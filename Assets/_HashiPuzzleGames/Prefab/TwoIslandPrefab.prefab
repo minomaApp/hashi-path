@@ -484,7 +484,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4936608256478425052}
   - component: {fileID: 1187209486991930451}
-  - component: {fileID: 6592204903481746518}
+  - component: {fileID: 6660613619013901337}
   m_Layer: 11
   m_Name: TwoIslandPrefab
   m_TagString: Untagged
@@ -549,11 +549,16 @@ MonoBehaviour:
   - {fileID: 6613244206129113899}
   unlockParticles:
   - {fileID: 3700863976341648961}
+  lockedShakeTarget: {fileID: 0}
+  lockedShakeDuration: 0.3
+  lockedShakeStrength: 0.08
+  lockedShakeVibrations: 2
+  lockedShakeLocalAxis: {x: 1, y: 0, z: 0}
   islandRenderers:
   - {fileID: 0}
   - {fileID: 0}
---- !u!65 &6592204903481746518
-BoxCollider:
+--- !u!136 &6660613619013901337
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -570,8 +575,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 4, y: 1, z: 4}
+  serializedVersion: 2
+  m_Radius: 2.17
+  m_Height: 4.0375667
+  m_Direction: 0
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8165120273435933155
 GameObject:
@@ -688,12 +695,12 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ed237313068d45c4686e3c0b739948cb, type: 2}
+      objectReference: {fileID: 2100000, guid: 9e3dac342a35f114e8e6a3b62846f17f, type: 2}
     - target: {fileID: -7511558181221131132, guid: a2d9281ee0718444987f99d50ad64884,
         type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: e0b606cbecd76584db2aa93f1d4bd76c, type: 2}
+      objectReference: {fileID: 2100000, guid: 783508e760478204892897b72f72221a, type: 2}
     - target: {fileID: -4084672777538192892, guid: a2d9281ee0718444987f99d50ad64884,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -718,7 +725,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ed237313068d45c4686e3c0b739948cb, type: 2}
+      objectReference: {fileID: 2100000, guid: eab44e36539e0904e8d880b450f47494, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -912,17 +919,17 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: a6ae44a70b9d297429289cd18bd5f744, type: 2}
+      objectReference: {fileID: 2100000, guid: ef0c4dd3692ec9a44b4326af95e9f01b, type: 2}
     - target: {fileID: -7812332359284262412, guid: d9ca5b5ec8ac09542b9d6e79b2bb18a0,
         type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 61d890793d09268459282eaa2afd2752, type: 2}
+      objectReference: {fileID: 2100000, guid: 80fa8b27b2fc9154aac49235b538c6fd, type: 2}
     - target: {fileID: -7511558181221131132, guid: d9ca5b5ec8ac09542b9d6e79b2bb18a0,
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 61d890793d09268459282eaa2afd2752, type: 2}
+      objectReference: {fileID: 2100000, guid: 80fa8b27b2fc9154aac49235b538c6fd, type: 2}
     - target: {fileID: 919132149155446097, guid: d9ca5b5ec8ac09542b9d6e79b2bb18a0,
         type: 3}
       propertyPath: m_Name

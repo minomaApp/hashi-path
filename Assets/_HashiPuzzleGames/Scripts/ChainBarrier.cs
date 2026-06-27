@@ -23,6 +23,11 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private float endpointPadding = 0f;
         [SerializeField] private float blockingThickness = 0.12f;
 
+        [Header("Endpoint Columns")]
+        [SerializeField] private Transform startColumn;
+        [SerializeField] private Transform endColumn;
+        [SerializeField] private float columnVerticalOffset = 0f;
+
         [Header("Text")]
         [SerializeField] private TMP_Text unlockRequirementText;
         [SerializeField] private float textVerticalOffset = 0.25f;
@@ -139,12 +144,14 @@ namespace HashiGame.Scripts.Runtime
                 animator.SetTrigger(breakTriggerName);
             }
 
-            if (Application.isPlaying && breakVisualDelay > 0f)
+            if (Application.isPlaying &&
+      (breakVisualDelay > 0f || useLineShrinkAnimation))
             {
                 StartCoroutine(DisableVisualAfterDelay());
             }
             else
             {
+                SetEndpointColumnsActive(false);
                 SetVisualActive(false);
             }
         }
@@ -166,7 +173,12 @@ namespace HashiGame.Scripts.Runtime
 
         private IEnumerator DisableVisualAfterDelay()
         {
-            yield return new WaitForSeconds(breakVisualDelay);
+            if (breakVisualDelay > 0f)
+            {
+                yield return new WaitForSeconds(breakVisualDelay);
+            }
+
+            SetEndpointColumnsActive(false);
 
             if (useLineShrinkAnimation &&
                 chainLine != null &&
@@ -217,6 +229,7 @@ namespace HashiGame.Scripts.Runtime
                 chainLine.SetPosition(1, end);
             }
 
+            ApplyEndpointColumns(start, end);
             ApplyTextPosition();
         }
 
@@ -275,6 +288,38 @@ namespace HashiGame.Scripts.Runtime
             }
 
             SetObjectArrayActive(visualObjectsControlledByChainState, value);
+            SetEndpointColumnsActive(value);
+        }
+
+        private void ApplyEndpointColumns(Vector3 startPoint, Vector3 endPoint)
+        {
+            PositionEndpointColumn(startColumn, startPoint);
+            PositionEndpointColumn(endColumn, endPoint);
+            SetEndpointColumnsActive(isBlocking);
+        }
+
+        private void PositionEndpointColumn(Transform column, Vector3 worldPosition)
+        {
+            if (column == null)
+            {
+                return;
+            }
+
+            worldPosition.y += columnVerticalOffset;
+            column.position = worldPosition;
+        }
+
+        private void SetEndpointColumnsActive(bool value)
+        {
+            if (startColumn != null)
+            {
+                startColumn.gameObject.SetActive(value);
+            }
+
+            if (endColumn != null)
+            {
+                endColumn.gameObject.SetActive(value);
+            }
         }
 
         private void EnsureLineRenderer()

@@ -19,6 +19,12 @@ namespace HashiGame.Scripts.Runtime
         [Header("Cut Settings")]
         [SerializeField] private float cutDetectionThickness = 0.18f;
 
+        [Header("Island Blocker Raycast")]
+        [SerializeField] private LayerMask islandBlockerLayerMask = ~0;
+        [SerializeField]
+        private QueryTriggerInteraction islandBlockerTriggerInteraction =
+            QueryTriggerInteraction.Collide;
+
         private readonly Dictionary<Vector2Int, IslandNode> islandsByCoordinate =
             new Dictionary<Vector2Int, IslandNode>();
 
@@ -733,31 +739,38 @@ namespace HashiGame.Scripts.Runtime
             Vector3 startPoint = firstIsland.ConnectionPosition;
             Vector3 endPoint = secondIsland.ConnectionPosition;
 
-            if (levelData.hashiRules.blockBridgeThroughIsland)
+            //if (levelData.hashiRules.blockBridgeThroughIsland)
+            //{
+            //    foreach (IslandNode island in islandsByCoordinate.Values)
+            //    {
+            //        if (island == firstIsland || island == secondIsland)
+            //        {
+            //            continue;
+            //        }
+
+            //        float blockRadius = Mathf.Max(
+            //            levelData.hashiRules.islandBlockingRadius,
+            //            island.ConnectionBlockRadius);
+
+            //        float distance = BridgeGeometryUtility.DistancePointToSegment(
+            //            island.ConnectionPosition,
+            //            startPoint,
+            //            endPoint);
+
+            //        if (distance <= blockRadius)
+            //        {
+            //            reason = "Another island is between the selected islands.";
+            //            return false;
+            //        }
+            //    }
+            //}
+            if (levelData.hashiRules.blockBridgeThroughIsland &&
+                 IsIslandColliderBetween(firstIsland, secondIsland, out IslandNode blockingIsland))
             {
-                foreach (IslandNode island in islandsByCoordinate.Values)
-                {
-                    if (island == firstIsland || island == secondIsland)
-                    {
-                        continue;
-                    }
-
-                    float blockRadius = Mathf.Max(
-                        levelData.hashiRules.islandBlockingRadius,
-                        island.ConnectionBlockRadius);
-
-                    float distance = BridgeGeometryUtility.DistancePointToSegment(
-                        island.ConnectionPosition,
-                        startPoint,
-                        endPoint);
-
-                    if (distance <= blockRadius)
-                    {
-                        reason = "Another island is between the selected islands.";
-                        return false;
-                    }
-                }
+                reason = "Another island is between the selected islands.";
+                return false;
             }
+
 
             if (levelData.hashiRules.blockBridgeCrossing)
             {
@@ -814,6 +827,66 @@ namespace HashiGame.Scripts.Runtime
             }
 
             return true;
+        }
+
+        private bool IsIslandColliderBetween(
+            IslandNode firstIsland,
+            IslandNode secondIsland,
+            out IslandNode blockingIsland)
+        {
+            blockingIsland = null;
+
+            if (firstIsland == null || secondIsland == null)
+            {
+                return false;
+            }
+
+            Vector3 startPoint = firstIsland.ConnectionPosition;
+            Vector3 endPoint = secondIsland.ConnectionPosition;
+
+            Vector3 direction = endPoint - startPoint;
+            float distance = direction.magnitude;
+
+            if (distance <= 0.0001f)
+            {
+                return false;
+            }
+
+            direction /= distance;
+
+            RaycastHit[] hits = Physics.RaycastAll(
+                startPoint,
+                direction,
+                distance,
+                islandBlockerLayerMask,
+                islandBlockerTriggerInteraction);
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider hitCollider = hits[i].collider;
+
+                if (hitCollider == null)
+                {
+                    continue;
+                }
+
+                IslandNode hitIsland = hitCollider.GetComponentInParent<IslandNode>();
+
+                if (hitIsland == null)
+                {
+                    continue;
+                }
+
+                if (hitIsland == firstIsland || hitIsland == secondIsland)
+                {
+                    continue;
+                }
+
+                blockingIsland = hitIsland;
+                return true;
+            }
+
+            return false;
         }
 
         private void RefreshBoardState()
