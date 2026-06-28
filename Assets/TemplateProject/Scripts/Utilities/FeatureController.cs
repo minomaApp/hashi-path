@@ -24,6 +24,10 @@ namespace TemplateProject.Scripts.Utilities
         [SerializeField] private Image rewardImageHidden;
         [SerializeField] private GameObject progressPanel;
 
+        [Header("Feature Content State")]
+        [SerializeField] private GameObject featureContentRoot;
+        [SerializeField] private GameObject afterLastFeatureRoot;
+
         [Header("Animation Settings")] [SerializeField]
         private float fadeDuration = 0.5f;
 
@@ -96,19 +100,51 @@ namespace TemplateProject.Scripts.Utilities
                 featureSettings.features[i].unlockLevelNumber = levels[i];
             }
         }
-
-
         public async UniTask ShowWinPopup()
         {
             var currentLevel = LevelManager.instance.GetTotalLevelPlayed();
+
+            if (featureUnlockLevels == null ||
+                featureUnlockLevels.Length == 0 ||
+                prizeStageIndices == null ||
+                prizeStageIndices.Length == 0)
+            {
+                UIManager.instance.OpenNoFeatureWin();
+                return;
+            }
 
             var sortedPrizeIdx = prizeStageIndices
                 .OrderBy(idx => featureUnlockLevels[idx])
                 .ToList();
 
+            if (sortedPrizeIdx.Count == 0)
+            {
+                UIManager.instance.OpenNoFeatureWin();
+                return;
+            }
+
+            int lastPrizeIdx = sortedPrizeIdx[sortedPrizeIdx.Count - 1];
+            int lastPrizeLevel = featureUnlockLevels[lastPrizeIdx];
+
+            if (currentLevel > lastPrizeLevel)
+            {
+                UIManager.instance.OpenFeatureWin();
+                SetFeatureContentState(false);
+                return;
+            }
+
+            SetFeatureContentState(true);
+
             var stage = sortedPrizeIdx.FindIndex(idx => featureUnlockLevels[idx] >= currentLevel);
+
             if (stage < 0)
-                stage = sortedPrizeIdx.Count - 1;
+            {
+                UIManager.instance.OpenFeatureWin();
+                SetFeatureContentState(false);
+                return;
+            }
+
+            UIManager.instance.OpenFeatureWin();
 
             var nextPrizeIdx = sortedPrizeIdx[stage];
             var nextPrizeLevel = featureUnlockLevels[nextPrizeIdx];
@@ -116,17 +152,25 @@ namespace TemplateProject.Scripts.Utilities
                 ? featureUnlockLevels[sortedPrizeIdx[stage - 1]]
                 : 0;
 
-            //infoTMP.text = prevPrizeLevel == 0 ? "New Feature" : "Special Level";
             if (prizeSprites.TryGetValue(nextPrizeLevel, out var spr))
+            {
                 rewardImage.sprite = spr;
+            }
+
             if (prizeHiddenSprites.TryGetValue(nextPrizeLevel, out var sprH))
+            {
                 rewardImageHidden.sprite = sprH;
+            }
 
             var goalAmount = nextPrizeLevel - prevPrizeLevel;
             if (goalAmount <= 0)
             {
                 progressPanel.SetActive(false);
                 goalAmount = 1;
+            }
+            else
+            {
+                progressPanel.SetActive(true);
             }
 
             var progressed = Mathf.Clamp(currentLevel - prevPrizeLevel, 0, goalAmount);
@@ -162,6 +206,19 @@ namespace TemplateProject.Scripts.Utilities
                 await rewardImage.rectTransform
                     .DOPunchScale(Vector3.one * punchScale, fillDuration / 2f)
                     .AsyncWaitForCompletion();
+            }
+        }
+
+        private void SetFeatureContentState(bool showFeatureContent)
+        {
+            if (featureContentRoot != null)
+            {
+                featureContentRoot.SetActive(showFeatureContent);
+            }
+
+            if (afterLastFeatureRoot != null)
+            {
+                afterLastFeatureRoot.SetActive(!showFeatureContent);
             }
         }
     }
