@@ -2161,8 +2161,16 @@ MonoBehaviour:
   cutDetectionThickness: 0.18
   islandBlockerLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 3703
   islandBlockerTriggerInteraction: 2
+  bridgeConnectSound: BridgeConnect
+  bridgeCutSound: BridgeCut
+  islandUnlockSound: IslandUnlock
+  islandCompleteSound: IslandComplete
+  useBridgeConnectVibration: 1
+  useBridgeCutVibration: 1
+  useIslandUnlockVibration: 1
+  useIslandCompleteVibration: 1
 --- !u!4 &318986958
 Transform:
   m_ObjectHideFlags: 0
@@ -3104,7 +3112,6 @@ MonoBehaviour:
     m_Bits: 2048
   raycastDistance: 500
   invalidPreviewDuration: 0.18
-  useBasicDeviceVibration: 1
   onInvalidMove:
     m_PersistentCalls:
       m_Calls: []
@@ -3115,6 +3122,10 @@ MonoBehaviour:
   cutTrailRenderer: {fileID: 290742785}
   cutTrailVerticalOffset: 0.25
   cutTrailDisableDelay: 0.2
+  islandClickSound: IslandClick
+  lockedIslandClickSound: LockedIslandClick
+  useIslandClickVibration: 1
+  useLockedIslandClickVibration: 1
   cutTrailFollowSpeed: 35
 --- !u!4 &560191544
 Transform:

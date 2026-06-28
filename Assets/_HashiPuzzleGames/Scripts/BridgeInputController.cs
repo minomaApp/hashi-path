@@ -31,7 +31,7 @@ namespace HashiGame.Scripts.Runtime
 
         [Header("Feedback")]
         [SerializeField] private float invalidPreviewDuration = 0.18f;
-        [SerializeField] private bool useBasicDeviceVibration;
+        //[SerializeField] private bool useBasicDeviceVibration;
         [SerializeField] private HashiStringUnityEvent onInvalidMove;
 
         [Header("Cut Gesture")]
@@ -453,10 +453,10 @@ namespace HashiGame.Scripts.Runtime
                 invalidPreviewCoroutine = StartCoroutine(HideInvalidPreviewAfterDelay());
             }
 
-            if (useBasicDeviceVibration)
-            {
-                Handheld.Vibrate();
-            }
+            //if (useBasicDeviceVibration)
+            //{
+            //    Handheld.Vibrate();
+            //}
 
             onInvalidMove?.Invoke(reason ?? string.Empty);
         }
