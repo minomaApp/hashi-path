@@ -3,6 +3,9 @@ using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.SO;
 using TMPro;
 using UnityEngine;
+using BoxPuller.Scripts.Runtime.Managers;
+using TemplateProject.Scripts.Data;
+using TemplateProject.Scripts.Runtime.Managers;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -51,6 +54,12 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField]
         private AnimationCurve lineShrinkCurve =
             AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+        [Header("Audio/Haptic")]
+        [AudioClipName] public string chainShrinkSound;
+        [AudioClipName] public string chainCloseSound;
+        [SerializeField] private bool useChainShrinkVibration = true;
+        [SerializeField] private bool useChainCloseVibration = true;
 
         private HashiVisualSettings visualSettings;
         private bool isBlocking = true;
@@ -185,7 +194,13 @@ namespace HashiGame.Scripts.Runtime
                 chainLine.enabled &&
                 chainLine.positionCount >= 2)
             {
+                PlayChainShrinkFeedback();
                 yield return ShrinkLineToCenter();
+                PlayChainCloseFeedback();
+            }
+            else
+            {
+                PlayChainCloseFeedback();
             }
 
             SetVisualActive(false);
@@ -430,6 +445,39 @@ namespace HashiGame.Scripts.Runtime
 
             chainLine.SetPosition(0, centerPoint);
             chainLine.SetPosition(1, centerPoint);
+        }
+
+        private void PlayChainShrinkFeedback()
+        {
+            PlaySound(chainShrinkSound);
+
+            if (useChainShrinkVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.ChainShrink();
+            }
+        }
+
+        private void PlayChainCloseFeedback()
+        {
+            PlaySound(chainCloseSound);
+
+            if (useChainCloseVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.ChainClose();
+            }
+        }
+
+        private static void PlaySound(string clipName)
+        {
+            if (string.IsNullOrEmpty(clipName))
+            {
+                return;
+            }
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySound(clipName);
+            }
         }
 
 #if UNITY_EDITOR

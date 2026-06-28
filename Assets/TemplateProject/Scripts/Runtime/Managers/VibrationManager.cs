@@ -80,5 +80,45 @@ namespace BoxPuller.Scripts.Runtime.Managers
         {
             Light();
         }
+
+        public void IslandClick()
+        {
+            Light();
+        }
+
+        public void LockedIslandClick()
+        {
+            Medium();
+        }
+
+        public void BridgeConnect()
+        {
+            Light();
+        }
+
+        public void BridgeCut()
+        {
+            Light();
+        }
+
+        public void IslandUnlock()
+        {
+            Medium();
+        }
+
+        public void IslandComplete()
+        {
+            Medium();
+        }
+
+        public void ChainShrink()
+        {
+            Light();
+        }
+
+        public void ChainClose()
+        {
+            Medium();
+        }
     }
 }

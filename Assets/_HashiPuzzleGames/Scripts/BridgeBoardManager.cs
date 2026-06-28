@@ -4,6 +4,9 @@ using BoxPuller.Scripts.Data;
 using BoxPuller.Scripts.Data.SO;
 using UnityEngine;
 using UnityEngine.Events;
+using BoxPuller.Scripts.Runtime.Managers;
+using TemplateProject.Scripts.Data;
+using TemplateProject.Scripts.Runtime.Managers;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -25,6 +28,17 @@ namespace HashiGame.Scripts.Runtime
         private QueryTriggerInteraction islandBlockerTriggerInteraction =
             QueryTriggerInteraction.Collide;
 
+        [Header("Audio/Haptic")]
+        [AudioClipName] public string bridgeConnectSound;
+        [AudioClipName] public string bridgeCutSound;
+        [AudioClipName] public string islandUnlockSound;
+        [AudioClipName] public string islandCompleteSound;
+
+        [SerializeField] private bool useBridgeConnectVibration = true;
+        [SerializeField] private bool useBridgeCutVibration = true;
+        [SerializeField] private bool useIslandUnlockVibration = true;
+        [SerializeField] private bool useIslandCompleteVibration = true;
+
         private readonly Dictionary<Vector2Int, IslandNode> islandsByCoordinate =
             new Dictionary<Vector2Int, IslandNode>();
 
@@ -41,6 +55,8 @@ namespace HashiGame.Scripts.Runtime
         private global::GameManager gameManager;
         private bool isSetup;
         private bool hasWon;
+        private bool suppressBoardStateFeedback;
+
 
         public bool IsSetup => isSetup;
         public bool HasWon => hasWon;
@@ -86,7 +102,10 @@ namespace HashiGame.Scripts.Runtime
             CreateMissingChainsFromData();
 
             isSetup = true;
+
+            suppressBoardStateFeedback = true;
             RefreshBoardState();
+            suppressBoardStateFeedback = false;
 
             Debug.Log(
                 "[BridgeBoardManager] Setup complete. Islands: " + islandsByCoordinate.Count +
@@ -201,6 +220,8 @@ namespace HashiGame.Scripts.Runtime
                 connection.SetBridgeCount(nextCount, visualSettings);
                 connection.PlayBuildWave();
             }
+
+            PlayBridgeConnectFeedback();
 
             RefreshBoardState();
             return true;
@@ -380,6 +401,8 @@ namespace HashiGame.Scripts.Runtime
             {
                 return;
             }
+
+            PlayBridgeCutFeedback();
 
             if (connection.BridgeCount > 1)
             {
@@ -897,11 +920,17 @@ namespace HashiGame.Scripts.Runtime
             }
 
             int previousMilestoneCount = everCompletedIslands.Count;
+            bool anyIslandCompletedThisRefresh = false;
+            bool anyIslandUnlockedThisRefresh = false;
 
             foreach (IslandNode island in islandsByCoordinate.Values)
             {
                 int bridgeCount = island.CalculateConnectedBridgeCount();
-                island.SetCurrentBridgeCount(bridgeCount);
+
+                if (island.SetCurrentBridgeCount(bridgeCount))
+                {
+                    anyIslandCompletedThisRefresh = true;
+                }
 
                 if (island.IsCompleted)
                 {
@@ -913,7 +942,10 @@ namespace HashiGame.Scripts.Runtime
 
             foreach (IslandNode island in islandsByCoordinate.Values)
             {
-                island.TryUnlock(milestoneCount);
+                if (island.TryUnlock(milestoneCount))
+                {
+                    anyIslandUnlockedThisRefresh = true;
+                }
             }
 
             for (int i = 0; i < chainBarriers.Count; i++)
@@ -922,6 +954,19 @@ namespace HashiGame.Scripts.Runtime
                 {
                     chainBarriers[i].RefreshRequirementText(milestoneCount);
                     chainBarriers[i].TryUnlock(milestoneCount);
+                }
+            }
+
+            if (!suppressBoardStateFeedback)
+            {
+                if (anyIslandCompletedThisRefresh)
+                {
+                    PlayIslandCompleteFeedback();
+                }
+
+                if (anyIslandUnlockedThisRefresh)
+                {
+                    PlayIslandUnlockFeedback();
                 }
             }
 
@@ -936,7 +981,6 @@ namespace HashiGame.Scripts.Runtime
                 gameManager?.GameWin();
             }
         }
-
         private bool AreAllWinConditionsMet()
         {
             if (islandsByCoordinate.Count == 0)
@@ -1097,6 +1141,59 @@ namespace HashiGame.Scripts.Runtime
             private static bool ComesBefore(Vector2Int a, Vector2Int b)
             {
                 return a.x < b.x || (a.x == b.x && a.y <= b.y);
+            }
+        }
+
+        private void PlayBridgeConnectFeedback()
+        {
+            PlaySound(bridgeConnectSound);
+
+            if (useBridgeConnectVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.BridgeConnect();
+            }
+        }
+
+        private void PlayBridgeCutFeedback()
+        {
+            PlaySound(bridgeCutSound);
+
+            if (useBridgeCutVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.BridgeCut();
+            }
+        }
+
+        private void PlayIslandUnlockFeedback()
+        {
+            PlaySound(islandUnlockSound);
+
+            if (useIslandUnlockVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.IslandUnlock();
+            }
+        }
+
+        private void PlayIslandCompleteFeedback()
+        {
+            PlaySound(islandCompleteSound);
+
+            if (useIslandCompleteVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.IslandComplete();
+            }
+        }
+
+        private static void PlaySound(string clipName)
+        {
+            if (string.IsNullOrEmpty(clipName))
+            {
+                return;
+            }
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySound(clipName);
             }
         }
     }

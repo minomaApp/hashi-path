@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using TemplateProject.Scripts.Runtime.Managers;
+using BoxPuller.Scripts.Runtime.Managers;
+using TemplateProject.Scripts.Data;
+
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -41,6 +44,12 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private TrailRenderer cutTrailRenderer;
         [SerializeField] private float cutTrailVerticalOffset = 0.25f;
         [SerializeField] private float cutTrailDisableDelay = 0.2f;
+
+        [Header("Audio/Haptic")]
+        [AudioClipName] public string islandClickSound;
+        [AudioClipName] public string lockedIslandClickSound;
+        [SerializeField] private bool useIslandClickVibration = true;
+        [SerializeField] private bool useLockedIslandClickVibration = true;
 
         [SerializeField] private float cutTrailFollowSpeed = 35f;
         private Vector3 smoothedCutTrailPosition;
@@ -146,17 +155,10 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
-            //if (island.IsLocked)
-            //{
-            //    ShowInvalidFeedback(
-            //        island.ConnectionPosition,
-            //        island.ConnectionPosition,
-            //        "This island is locked.");
-            //    return;
-            //}
-
             if (island.IsLocked)
             {
+                PlayLockedIslandClickFeedback();
+
                 island.PlayLockedShake();
 
                 ShowInvalidFeedback(
@@ -165,6 +167,8 @@ namespace HashiGame.Scripts.Runtime
                     "This island is locked.");
                 return;
             }
+
+            PlayIslandClickFeedback();
 
             StartTimerOnFirstGameplayInput();
 
@@ -179,6 +183,39 @@ namespace HashiGame.Scripts.Runtime
                     dragStartIsland.ConnectionPosition,
                     dragStartIsland.ConnectionPosition,
                     true);
+            }
+        }
+
+        private void PlayIslandClickFeedback()
+        {
+            PlaySound(islandClickSound);
+
+            if (useIslandClickVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.IslandClick();
+            }
+        }
+
+        private void PlayLockedIslandClickFeedback()
+        {
+            PlaySound(lockedIslandClickSound);
+
+            if (useLockedIslandClickVibration && VibrationManager.instance != null)
+            {
+                VibrationManager.instance.LockedIslandClick();
+            }
+        }
+
+        private static void PlaySound(string clipName)
+        {
+            if (string.IsNullOrEmpty(clipName))
+            {
+                return;
+            }
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySound(clipName);
             }
         }
 
