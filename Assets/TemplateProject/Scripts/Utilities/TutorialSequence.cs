@@ -31,9 +31,13 @@ namespace TemplateProject.Scripts.Utilities
 
         public void NextStep(StepType stepType)
         {
-            if(_steps.Count <= _currentIndex) return;
-            if(stepType != _steps[_currentIndex].stepType) return;
+            if (!IsWaitingForStep(stepType))
+            {
+                return;
+            }
+
             _currentIndex++;
+
             if (_currentIndex < _steps.Count)
             {
                 ShowStep(_currentIndex);
@@ -42,6 +46,21 @@ namespace TemplateProject.Scripts.Utilities
             {
                 OnComplete?.Invoke();
             }
+        }
+
+        public bool IsWaitingForStep(StepType stepType)
+        {
+            if (_steps == null)
+            {
+                return false;
+            }
+
+            if (_steps.Count <= _currentIndex)
+            {
+                return false;
+            }
+
+            return _steps[_currentIndex].stepType == stepType;
         }
     }
 }

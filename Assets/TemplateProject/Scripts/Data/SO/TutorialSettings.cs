@@ -9,9 +9,10 @@ namespace TemplateProject.Scripts.Data.SO
     public enum StepType
     {
         Classic,
-        EventTriggered
+        EventTriggered,
+        DoubleBridgeCreated
     }
-    
+
     [Serializable]
     public struct TutorialLevel {
         public int tutorialIndex;

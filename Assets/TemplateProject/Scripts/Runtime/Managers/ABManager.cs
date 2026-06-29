@@ -117,7 +117,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
             LevelLoopStartLevel = 1;
 
             levelsString = CreateDefaultLevelsString(levelCount);
-            tutorialLevelsString = "0,1";
+            tutorialLevelsString = "0,2,12";
             skipAfterLoopLevelsString = "0";
             featureUnlockLevelsString = "6,12,20";
             levelTimersString = CreateDefaultString("60", levelCount);

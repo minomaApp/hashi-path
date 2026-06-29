@@ -15,6 +15,8 @@ namespace TemplateProject.Scripts.Utilities
 
         public static TutorialController instance;
 
+        public bool HasActiveTutorial => _sequence != null;
+        
         private void Awake()
         {
             MakeSingleton();
@@ -147,10 +149,22 @@ namespace TemplateProject.Scripts.Utilities
 
         public void HandleInput(StepType stepType)
         {
-            if (_sequence == null)
+            if (!CanHandleInput(stepType))
+            {
                 return;
+            }
 
             _sequence.NextStep(stepType);
+        }
+
+        public bool CanHandleInput(StepType stepType)
+        {
+            if (_sequence == null)
+            {
+                return false;
+            }
+
+            return _sequence.IsWaitingForStep(stepType);
         }
     }
 }

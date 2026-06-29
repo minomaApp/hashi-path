@@ -7,6 +7,8 @@ using UnityEngine.Events;
 using BoxPuller.Scripts.Runtime.Managers;
 using TemplateProject.Scripts.Data;
 using TemplateProject.Scripts.Runtime.Managers;
+using TemplateProject.Scripts.Utilities;
+using TemplateProject.Scripts.Data.SO;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -185,14 +187,16 @@ namespace HashiGame.Scripts.Runtime
         }
 
         public bool TryCycleConnection(
-            IslandNode firstIsland,
-            IslandNode secondIsland,
-            out string reason)
+     IslandNode firstIsland,
+     IslandNode secondIsland,
+     out string reason)
         {
             if (!CanCycleConnection(firstIsland, secondIsland, out reason))
             {
                 return false;
             }
+
+            bool didReachDoubleBridge = false;
 
             IslandPairKey key = new IslandPairKey(
                 firstIsland.Coordinate,
@@ -211,20 +215,47 @@ namespace HashiGame.Scripts.Runtime
                     reason = "Bridge object could not be created.";
                     return false;
                 }
+
                 connection.PlayBuildWave();
             }
             else
             {
+                int previousCount = connection.BridgeCount;
                 int maximumCount = firstIsland.GetMaximumBridgeCountWith(secondIsland);
                 int nextCount = Mathf.Min(connection.BridgeCount + 1, maximumCount);
+
                 connection.SetBridgeCount(nextCount, visualSettings);
                 connection.PlayBuildWave();
+
+                didReachDoubleBridge = previousCount < 2 && nextCount == 2;
             }
 
             PlayBridgeConnectFeedback();
+            TryCompleteDoubleBridgeTutorial(didReachDoubleBridge);
 
             RefreshBoardState();
             return true;
+        }
+
+        private void TryCompleteDoubleBridgeTutorial(bool didReachDoubleBridge)
+        {
+            if (!didReachDoubleBridge)
+            {
+                return;
+            }
+
+            if (TutorialController.instance == null)
+            {
+                return;
+            }
+
+            if (!TutorialController.instance.CanHandleInput(StepType.DoubleBridgeCreated))
+            {
+                return;
+            }
+            Debug.Log("[BridgeBoardManager] TutorialController setup completed.");
+
+            TutorialController.instance.HandleInput(StepType.DoubleBridgeCreated);
         }
 
         public bool TryCutConnection(
