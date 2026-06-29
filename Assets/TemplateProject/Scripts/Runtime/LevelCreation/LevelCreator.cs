@@ -113,6 +113,10 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         public bool requireAllIslandsConnected;
         public float islandBlockingRadius = 0.45f;
 
+        [Header("Tutorial Bridge Settings")]
+        [Range(1, 2)] public int tutorialBridgeCount = 1;
+
+
         private LevelData levelData;
         private int activeDataLevelIndex = int.MinValue;
         private GameObject parentObject;
@@ -125,6 +129,9 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         private readonly List<BridgeConnection> generatedFixedBridges =
             new List<BridgeConnection>();
         private readonly List<ChainBarrier> generatedChains = new List<ChainBarrier>();
+
+        private readonly List<BridgeConnection> generatedTutorialBridges =
+    new List<BridgeConnection>();
 
         public LevelData GetLevelData()
         {
@@ -255,6 +262,44 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             return true;
         }
 
+        public bool TryAddTutorialBridge(
+    Vector2Int firstCoordinate,
+    Vector2Int secondCoordinate,
+    out string error)
+        {
+            EnsureLevelData();
+            error = string.Empty;
+
+            if (!levelData.TryGetIslandCell(firstCoordinate, out IslandCellData firstIsland) ||
+                !levelData.TryGetIslandCell(secondCoordinate, out IslandCellData secondIsland))
+            {
+                error = "Tutorial bridge endpoints must both contain islands.";
+                return false;
+            }
+
+            int count = Mathf.Clamp(tutorialBridgeCount, 1, 2);
+
+            if (count == 2 &&
+                (firstIsland.bridgeMode != EnumHolder.IslandBridgeMode.DoubleAllowed ||
+                 secondIsland.bridgeMode != EnumHolder.IslandBridgeMode.DoubleAllowed))
+            {
+                error = "A double tutorial bridge requires two Double Allowed islands.";
+                return false;
+            }
+
+            if (!levelData.AddTutorialBridgeDefinition(
+                    firstCoordinate,
+                    secondCoordinate,
+                    count))
+            {
+                error = "This tutorial bridge definition is invalid or already exists.";
+                return false;
+            }
+
+            EditorUtility.SetDirty(this);
+            return true;
+        }
+
         public bool TryAddChain(
             Vector2Int firstCoordinate,
             Vector2Int secondCoordinate,
@@ -280,6 +325,13 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
         {
             EnsureLevelData();
             levelData.RemoveFixedBridgeDefinition(id);
+            EditorUtility.SetDirty(this);
+        }
+
+        public void RemoveTutorialBridge(int id)
+        {
+            EnsureLevelData();
+            levelData.RemoveTutorialBridgeDefinition(id);
             EditorUtility.SetDirty(this);
         }
 
@@ -338,22 +390,24 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             SetParents();
             Dictionary<Vector2Int, IslandNode> islandMap = CreateIslands();
             CreateFixedBridges(islandMap);
+            CreateTutorialBridges(islandMap);
             CreateChains();
 
             currentLevelContainer.InitHashiRuntimeReferences(
-                gridWidth,
-                gridHeight,
-                horizontalSpaceModifier,
-                verticalSpaceModifier,
-                gridOriginOffset,
-                islandBaseHeight,
-                islandParentObject,
-                bridgeParentObject,
-                chainParentObject,
-                effectsParentObject,
-                generatedIslands,
-                generatedFixedBridges,
-                generatedChains);
+      gridWidth,
+      gridHeight,
+      horizontalSpaceModifier,
+      verticalSpaceModifier,
+      gridOriginOffset,
+      islandBaseHeight,
+      islandParentObject,
+      bridgeParentObject,
+      chainParentObject,
+      effectsParentObject,
+      generatedIslands,
+      generatedFixedBridges,
+      generatedTutorialBridges,
+      generatedChains);
 
             SaveLevel();
             EditorUtility.SetDirty(currentLevelContainer);
@@ -463,6 +517,7 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
 
             generatedIslands.Clear();
             generatedFixedBridges.Clear();
+            generatedTutorialBridges.Clear();
             generatedChains.Clear();
 
             parentObject = new GameObject("Level_" + levelIndex);
@@ -583,6 +638,56 @@ namespace BoxPuller.Scripts.Runtime.LevelCreation
             }
         }
 
+        private void CreateTutorialBridges(
+    Dictionary<Vector2Int, IslandNode> islandMap)
+        {
+            for (int i = 0; i < levelData.tutorialBridges.Count; i++)
+            {
+                TutorialBridgeDefinitionData bridgeData = levelData.tutorialBridges[i];
+
+                if (!islandMap.TryGetValue(
+                        bridgeData.startCoordinate,
+                        out IslandNode firstIsland) ||
+                    !islandMap.TryGetValue(
+                        bridgeData.endCoordinate,
+                        out IslandNode secondIsland))
+                {
+                    continue;
+                }
+
+                GameObject bridgeObject = PrefabUtility.InstantiatePrefab(
+                    prefabs.bridgePrefab) as GameObject;
+
+                if (bridgeObject == null)
+                {
+                    continue;
+                }
+
+                bridgeObject.transform.SetParent(bridgeParentObject.transform, true);
+                bridgeObject.name = "TutorialBridge_" + bridgeData.id;
+
+                BridgeVisual bridgeVisual = bridgeObject.GetComponent<BridgeVisual>();
+                if (bridgeVisual == null)
+                {
+                    bridgeVisual = bridgeObject.AddComponent<BridgeVisual>();
+                }
+
+                BridgeConnection connection = bridgeObject.GetComponent<BridgeConnection>();
+                if (connection == null)
+                {
+                    connection = bridgeObject.AddComponent<BridgeConnection>();
+                }
+
+                connection.ConfigureLevelData(
+                    firstIsland,
+                    secondIsland,
+                    bridgeData.bridgeCount,
+                    false,
+                    visualSettings);
+
+                generatedTutorialBridges.Add(connection);
+            }
+        }
         private void CreateChains()
         {
             for (int i = 0; i < levelData.chainBarriers.Count; i++)

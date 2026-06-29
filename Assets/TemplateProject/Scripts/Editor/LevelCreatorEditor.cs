@@ -290,7 +290,7 @@ namespace TemplateProject.Scripts.Editor
             EnumHolder.HashiEditorMode previousMode = editorMode;
             editorMode = (EnumHolder.HashiEditorMode)GUILayout.Toolbar(
                 (int)editorMode,
-                new[] { "Island", "Fixed Bridge", "Chain" },
+                new[] { "Island", "Fixed Bridge", "Tutorial Bridge", "Chain" },
                 GUILayout.Height(30f));
 
             if (previousMode != editorMode)
@@ -318,6 +318,17 @@ namespace TemplateProject.Scripts.Editor
 
                     DrawPendingSelectionHelp(
                         "Select two island cells. The generated bridge cannot be removed during play.");
+                    break;
+
+                case EnumHolder.HashiEditorMode.TutorialBridge:
+                    levelCreator.tutorialBridgeCount = EditorGUILayout.IntPopup(
+                        "Tutorial Bridge Count",
+                        Mathf.Clamp(levelCreator.tutorialBridgeCount, 1, 2),
+                        new[] { "Single", "Double" },
+                        new[] { 1, 2 });
+
+                    DrawPendingSelectionHelp(
+                        "Select two island cells. This bridge starts active and can be cut during play.");
                     break;
 
                 case EnumHolder.HashiEditorMode.Chain:
@@ -415,9 +426,10 @@ namespace TemplateProject.Scripts.Editor
 
             List<IslandCellData> islands = data.GetIslandCells();
             EditorGUILayout.LabelField(
-                "Islands: " + islands.Count +
-                "   Fixed Bridges: " + data.fixedBridges.Count +
-                "   Chains: " + data.chainBarriers.Count);
+         "Islands: " + islands.Count +
+         "   Fixed Bridges: " + data.fixedBridges.Count +
+         "   Tutorial Bridges: " + data.tutorialBridges.Count +
+         "   Chains: " + data.chainBarriers.Count);
 
             const float cellWidth = 80f;
             const float cellHeight = 80f;
@@ -530,6 +542,20 @@ namespace TemplateProject.Scripts.Editor
                 }
             }
 
+            for (int i = 0; i < data.tutorialBridges.Count; i++)
+            {
+                TutorialBridgeDefinitionData bridge = data.tutorialBridges[i];
+
+                if (bridge.startCoordinate == coordinate)
+                {
+                    builder.AppendLine("T" + bridge.id + " A x" + bridge.bridgeCount);
+                }
+                else if (bridge.endCoordinate == coordinate)
+                {
+                    builder.AppendLine("T" + bridge.id + " B x" + bridge.bridgeCount);
+                }
+            }
+
             for (int i = 0; i < data.chainBarriers.Count; i++)
             {
                 ChainBarrierData chain = data.chainBarriers[i];
@@ -594,6 +620,10 @@ namespace TemplateProject.Scripts.Editor
                     HandleFixedBridgePoint(coordinate, island);
                     break;
 
+                case EnumHolder.HashiEditorMode.TutorialBridge:
+                    HandleTutorialBridgePoint(coordinate, island);
+                    break;
+
                 case EnumHolder.HashiEditorMode.Chain:
                     HandleChainPoint(coordinate);
                     break;
@@ -648,7 +678,51 @@ namespace TemplateProject.Scripts.Editor
                 SetEditorMessage(error, MessageType.Error);
             }
         }
+        private void HandleTutorialBridgePoint(
+    Vector2Int coordinate,
+    IslandCellData island)
+        {
+            if (island == null)
+            {
+                SetEditorMessage(
+                    "Tutorial bridge points must contain islands.",
+                    MessageType.Error);
+                return;
+            }
 
+            if (!hasPendingCoordinate)
+            {
+                pendingCoordinate = coordinate;
+                hasPendingCoordinate = true;
+                SetEditorMessage(
+                    "Select the second island for the tutorial bridge.",
+                    MessageType.Info);
+                return;
+            }
+
+            if (pendingCoordinate == coordinate)
+            {
+                SetEditorMessage(
+                    "Select a different island.",
+                    MessageType.Warning);
+                return;
+            }
+
+            bool success = levelCreator.TryAddTutorialBridge(
+                pendingCoordinate,
+                coordinate,
+                out string error);
+
+            if (success)
+            {
+                SetEditorMessage("Tutorial bridge added.", MessageType.Info);
+                CancelPendingSelection(false);
+            }
+            else
+            {
+                SetEditorMessage(error, MessageType.Error);
+            }
+        }
         private void HandleChainPoint(Vector2Int coordinate)
         {
             if (!hasPendingCoordinate)
@@ -703,6 +777,8 @@ namespace TemplateProject.Scripts.Editor
 
             DrawFixedBridgeList(data);
             EditorGUILayout.Space(8f);
+            DrawTutorialBridgeList(data);
+            EditorGUILayout.Space(8f);
             DrawChainList(data);
 
             EditorGUILayout.EndScrollView();
@@ -749,7 +825,46 @@ namespace TemplateProject.Scripts.Editor
                 EditorGUILayout.EndHorizontal();
             }
         }
+        private void DrawTutorialBridgeList(LevelData data)
+        {
+            EditorGUILayout.LabelField("Tutorial Bridges", EditorStyles.boldLabel);
 
+            if (data.tutorialBridges.Count == 0)
+            {
+                EditorGUILayout.LabelField("None");
+                return;
+            }
+
+            for (int i = 0; i < data.tutorialBridges.Count; i++)
+            {
+                TutorialBridgeDefinitionData bridge = data.tutorialBridges[i];
+                EditorGUILayout.BeginHorizontal("box");
+                EditorGUILayout.LabelField(
+                    "ID " + bridge.id + "   " +
+                    bridge.startCoordinate + " -> " + bridge.endCoordinate,
+                    GUILayout.MinWidth(250f));
+
+                int newCount = EditorGUILayout.IntPopup(
+                    bridge.bridgeCount,
+                    new[] { "Single", "Double" },
+                    new[] { 1, 2 },
+                    GUILayout.Width(90f));
+
+                if (newCount != bridge.bridgeCount)
+                {
+                    bridge.bridgeCount = newCount;
+                    EditorUtility.SetDirty(levelCreator);
+                }
+
+                if (GUILayout.Button("Remove", GUILayout.Width(70f)))
+                {
+                    levelCreator.RemoveTutorialBridge(bridge.id);
+                    GUIUtility.ExitGUI();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
         private void DrawChainList(LevelData data)
         {
             EditorGUILayout.LabelField("Chains", EditorStyles.boldLabel);

@@ -165,6 +165,15 @@ namespace BoxPuller.Scripts.Data
     }
 
     [Serializable]
+    public class TutorialBridgeDefinitionData
+    {
+        public int id;
+        public Vector2Int startCoordinate;
+        public Vector2Int endCoordinate;
+        public int bridgeCount = 1;
+    }
+
+    [Serializable]
     public class ChainBarrierData
     {
         public int id;
@@ -237,6 +246,7 @@ namespace BoxPuller.Scripts.Data
 
         [Header("Hashi Level Data")]
         public List<FixedBridgeDefinitionData> fixedBridges = new List<FixedBridgeDefinitionData>();
+        public List<TutorialBridgeDefinitionData> tutorialBridges = new List<TutorialBridgeDefinitionData>();
         public List<ChainBarrierData> chainBarriers = new List<ChainBarrierData>();
         public HashiLevelRulesData hashiRules = new HashiLevelRulesData();
 
@@ -1041,6 +1051,7 @@ namespace BoxPuller.Scripts.Data
         public void EnsureHashiData()
         {
             fixedBridges ??= new List<FixedBridgeDefinitionData>();
+            tutorialBridges ??= new List<TutorialBridgeDefinitionData>();
             chainBarriers ??= new List<ChainBarrierData>();
             hashiRules ??= new HashiLevelRulesData();
 
@@ -1105,8 +1116,18 @@ namespace BoxPuller.Scripts.Data
             cell.BasePlaceable = null;
             GridData[x, y] = cell;
 
+            //Vector2Int coordinate = new Vector2Int(x, y);
+            //fixedBridges.RemoveAll(bridge =>
+            //    bridge.startCoordinate == coordinate ||
+            //    bridge.endCoordinate == coordinate);
+
             Vector2Int coordinate = new Vector2Int(x, y);
+
             fixedBridges.RemoveAll(bridge =>
+                bridge.startCoordinate == coordinate ||
+                bridge.endCoordinate == coordinate);
+
+            tutorialBridges.RemoveAll(bridge =>
                 bridge.startCoordinate == coordinate ||
                 bridge.endCoordinate == coordinate);
         }
@@ -1190,6 +1211,56 @@ namespace BoxPuller.Scripts.Data
 
             return true;
         }
+        public bool AddTutorialBridgeDefinition(
+    Vector2Int startCoordinate,
+    Vector2Int endCoordinate,
+    int bridgeCount)
+        {
+            EnsureHashiData();
+
+            if (startCoordinate == endCoordinate)
+            {
+                return false;
+            }
+
+            if (!TryGetIslandCell(startCoordinate, out _) ||
+                !TryGetIslandCell(endCoordinate, out _))
+            {
+                return false;
+            }
+
+            bool duplicateFixed = fixedBridges.Exists(bridge =>
+                (bridge.startCoordinate == startCoordinate &&
+                 bridge.endCoordinate == endCoordinate) ||
+                (bridge.startCoordinate == endCoordinate &&
+                 bridge.endCoordinate == startCoordinate));
+
+            if (duplicateFixed)
+            {
+                return false;
+            }
+
+            bool duplicateTutorial = tutorialBridges.Exists(bridge =>
+                (bridge.startCoordinate == startCoordinate &&
+                 bridge.endCoordinate == endCoordinate) ||
+                (bridge.startCoordinate == endCoordinate &&
+                 bridge.endCoordinate == startCoordinate));
+
+            if (duplicateTutorial)
+            {
+                return false;
+            }
+
+            tutorialBridges.Add(new TutorialBridgeDefinitionData
+            {
+                id = GetNextTutorialBridgeId(),
+                startCoordinate = startCoordinate,
+                endCoordinate = endCoordinate,
+                bridgeCount = Mathf.Clamp(bridgeCount, 1, 2)
+            });
+
+            return true;
+        }
 
         public bool AddChainBarrier(
             Vector2Int startCoordinate,
@@ -1233,6 +1304,12 @@ namespace BoxPuller.Scripts.Data
             fixedBridges.RemoveAll(bridge => bridge.id == id);
         }
 
+        public void RemoveTutorialBridgeDefinition(int id)
+        {
+            EnsureHashiData();
+            tutorialBridges.RemoveAll(bridge => bridge.id == id);
+        }
+
         public void RemoveChainBarrier(int id)
         {
             EnsureHashiData();
@@ -1245,6 +1322,18 @@ namespace BoxPuller.Scripts.Data
 
             int nextId = 1;
             while (fixedBridges.Exists(bridge => bridge.id == nextId))
+            {
+                nextId++;
+            }
+
+            return nextId;
+        }
+        public int GetNextTutorialBridgeId()
+        {
+            EnsureHashiData();
+
+            int nextId = 1;
+            while (tutorialBridges.Exists(bridge => bridge.id == nextId))
             {
                 nextId++;
             }
@@ -1288,6 +1377,12 @@ namespace BoxPuller.Scripts.Data
                 chain.startCoordinate += offset;
                 chain.endCoordinate += offset;
             }
+            for (int i = 0; i < tutorialBridges.Count; i++)
+            {
+                TutorialBridgeDefinitionData bridge = tutorialBridges[i];
+                bridge.startCoordinate += offset;
+                bridge.endCoordinate += offset;
+            }
 
             fixedBridges.RemoveAll(bridge =>
                 !IsCoordinateInside(bridge.startCoordinate, newWidth, newHeight) ||
@@ -1296,6 +1391,10 @@ namespace BoxPuller.Scripts.Data
             chainBarriers.RemoveAll(chain =>
                 !IsCoordinateInside(chain.startCoordinate, newWidth, newHeight) ||
                 !IsCoordinateInside(chain.endCoordinate, newWidth, newHeight));
+
+            tutorialBridges.RemoveAll(bridge =>
+    !IsCoordinateInside(bridge.startCoordinate, newWidth, newHeight) ||
+    !IsCoordinateInside(bridge.endCoordinate, newWidth, newHeight));
         }
 
         private static bool IsCoordinateInside(

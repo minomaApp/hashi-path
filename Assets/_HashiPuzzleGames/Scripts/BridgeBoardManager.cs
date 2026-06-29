@@ -100,6 +100,8 @@ namespace HashiGame.Scripts.Runtime
 
             RegisterGeneratedFixedBridges();
             CreateMissingFixedBridgesFromData();
+            RegisterGeneratedTutorialBridges();
+            CreateMissingTutorialBridgesFromData();
             RegisterGeneratedChains();
             CreateMissingChainsFromData();
 
@@ -253,7 +255,7 @@ namespace HashiGame.Scripts.Runtime
             {
                 return;
             }
-            Debug.Log("[BridgeBoardManager] TutorialController setup completed.");
+            Debug.Log("[BridgeBoardManager] TutorialController TryCompleteDoubleBridgeTutorial setup completed.");
 
             TutorialController.instance.HandleInput(StepType.DoubleBridgeCreated);
         }
@@ -420,8 +422,8 @@ namespace HashiGame.Scripts.Runtime
         }
 
         private void CutBridgeConnection(
-      BridgeConnection connection,
-      Vector3 cutWorldPoint)
+     BridgeConnection connection,
+     Vector3 cutWorldPoint)
         {
             if (connection == null)
             {
@@ -447,6 +449,24 @@ namespace HashiGame.Scripts.Runtime
             {
                 RemoveConnection(connection, cutWorldPoint);
             }
+
+            TryCompleteBridgeRemovedTutorial();
+        }
+
+        private void TryCompleteBridgeRemovedTutorial()
+        {
+            if (TutorialController.instance == null)
+            {
+                return;
+            }
+
+            if (!TutorialController.instance.CanHandleInput(StepType.BridgeRemoved))
+            {
+                return;
+            }
+            Debug.Log("[BridgeBoardManager] TutorialController TryCompleteBridgeRemovedTutorial setup completed.");
+
+            TutorialController.instance.HandleInput(StepType.BridgeRemoved);
         }
 
         private bool RegisterIslands()
@@ -568,6 +588,79 @@ namespace HashiGame.Scripts.Runtime
                     secondIsland,
                     data.bridgeCount,
                     true);
+            }
+        }
+
+        private void RegisterGeneratedTutorialBridges()
+        {
+            IReadOnlyList<BridgeConnection> generatedBridges =
+                levelContainer.GeneratedTutorialBridges;
+
+            if (generatedBridges == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < generatedBridges.Count; i++)
+            {
+                BridgeConnection connection = generatedBridges[i];
+
+                if (connection == null)
+                {
+                    continue;
+                }
+
+                IslandNode firstIsland = GetIsland(connection.StartCoordinate);
+                IslandNode secondIsland = GetIsland(connection.EndCoordinate);
+
+                if (firstIsland == null || secondIsland == null)
+                {
+                    Debug.LogError(
+                        "[BridgeBoardManager] Tutorial bridge endpoint island is missing.");
+                    continue;
+                }
+
+                if (!connection.BindRuntime(firstIsland, secondIsland, visualSettings))
+                {
+                    continue;
+                }
+
+                RegisterConnectionInternal(connection);
+            }
+        }
+
+        private void CreateMissingTutorialBridgesFromData()
+        {
+            if (levelData.tutorialBridges == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < levelData.tutorialBridges.Count; i++)
+            {
+                TutorialBridgeDefinitionData data = levelData.tutorialBridges[i];
+                IslandPairKey key = new IslandPairKey(
+                    data.startCoordinate,
+                    data.endCoordinate);
+
+                if (connectionsByPair.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                IslandNode firstIsland = GetIsland(data.startCoordinate);
+                IslandNode secondIsland = GetIsland(data.endCoordinate);
+
+                if (firstIsland == null || secondIsland == null)
+                {
+                    continue;
+                }
+
+                CreateBridgeConnection(
+                    firstIsland,
+                    secondIsland,
+                    data.bridgeCount,
+                    false);
             }
         }
 
@@ -1100,11 +1193,49 @@ namespace HashiGame.Scripts.Runtime
             {
                 BridgeConnection connection = existingConnections[i];
 
-                if (connection != null && !connection.IsFixed)
+                if (connection == null)
                 {
-                    DestroyObject(connection.gameObject);
+                    continue;
+                }
+
+                if (connection.IsFixed)
+                {
+                    continue;
+                }
+
+                if (IsGeneratedTutorialBridge(connection))
+                {
+                    continue;
+                }
+
+                DestroyObject(connection.gameObject);
+            }
+        }
+
+        private bool IsGeneratedTutorialBridge(BridgeConnection connection)
+        {
+            if (connection == null || levelContainer == null)
+            {
+                return false;
+            }
+
+            IReadOnlyList<BridgeConnection> tutorialBridges =
+                levelContainer.GeneratedTutorialBridges;
+
+            if (tutorialBridges == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < tutorialBridges.Count; i++)
+            {
+                if (tutorialBridges[i] == connection)
+                {
+                    return true;
                 }
             }
+
+            return false;
         }
 
         private void ClearRuntimeCollections()

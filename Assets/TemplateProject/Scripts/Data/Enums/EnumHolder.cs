@@ -84,6 +84,7 @@ namespace BoxPuller.Scripts.Data.Enums
         {
             Island,
             FixedBridge,
+            TutorialBridge,
             Chain
         }
     }

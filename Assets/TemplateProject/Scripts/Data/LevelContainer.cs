@@ -45,6 +45,10 @@ namespace BoxPuller.Scripts.Data
         [SerializeField] private List<GameObject> generatedBottomNodes = new List<GameObject>();
         [SerializeField] private List<GameObject> generatedFlowerPetals = new List<GameObject>();
 
+        [SerializeField]
+        private List<BridgeConnection> generatedTutorialBridges =
+    new List<BridgeConnection>();
+
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
 
@@ -70,20 +74,24 @@ namespace BoxPuller.Scripts.Data
         public IReadOnlyList<GameObject> GeneratedBottomNodes => generatedBottomNodes;
         public IReadOnlyList<GameObject> GeneratedFlowerPetals => generatedFlowerPetals;
 
+        public IReadOnlyList<BridgeConnection> GeneratedTutorialBridges => generatedTutorialBridges;
+
+
         public void InitHashiRuntimeReferences(
-            int width,
-            int height,
-            float horizontalSpacing,
-            float verticalSpacing,
-            Vector3 gridOrigin,
-            float baseHeight,
-            GameObject newIslandParent,
-            GameObject newBridgeParent,
-            GameObject newChainParent,
-            GameObject newEffectsParent,
-            List<IslandNode> islands,
-            List<BridgeConnection> fixedBridges,
-            List<ChainBarrier> chainsList)
+          int width,
+          int height,
+          float horizontalSpacing,
+          float verticalSpacing,
+          Vector3 gridOrigin,
+          float baseHeight,
+          GameObject newIslandParent,
+          GameObject newBridgeParent,
+          GameObject newChainParent,
+          GameObject newEffectsParent,
+          List<IslandNode> islands,
+          List<BridgeConnection> fixedBridges,
+          List<BridgeConnection> tutorialBridges,
+          List<ChainBarrier> chainsList)
         {
             gridWidth = width;
             gridHeight = height;
@@ -99,7 +107,9 @@ namespace BoxPuller.Scripts.Data
 
             generatedIslands = islands ?? new List<IslandNode>();
             generatedFixedBridges = fixedBridges ?? new List<BridgeConnection>();
+            generatedTutorialBridges = tutorialBridges ?? new List<BridgeConnection>();
             generatedChains = chainsList ?? new List<ChainBarrier>();
+
         }
 
         public Vector3 GridCoordinateToWorld(Vector2Int coordinate)

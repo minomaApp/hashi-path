@@ -10,7 +10,8 @@ namespace TemplateProject.Scripts.Data.SO
     {
         Classic,
         EventTriggered,
-        DoubleBridgeCreated
+        DoubleBridgeCreated,
+        BridgeRemoved
     }
 
     [Serializable]
