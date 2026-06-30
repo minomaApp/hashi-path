@@ -29,6 +29,10 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private LayerMask islandLayerMask = ~0;
         [SerializeField] private float raycastDistance = 500f;
 
+        [Header("Island Snap")]
+        [SerializeField] private bool useIslandSnap = true;
+        [SerializeField] private float islandSnapScreenRadius = 90f;
+
         [Header("Feedback")]
         [SerializeField] private float invalidPreviewDuration = 0.18f;
         //[SerializeField] private bool useBasicDeviceVibration;
@@ -254,17 +258,17 @@ namespace HashiGame.Scripts.Runtime
 
             bool isValid = false;
 
-            if (TryRaycastIsland(screenPosition, out hoveredIsland))
+            if (TryFindTargetIsland(
+                    screenPosition,
+                    dragStartIsland,
+                    out hoveredIsland))
             {
                 endPoint = hoveredIsland.ConnectionPosition;
 
-                if (hoveredIsland != dragStartIsland)
-                {
-                    isValid = boardManager.CanCycleConnection(
-                        dragStartIsland,
-                        hoveredIsland,
-                        out _);
-                }
+                isValid = boardManager.CanCycleConnection(
+                    dragStartIsland,
+                    hoveredIsland,
+                    out _);
             }
 
             if (previewController != null)
@@ -288,7 +292,10 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
-            if (!TryRaycastIsland(screenPosition, out IslandNode endIsland) ||
+            if (!TryFindTargetIsland(
+                    screenPosition,
+                    startIsland,
+                    out IslandNode endIsland) ||
                 endIsland == startIsland)
             {
                 HidePreview();
@@ -417,6 +424,85 @@ namespace HashiGame.Scripts.Runtime
 
             island = hit.collider.GetComponentInParent<IslandNode>();
             return island != null;
+        }
+
+        private bool TryFindTargetIsland(
+    Vector2 screenPosition,
+    IslandNode ignoredIsland,
+    out IslandNode island)
+        {
+            island = null;
+
+            if (TryRaycastIsland(screenPosition, out IslandNode raycastIsland) &&
+                raycastIsland != ignoredIsland)
+            {
+                island = raycastIsland;
+                return true;
+            }
+
+            if (!useIslandSnap)
+            {
+                return false;
+            }
+
+            return TryFindNearestIslandByScreenDistance(
+                screenPosition,
+                ignoredIsland,
+                out island);
+        }
+
+        private bool TryFindNearestIslandByScreenDistance(
+            Vector2 screenPosition,
+            IslandNode ignoredIsland,
+            out IslandNode nearestIsland)
+        {
+            nearestIsland = null;
+
+            if (boardManager == null || inputCamera == null)
+            {
+                return false;
+            }
+
+            float radius = Mathf.Max(1f, islandSnapScreenRadius);
+            float bestSqrDistance = radius * radius;
+
+            foreach (IslandNode island in boardManager.Islands)
+            {
+                if (island == null)
+                {
+                    continue;
+                }
+
+                if (island == ignoredIsland)
+                {
+                    continue;
+                }
+
+                Vector3 islandScreenPosition =
+                    inputCamera.WorldToScreenPoint(island.ConnectionPosition);
+
+                if (islandScreenPosition.z < 0f)
+                {
+                    continue;
+                }
+
+                Vector2 islandScreenPoint = new Vector2(
+                    islandScreenPosition.x,
+                    islandScreenPosition.y);
+
+                float sqrDistance =
+                    (islandScreenPoint - screenPosition).sqrMagnitude;
+
+                if (sqrDistance > bestSqrDistance)
+                {
+                    continue;
+                }
+
+                bestSqrDistance = sqrDistance;
+                nearestIsland = island;
+            }
+
+            return nearestIsland != null;
         }
 
         private Vector3 GetPointerWorldPoint(Vector2 screenPosition, float planeHeight)

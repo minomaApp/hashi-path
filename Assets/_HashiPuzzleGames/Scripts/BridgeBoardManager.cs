@@ -449,7 +449,11 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
+            IslandNode firstIsland = connection.StartIsland;
+            IslandNode secondIsland = connection.EndIsland;
+
             PlayBridgeCutFeedback();
+            PlayBridgeEndpointFeedback(firstIsland, secondIsland);
 
             if (connection.BridgeCount > 1)
             {
