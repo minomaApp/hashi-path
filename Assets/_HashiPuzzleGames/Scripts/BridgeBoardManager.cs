@@ -233,12 +233,26 @@ namespace HashiGame.Scripts.Runtime
             }
 
             PlayBridgeConnectFeedback();
+            PlayBridgeEndpointFeedback(firstIsland, secondIsland);
             TryCompleteDoubleBridgeTutorial(didReachDoubleBridge);
 
             RefreshBoardState();
             return true;
         }
+        private void PlayBridgeEndpointFeedback(
+    IslandNode firstIsland,
+    IslandNode secondIsland)
+        {
+            if (firstIsland != null)
+            {
+                firstIsland.PlayBridgeConnectionFeedback();
+            }
 
+            if (secondIsland != null)
+            {
+                secondIsland.PlayBridgeConnectionFeedback();
+            }
+        }
         private void TryCompleteDoubleBridgeTutorial(bool didReachDoubleBridge)
         {
             if (!didReachDoubleBridge)

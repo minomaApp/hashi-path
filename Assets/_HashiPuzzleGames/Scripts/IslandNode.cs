@@ -6,6 +6,7 @@ using BoxPuller.Scripts.Data.SO;
 using TMPro;
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
 
 namespace HashiGame.Scripts.Runtime
 {
@@ -51,8 +52,17 @@ namespace HashiGame.Scripts.Runtime
         [SerializeField] private Transform lockedShakeTarget;
         [SerializeField] private float lockedShakeDuration = 0.3f;
         [SerializeField] private float lockedShakeStrength = 0.08f;
-        [SerializeField] private int lockedShakeVibrations =2;
+        [SerializeField] private int lockedShakeVibrations = 2;
         [SerializeField] private Vector3 lockedShakeLocalAxis = Vector3.right;
+
+        [Header("Bridge Connection Feedback")]
+        [SerializeField] private Transform bridgeConnectionFeedbackTarget;
+        [SerializeField] private float bridgeConnectionGrowScale = 1.12f;
+        [SerializeField] private float bridgeConnectionGrowDuration = 0.08f;
+        [SerializeField] private float bridgeConnectionShrinkDuration = 0.12f;
+        [SerializeField] private Ease bridgeConnectionGrowEase = Ease.OutBack;
+        [SerializeField] private Ease bridgeConnectionShrinkEase = Ease.OutQuad;
+        [SerializeField] private ParticleSystem[] bridgeConnectionParticles;
 
         [HideInInspector]
         [SerializeField] private Renderer[] islandRenderers;
@@ -66,8 +76,13 @@ namespace HashiGame.Scripts.Runtime
         private int currentBridgeCount;
         private bool unlockParticlesPlayed;
 
-        private Coroutine lockedShakeCoroutine;
+        //private Coroutine lockedShakeCoroutine;
         private Vector3 lockedShakeStartLocalPosition;
+        private Tween lockedShakeTween;
+        private Tween bridgeConnectionTween;
+        private Vector3 bridgeConnectionStartScale;
+        private bool hasBridgeConnectionStartScale;
+        private bool hasLockedShakeStartLocalPosition;
 
         public bool IsOverfilled => currentBridgeCount > requiredBridgeCount;
         public Vector2Int Coordinate => coordinate;
@@ -219,18 +234,20 @@ namespace HashiGame.Scripts.Runtime
                 return;
             }
 
-            if (lockedShakeCoroutine != null)
+            if (lockedShakeTween != null && lockedShakeTween.IsActive())
             {
-                StopCoroutine(lockedShakeCoroutine);
-                target.localPosition = lockedShakeStartLocalPosition;
+                lockedShakeTween.Kill(false);
+                lockedShakeTween = null;
+
+                if (hasLockedShakeStartLocalPosition)
+                {
+                    target.localPosition = lockedShakeStartLocalPosition;
+                }
             }
 
             lockedShakeStartLocalPosition = target.localPosition;
-            lockedShakeCoroutine = StartCoroutine(LockedShakeRoutine(target));
-        }
+            hasLockedShakeStartLocalPosition = true;
 
-        private IEnumerator LockedShakeRoutine(Transform target)
-        {
             Vector3 axis = lockedShakeLocalAxis;
 
             if (axis.sqrMagnitude <= 0.0001f)
@@ -240,31 +257,147 @@ namespace HashiGame.Scripts.Runtime
 
             axis.Normalize();
 
+            int stepCount = Mathf.Max(1, lockedShakeVibrations) * 2;
             float duration = Mathf.Max(0.01f, lockedShakeDuration);
-            float elapsed = 0f;
+            float stepDuration = duration / (stepCount + 1);
 
-            while (elapsed < duration)
+            Sequence sequence = DOTween.Sequence();
+            sequence.SetTarget(target);
+
+            for (int i = 0; i < stepCount; i++)
             {
-                elapsed += Time.deltaTime;
+                float sign = i % 2 == 0 ? 1f : -1f;
+                float fade = 1f - (i / (float)stepCount);
 
-                float time = Mathf.Clamp01(elapsed / duration);
-                float fade = 1f - time;
-                float wave = Mathf.Sin(
-                    time *
-                    lockedShakeVibrations *
-                    Mathf.PI *
-                    2f);
-
-                target.localPosition =
+                Vector3 targetPosition =
                     lockedShakeStartLocalPosition +
-                    axis * wave * lockedShakeStrength * fade;
+                    axis * lockedShakeStrength * sign * fade;
 
-                yield return null;
+                sequence.Append(
+                    target
+                        .DOLocalMove(targetPosition, stepDuration)
+                        .SetEase(Ease.OutQuad));
             }
 
-            target.localPosition = lockedShakeStartLocalPosition;
-            lockedShakeCoroutine = null;
+            sequence.Append(
+                target
+                    .DOLocalMove(lockedShakeStartLocalPosition, stepDuration)
+                    .SetEase(Ease.OutQuad));
+
+            sequence.OnComplete(() =>
+            {
+                if (target != null)
+                {
+                    target.localPosition = lockedShakeStartLocalPosition;
+                }
+
+                lockedShakeTween = null;
+            });
+
+            lockedShakeTween = sequence;
         }
+
+        public void PlayBridgeConnectionFeedback()
+        {
+            Transform target = GetBridgeConnectionFeedbackTarget();
+
+            if (target == null)
+            {
+                return;
+            }
+
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
+            if (bridgeConnectionTween != null && bridgeConnectionTween.IsActive())
+            {
+                bridgeConnectionTween.Kill(false);
+
+                if (hasBridgeConnectionStartScale)
+                {
+                    target.localScale = bridgeConnectionStartScale;
+                }
+
+                bridgeConnectionTween = null;
+            }
+
+            bridgeConnectionStartScale = target.localScale;
+            hasBridgeConnectionStartScale = true;
+
+            float safeScale = Mathf.Max(1f, bridgeConnectionGrowScale);
+            Vector3 targetScale = bridgeConnectionStartScale * safeScale;
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.SetTarget(target);
+            sequence.Append(
+                target
+                    .DOScale(targetScale, bridgeConnectionGrowDuration)
+                    .SetEase(bridgeConnectionGrowEase));
+            sequence.Append(
+                target
+                    .DOScale(bridgeConnectionStartScale, bridgeConnectionShrinkDuration)
+                    .SetEase(bridgeConnectionShrinkEase));
+            sequence.OnComplete(() =>
+            {
+                if (target != null)
+                {
+                    target.localScale = bridgeConnectionStartScale;
+                }
+
+                bridgeConnectionTween = null;
+            });
+
+            bridgeConnectionTween = sequence;
+
+            PlayBridgeConnectionParticles();
+        }
+
+        private Transform GetBridgeConnectionFeedbackTarget()
+        {
+            return bridgeConnectionFeedbackTarget != null
+                ? bridgeConnectionFeedbackTarget
+                : transform;
+        }
+
+        private void PlayBridgeConnectionParticles()
+        {
+            if (bridgeConnectionParticles == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < bridgeConnectionParticles.Length; i++)
+            {
+                ParticleSystem particle = bridgeConnectionParticles[i];
+
+                if (particle == null)
+                {
+                    continue;
+                }
+
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                particle.Play(true);
+            }
+        }
+
+        private void StopBridgeConnectionFeedback(bool restoreScale)
+        {
+            Transform target = GetBridgeConnectionFeedbackTarget();
+
+            if (bridgeConnectionTween != null && bridgeConnectionTween.IsActive())
+            {
+                bridgeConnectionTween.Kill(false);
+                bridgeConnectionTween = null;
+            }
+
+            if (restoreScale && target != null && hasBridgeConnectionStartScale)
+            {
+                target.localScale = bridgeConnectionStartScale;
+            }
+        }
+
         private Transform GetLockedShakeTarget()
         {
             return lockedShakeTarget != null
@@ -313,6 +446,7 @@ namespace HashiGame.Scripts.Runtime
         private void ResetRuntimeState()
         {
             StopLockedShake(false);
+            StopBridgeConnectionFeedback(false);
 
             connections.Clear();
             currentBridgeCount = 0;
@@ -326,13 +460,15 @@ namespace HashiGame.Scripts.Runtime
         {
             Transform target = GetLockedShakeTarget();
 
-            if (lockedShakeCoroutine != null)
+            if (lockedShakeTween != null && lockedShakeTween.IsActive())
             {
-                StopCoroutine(lockedShakeCoroutine);
-                lockedShakeCoroutine = null;
+                lockedShakeTween.Kill(false);
+                lockedShakeTween = null;
             }
 
-            if (restorePosition && target != null)
+            if (restorePosition &&
+                target != null &&
+                hasLockedShakeStartLocalPosition)
             {
                 target.localPosition = lockedShakeStartLocalPosition;
             }
