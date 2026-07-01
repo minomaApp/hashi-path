@@ -1356,7 +1356,7 @@ namespace HashiGame.Scripts.Runtime
 
         private void PlayIslandCompleteFeedback()
         {
-            PlaySound(islandCompleteSound);
+         
 
             if (useIslandCompleteVibration && VibrationManager.instance != null)
             {
