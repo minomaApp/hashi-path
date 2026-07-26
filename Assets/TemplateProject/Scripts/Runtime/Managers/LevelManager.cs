@@ -11,6 +11,9 @@ namespace TemplateProject.Scripts.Runtime.Managers
     [DefaultExecutionOrder(-1)]
     public class LevelManager : MonoBehaviour
     {
+        private const int PreferredMobileFrameRate = 60;
+        private const int MinimumMobileFrameRate = 30;
+
         public static LevelManager instance;
 
         [Header("Cached References")]
@@ -42,10 +45,28 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         private void HandleFPS()
         {
-            if (Application.targetFrameRate != 120)
+#if UNITY_ANDROID || UNITY_IOS
+            QualitySettings.vSyncCount = 0;
+
+            double refreshRate = Screen.currentResolution.refreshRateRatio.value;
+            if (refreshRate <= 0d)
             {
-                Application.targetFrameRate = 120;
+                Application.targetFrameRate = PreferredMobileFrameRate;
+                return;
             }
+
+            int roundedRefreshRate = Mathf.RoundToInt((float)refreshRate);
+            int divisor = Mathf.Max(
+                1,
+                Mathf.RoundToInt(
+                    roundedRefreshRate / (float)PreferredMobileFrameRate));
+
+            Application.targetFrameRate = Mathf.Max(
+                MinimumMobileFrameRate,
+                Mathf.RoundToInt(roundedRefreshRate / (float)divisor));
+#else
+            Application.targetFrameRate = PreferredMobileFrameRate;
+#endif
         }
 
         private void MakeSingleton()
@@ -61,9 +82,9 @@ namespace TemplateProject.Scripts.Runtime.Managers
         }
 
         /// <summary>
-        /// Prefab seçilmeden önce çağrılır.
-        /// Sadece level index datasını hazırlar.
-        /// Tutorial, feature, UI başlatmaz.
+        /// Prefab seÃ§ilmeden Ã¶nce Ã§aÄŸrÄ±lÄ±r.
+        /// Sadece level index datasÄ±nÄ± hazÄ±rlar.
+        /// Tutorial, feature, UI baÅŸlatmaz.
         /// </summary>
         public void InitializeLevelDataForLoading(int levelCount)
         {
@@ -79,9 +100,9 @@ namespace TemplateProject.Scripts.Runtime.Managers
         }
 
         /// <summary>
-        /// Sadece save datasını okur.
-        /// Tutorial başlatmaz.
-        /// Feature başlatmaz.
+        /// Sadece save datasÄ±nÄ± okur.
+        /// Tutorial baÅŸlatmaz.
+        /// Feature baÅŸlatmaz.
         /// </summary>
         public void HandleSaveData()
         {
@@ -105,8 +126,8 @@ namespace TemplateProject.Scripts.Runtime.Managers
         }
 
         /// <summary>
-        /// Prefab instantiate edildikten sonra çağrılır.
-        /// Tutorial, feature gibi sahneye bağlı sistemler burada başlatılır.
+        /// Prefab instantiate edildikten sonra Ã§aÄŸrÄ±lÄ±r.
+        /// Tutorial, feature gibi sahneye baÄŸlÄ± sistemler burada baÅŸlatÄ±lÄ±r.
         /// </summary>
         public void InitializeAfterLevelLoaded()
         {
@@ -202,7 +223,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
             if (ABManager.Levels == null || ABManager.Levels.Length == 0)
             {
-                Debug.LogError("[LevelManager] ABManager.Levels boş. Level index 0 döndürüldü.");
+                Debug.LogError("[LevelManager] ABManager.Levels boÅŸ. Level index 0 dÃ¶ndÃ¼rÃ¼ldÃ¼.");
                 return 0;
             }
 
