@@ -69,7 +69,7 @@ namespace BoxPuller.Scripts.Runtime.Managers
 
         public void LockedShooterClick()
         {
-            Medium();
+            Light();
         }
 
         public void BoxBreak()
@@ -88,7 +88,7 @@ namespace BoxPuller.Scripts.Runtime.Managers
 
         public void LockedIslandClick()
         {
-            Medium();
+            Light();
         }
 
         public void BridgeConnect()
@@ -108,7 +108,7 @@ namespace BoxPuller.Scripts.Runtime.Managers
 
         public void IslandComplete()
         {
-            Medium();
+            Light();
         }
 
         public void ChainShrink()
