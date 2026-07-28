@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using TemplateProject.Scripts.Data;
 using UnityEngine;
 
@@ -16,6 +15,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
         private Dictionary<string, AudioClip> audioClipDictionary = new Dictionary<string, AudioClip>();
 
         [SerializeField] private List<AudioSource> audioSources;
+        [SerializeField, Min(1)] private int initialSfxPoolSize = 4;
 
         [Header("Background Music")]
         [SerializeField] private AudioSource musicSource;
@@ -25,18 +25,37 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         private void Awake()
         {
-            InitializeSingleton();
+            if (!InitializeSingleton())
+            {
+                return;
+            }
+
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
             InitializeAudioLibrary();
+            InitializeAudioSourcePool();
         }
 
-        private void InitializeSingleton()
+        private bool InitializeSingleton()
         {
-            if (!instance)
+            if (instance != null && instance != this)
             {
-                instance = this;
+                Destroy(gameObject);
+                return false;
+            }
+
+            instance = this;
+            return true;
+        }
+
+        private void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance = null;
             }
         }
+
         private void Start()
         {
             if (playBackgroundMusicOnStart)
@@ -47,22 +66,65 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         private void InitializeAudioLibrary()
         {
+            audioClipDictionary.Clear();
+
             foreach (var audioData in audioLibrary.audioClips)
             {
                 audioClipDictionary.TryAdd(audioData.clipName, audioData.clip);
             }
         }
 
-        private AudioSource GetOrCreateAudioSource()
+        private void InitializeAudioSourcePool()
         {
-            foreach (var source in audioSources.Where(source => !source.isPlaying))
+            audioSources ??= new List<AudioSource>();
+            audioSources.RemoveAll(source => source == null);
+
+            int sfxSourceCount = 0;
+            foreach (AudioSource source in audioSources)
             {
-                return source;
+                if (source != musicSource)
+                {
+                    ConfigureSfxSource(source);
+                    sfxSourceCount++;
+                }
             }
 
-            var newSource = gameObject.AddComponent<AudioSource>();
+            while (sfxSourceCount < initialSfxPoolSize)
+            {
+                CreateSfxSource();
+                sfxSourceCount++;
+            }
+        }
+
+        private AudioSource GetOrCreateAudioSource()
+        {
+            for (int i = 0; i < audioSources.Count; i++)
+            {
+                AudioSource source = audioSources[i];
+                if (source != null && source != musicSource && !source.isPlaying)
+                {
+                    ConfigureSfxSource(source);
+                    return source;
+                }
+            }
+
+            return CreateSfxSource();
+        }
+
+        private AudioSource CreateSfxSource()
+        {
+            AudioSource newSource = gameObject.AddComponent<AudioSource>();
+            ConfigureSfxSource(newSource);
             audioSources.Add(newSource);
             return newSource;
+        }
+
+        private static void ConfigureSfxSource(AudioSource source)
+        {
+            source.playOnAwake = false;
+            source.loop = false;
+            source.spatialBlend = 0f;
+            source.clip = null;
         }
 
         public void PlaySound(string clipName, bool oneShot = true, bool loop = false, float volume = 1f)

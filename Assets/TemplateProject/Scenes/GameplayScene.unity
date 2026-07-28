@@ -2115,8 +2115,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_LastShotTime
+      value: 7.8138113
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
       propertyPath: m_Config.m_RootedPath
       value: D:/PUZZLEGAMES/GameShot
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_CaptureHotkey.m_Shift
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_CaptureHotkey.m_Control
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_GameViewResolution.m_Width
+      value: 828
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_GameViewResolution.m_Height
+      value: 1792
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_Resolutions.Array.data[0].m_FileName
+      value: D:\PUZZLEGAMES\GameShot\2064x2752-screenshot2064x2752/screenshot (1).png
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400048, guid: 17f70b34ca78a8843aeba4110051a266, type: 3}
+      propertyPath: m_Config.m_Resolutions.Array.data[1].m_FileName
+      value: D:\PUZZLEGAMES\GameShot\1320x2868-screenshot1320x2868/screenshot (1).png
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2166,7 +2194,7 @@ MonoBehaviour:
   bridgeConnectSound: BridgeConnect
   bridgeCutSound: BridgeCut
   islandUnlockSound: IslandUnlock
-  islandCompleteSound: IslandComplete
+  islandCompleteSound: BusArrived
   useBridgeConnectVibration: 1
   useBridgeCutVibration: 1
   useIslandUnlockVibration: 1
@@ -2657,6 +2685,7 @@ MonoBehaviour:
   audioLibrary: {fileID: 11400000, guid: a0bb4fce7dcd4594c85e67ef363f0f63, type: 2}
   audioSources:
   - {fileID: 1735003494}
+  initialSfxPoolSize: 4
   musicSource: {fileID: 1735003494}
   backgroundMusicClipName: BackgroundMusic
   backgroundMusicVolume: 0.36
@@ -3112,7 +3141,7 @@ MonoBehaviour:
     m_Bits: 2048
   raycastDistance: 500
   useIslandSnap: 1
-  islandSnapScreenRadius: 90
+  islandSnapScreenRadius: 135
   invalidPreviewDuration: 0.18
   onInvalidMove:
     m_PersistentCalls:
@@ -7296,10 +7325,10 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
+  m_HDR: 0
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 1
+  m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
@@ -7330,7 +7359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
+  m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
@@ -7341,14 +7370,14 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
   m_ClearDepth: 1
   m_AllowXRRendering: 1
-  m_AllowHDROutput: 1
+  m_AllowHDROutput: 0
   m_UseScreenCoordOverride: 0
   m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
@@ -7401,7 +7430,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1351022186}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bb42831ee5422f409e7f24f9e7488ea, type: 3}
   m_Name: 

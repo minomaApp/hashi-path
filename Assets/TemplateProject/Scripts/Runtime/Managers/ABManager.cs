@@ -119,7 +119,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
             levelsString = CreateDefaultLevelsString(levelCount);
             tutorialLevelsString = "0,2,12";
             skipAfterLoopLevelsString = "0";
-            featureUnlockLevelsString = "6,12,20";
+            featureUnlockLevelsString = "6,12,20,30";
             levelTimersString = CreateDefaultString("60", levelCount);
 
             Levels = GetIntArrayFromString(levelsString);
