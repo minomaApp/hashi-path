@@ -36,6 +36,10 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         private bool saveDataInitialized;
         private bool postLevelLoadInitialized;
+        private bool tinySauceLevelActive;
+        private int tinySauceLevelNumber;
+        private int tinySauceLineDrawCount;
+        private float tinySauceLevelStartRealtime;
 
         private void Awake()
         {
@@ -296,6 +300,65 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public int GetTotalLevelPlayed()
         {
             return totalPlayedLevelCount;
+        }
+
+        public void TrackLevelStarted()
+        {
+            if (tinySauceLevelActive)
+                return;
+
+            tinySauceLevelNumber = totalPlayedLevelCount;
+            tinySauceLineDrawCount = 0;
+            tinySauceLevelStartRealtime = Time.realtimeSinceStartup;
+            tinySauceLevelActive = true;
+
+            Debug.Log(
+                "[TinySauce Tracking] OnGameStarted | Level: " +
+                tinySauceLevelNumber);
+
+            TinySauce.OnGameStarted(tinySauceLevelNumber);
+        }
+
+        public void TrackLineDrawn()
+        {
+            if (!tinySauceLevelActive)
+                return;
+
+            tinySauceLineDrawCount++;
+
+            Debug.Log(
+                "[TinySauce Tracking] LineDrawn | Level: " +
+                tinySauceLevelNumber +
+                " | Count: " +
+                tinySauceLineDrawCount);
+        }
+
+        public void TrackLevelFinished(bool isCompleted)
+        {
+            if (!tinySauceLevelActive)
+                return;
+
+            tinySauceLevelActive = false;
+
+            float elapsedSeconds =
+                Time.realtimeSinceStartup - tinySauceLevelStartRealtime;
+
+            Debug.Log(
+                "[TinySauce Tracking] OnGameFinished | Level: " +
+                tinySauceLevelNumber +
+                " | Completed: " +
+                isCompleted +
+                " | LineDrawCount: " +
+                tinySauceLineDrawCount +
+                " | ElapsedSeconds: " +
+                elapsedSeconds.ToString("F2"));
+
+            // TinySauce derives LevelPlaytime from the matching start/finish
+            // events. The score field carries the number of lines drawn.
+            TinySauce.OnGameFinished(
+                isCompleted,
+                tinySauceLineDrawCount,
+                tinySauceLevelNumber);
         }
 
         public void OpenCheatLevel(int index)
