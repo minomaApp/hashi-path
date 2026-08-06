@@ -242,6 +242,11 @@ namespace HashiGame.Scripts.Runtime
             PlayBridgeEndpointFeedback(firstIsland, secondIsland);
             TryCompleteDoubleBridgeTutorial(didReachDoubleBridge);
 
+            if (LevelManager.instance != null)
+            {
+                LevelManager.instance.TrackLineDrawn();
+            }
+
             RefreshBoardState();
             return true;
         }

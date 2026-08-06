@@ -137,6 +137,8 @@ public class GameManager : MonoBehaviour
             {
                 LevelManager.instance.onLevelLoadComplete?.Invoke();
             }
+
+            LevelManager.instance.TrackLevelStarted();
         }
 
         Debug.Log("[GameManager] Runtime setup completed.");

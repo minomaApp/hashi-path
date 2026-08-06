@@ -157,6 +157,13 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
         public void WinGame()
         {
+            if (LevelManager.instance == null ||
+                !LevelManager.instance.isGamePlayable)
+            {
+                return;
+            }
+
+            LevelManager.instance.TrackLevelFinished(true);
             LevelManager.instance.isGamePlayable = false;
             uiManager.LevelCompleteEvents();
 
@@ -191,6 +198,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public void LoseGame(bool isTimeLose)
         {
             if (!LevelManager.instance.isGamePlayable || LevelManager.instance.isLevelFailed) return;
+            LevelManager.instance.TrackLevelFinished(false);
             LevelManager.instance.isGamePlayable = false;
             LevelManager.instance.isLevelFailed = true;
             // Elephant.LevelFailed(LevelManager.instance.GetTotalLevelPlayed());

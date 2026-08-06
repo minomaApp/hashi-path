@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Creating Custom Debugger Screens</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --background: #f7f8fb;
+            --content: #ffffff;
+            --text: #1f2937;
+            --muted: #64748b;
+            --border: #d8dee9;
+            --accent: #2563eb;
+            --code-background: #111827;
+            --code-text: #e5e7eb;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background: #0f172a;
+                --content: #111827;
+                --text: #e5e7eb;
+                --muted: #94a3b8;
+                --border: #334155;
+                --accent: #60a5fa;
+                --code-background: #020617;
+                --code-text: #e5e7eb;
+            }
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 32px auto;
+            padding: 32px;
+            background: var(--content);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        h1, h2, h3 {
+            line-height: 1.25;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 2.4rem;
+        }
+
+        h2 {
+            margin-top: 2.4rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        h3 {
+            margin-top: 1.8rem;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        code {
+            padding: 0.12rem 0.28rem;
+            border-radius: 0.25rem;
+            background: color-mix(in srgb, var(--border) 35%, transparent);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-size: 0.92em;
+        }
+
+        pre {
+            overflow-x: auto;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: var(--code-background);
+            color: var(--code-text);
+        }
+
+        pre code {
+            padding: 0;
+            background: transparent;
+            color: inherit;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .screenshot-placeholder {
+            margin: 0.5rem 0 1rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Creating Custom Debugger Screens</h1>
+    <p>This debugger UI is built from runtime-created Unity UI widgets. A custom screen is a <code>TSDebugScreen</code> subclass that adds widgets when the screen is shown.</p>
+
+    <nav aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#basic-screen">Basic Screen</a></li>
+            <li><a href="#add-the-screen-to-the-debugger">Add The Screen To The Debugger</a></li>
+            <li><a href="#widgets">Widgets</a></li>
+            <li><a href="#custom-back-behavior">Custom Back Behavior</a></li>
+            <li><a href="#custom-widgets">Custom Widgets</a></li>
+            <li><a href="#checklist">Checklist</a></li>
+        </ul>
+    </nav>
+
+    <section id="basic-screen">
+        <h2>Basic Screen</h2>
+        <p>Create a class in your own project namespace:</p>
+        <pre><code class="language-csharp">using UnityEngine;
+using Voodoo.Tiny.Sauce.Internal.Debugger;
+
+namespace MyGame.Debug
+{
+    public class TSDebugPlayerScreen : TSDebugScreen
+    {
+        protected override string ScreenTitle =&gt; "Player";
+
+        protected override void OnScreenShow()
+        {
+            ClearWidgets();
+
+            AddTitle("Player");
+            AddTextPair("Name", SystemInfo.deviceName);
+            AddTextPair("Level", PlayerPrefs.GetInt("PlayerLevel", 1).ToString());
+
+            AddButton("Give 100 Coins", () =&gt;
+            {
+                var coins = PlayerPrefs.GetInt("Coins", 0) + 100;
+                PlayerPrefs.SetInt("Coins", coins);
+                ShowScreen();
+            });
+        }
+    }
+}</code></pre>
+
+        <p>Important details:</p>
+        <ul>
+            <li>Override <code>ScreenTitle</code>; it is shown in the screen header.</li>
+            <li>Override <code>OnScreenShow()</code>; it runs every time the screen opens.</li>
+            <li>Call <code>ClearWidgets()</code> before adding widgets, otherwise the screen duplicates content every time it is reopened.</li>
+            <li>Use <code>ShowScreen()</code> after changing values if you want to refresh the content immediately.</li>
+            <li>The default back button returns to the main menu.</li>
+        </ul>
+    </section>
+
+    <section id="add-the-screen-to-the-debugger">
+        <h2>Add The Screen To The Debugger</h2>
+        <p>Register the screen in <code>TSDebugUIManager</code>.</p>
+        <p>If the screen is in another namespace, add the matching <code>using</code> directive to <code>TSDebugUIManager</code> or reference the screen type with its fully-qualified name.</p>
+
+        <p>Add a field:</p>
+        <pre><code class="language-csharp">private TSDebugPlayerScreen _playerScreen;</code></pre>
+
+        <p>Add a public method:</p>
+        <pre><code class="language-csharp">public void ShowPlayerScreen()
+{
+    EnsureScreen(ref _playerScreen);
+    _playerScreen.ShowScreen();
+}</code></pre>
+
+        <p>Then add a menu entry in <code>TSDebugMainMenuScreen.OnScreenShow()</code>:</p>
+        <pre><code class="language-csharp">AddButton("Player", () =&gt; TSDebugUIManager.Instance?.ShowPlayerScreen());</code></pre>
+    </section>
+
+    <section id="widgets">
+        <h2>Widgets</h2>
+        <p><code>TSDebugScreen</code> and <code>TSDebugFoldableSectionWidget</code> expose the same widget creation methods. Use them from <code>OnScreenShow()</code> or from a foldable section instance.</p>
+
+        <h3><code>TSDebugTextWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugTextWidget AddText(string text);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugTitleWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugTitleWidget AddTitle(string title);
+protected TSDebugTitleWidget AddSubTitle(string title);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugTextPairWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugTextPairWidget AddTextPair(
+    string label,
+    string value,
+    string copyValue = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugFoldableSectionWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugFoldableSectionWidget AddFoldableSection(
+    string title,
+    bool expanded = true);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+        <p>Foldable sections can contain widgets too:</p>
+        <pre><code class="language-csharp">var inventorySection = AddFoldableSection("Inventory", expanded: true);
+inventorySection.AddTextPair("Coins", PlayerPrefs.GetInt("Coins", 0).ToString());
+inventorySection.AddButton("Clear Inventory", ClearInventory);</code></pre>
+
+        <h3><code>TSDebugButtonWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugButtonWidget AddButton(
+    string label,
+    Action onClick = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugToggleWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugToggleWidget AddToggle(
+    string label,
+    bool defaultValue = false,
+    Action&lt;bool&gt; onValueChanged = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugDropdownWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugDropdownWidget AddDropdown(
+    string label,
+    IEnumerable&lt;string&gt; options,
+    string defaultValue = null,
+    Action&lt;string&gt; onValueChanged = null);
+
+protected TSDebugDropdownWidget AddEnumDropdown&lt;TEnum&gt;(
+    string label,
+    TEnum defaultValue,
+    Action&lt;TEnum&gt; onValueChanged = null)
+    where TEnum : struct;</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugTextInputWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugTextInputWidget AddTextInput(
+    string label,
+    string defaultValue = null,
+    Action&lt;string&gt; onValueChanged = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugNumberInputWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugNumberInputWidget AddNumberInput(
+    string label,
+    float defaultValue = 0f,
+    bool isInt = false,
+    Action&lt;float&gt; onValueChanged = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3><code>TSDebugNumberInputWithSliderWidget</code></h3>
+        <pre><code class="language-csharp">protected TSDebugNumberInputWithSliderWidget AddNumberInputWithSlider(
+    string label,
+    float defaultValue = 0f,
+    float minValue = 0f,
+    float maxValue = 100f,
+    bool isInt = false,
+    Action&lt;float&gt; onValueChanged = null);</code></pre>
+        <p class="screenshot-placeholder">Screenshot: add screenshot here.</p>
+
+        <h3>Value Change Callbacks</h3>
+        <p>Value widgets can receive an <code>onValueChanged</code> callback. Prefer passing a method that takes the new widget value instead of re-reading every widget from one generic apply method.</p>
+        <pre><code class="language-csharp">protected override void OnScreenShow()
+{
+    ClearWidgets();
+
+    AddTextInput("Player Name", PlayerName, ApplyPlayerName);
+    AddToggle("God Mode", IsGodModeEnabled, ApplyGodMode);
+    AddNumberInput("Level", PlayerLevel, isInt: true, onValueChanged: ApplyLevel);
+    AddNumberInputWithSlider(
+        "Health",
+        PlayerHealth,
+        minValue: 0f,
+        maxValue: 1000f,
+        isInt: true,
+        onValueChanged: ApplyHealth);
+}
+
+private void ApplyPlayerName(string value)
+{
+    PlayerName = string.IsNullOrWhiteSpace(value) ? "Player" : value.Trim();
+    RefreshSummary();
+}
+
+private void ApplyGodMode(bool value)
+{
+    IsGodModeEnabled = value;
+    RefreshSummary();
+}
+
+private void ApplyLevel(float value)
+{
+    PlayerLevel = Mathf.Max(1, Mathf.RoundToInt(value));
+    RefreshSummary();
+}
+
+private void ApplyHealth(float value)
+{
+    PlayerHealth = value;
+    RefreshSummary();
+}</code></pre>
+
+        <p>For slider widgets, the visual value updates while dragging, but <code>onValueChanged</code> fires only when the slider is released.</p>
+
+        <h3>Custom Widget Creation</h3>
+        <pre><code class="language-csharp">protected void AddWidget(TSDebugWidget widget);
+protected T CreateWidget&lt;T&gt;() where T : TSDebugWidget;</code></pre>
+    </section>
+
+    <section id="custom-back-behavior">
+        <h2>Custom Back Behavior</h2>
+        <p>By default, the back button opens the main menu. Override <code>OnBackPressed()</code> when the screen should return somewhere else:</p>
+        <pre><code class="language-csharp">protected override void OnBackPressed()
+{
+    TSDebugUIManager.Instance?.ShowGameAnalyticsScreen();
+}</code></pre>
+
+        <p>Hide the back button by overriding <code>ShowBackButton</code>:</p>
+        <pre><code class="language-csharp">protected override bool ShowBackButton =&gt; false;</code></pre>
+    </section>
+
+    <section id="custom-widgets">
+        <h2>Custom Widgets</h2>
+        <p>For one-off UI, prefer the screen helper methods. Create a custom widget only when the same UI needs to be reused or has complex behavior.</p>
+        <p>A custom widget should inherit from <code>TSDebugWidget</code>, create its layout in <code>Awake()</code>, and expose clear setter/action methods. Existing widgets follow this pattern:</p>
+        <pre><code class="language-csharp">public static TSDebugButtonWidget Instantiate()
+{
+    var widgetObject = new GameObject(
+        nameof(TSDebugButtonWidget),
+        typeof(RectTransform),
+        typeof(Image),
+        typeof(Button),
+        typeof(TSDebugButtonWidget));
+
+    return widgetObject.GetComponent&lt;TSDebugButtonWidget&gt;();
+}</code></pre>
+
+        <p>Add a custom widget to a screen with:</p>
+        <pre><code class="language-csharp">var widget = CreateWidget&lt;TSDebugCustomWidget&gt;();
+widget.Configure(...);</code></pre>
+    </section>
+
+    <section id="checklist">
+        <h2>Checklist</h2>
+        <ul>
+            <li>Put screen classes in your own project namespace.</li>
+            <li>Keep screen-building logic in <code>OnScreenShow()</code>.</li>
+            <li>Call <code>ClearWidgets()</code> before rebuilding dynamic screens.</li>
+            <li>Add the screen to <code>TSDebugUIManager</code>.</li>
+            <li>Add a button to <code>TSDebugMainMenuScreen</code>.</li>
+            <li>Use descriptive labels and values so screenshots are easy to understand.</li>
+        </ul>
+    </section>
+</main>
+</body>
+</html>
