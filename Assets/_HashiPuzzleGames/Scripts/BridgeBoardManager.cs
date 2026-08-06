@@ -58,15 +58,21 @@ namespace HashiGame.Scripts.Runtime
         private bool isSetup;
         private bool hasWon;
         private bool suppressBoardStateFeedback;
+        private int currentCompletedIslandCount;
+        private int lastReportedTotalIslandCount = -1;
 
 
         public bool IsSetup => isSetup;
         public bool HasWon => hasWon;
         public int CompletedIslandMilestoneCount => everCompletedIslands.Count;
+        public int CurrentCompletedIslandCount => currentCompletedIslandCount;
+        public int TotalIslandCount => islandsByCoordinate.Count;
         public IReadOnlyCollection<IslandNode> Islands => islandsByCoordinate.Values;
         public IReadOnlyCollection<BridgeConnection> Connections => connectionsByPair.Values;
         public IReadOnlyList<ChainBarrier> ChainBarriers => chainBarriers;
         public HashiVisualSettings VisualSettings => visualSettings;
+
+        public event Action<int, int> IslandProgressChanged;
 
         public bool Setup(
             LevelData newLevelData,
@@ -1062,6 +1068,7 @@ namespace HashiGame.Scripts.Runtime
             }
 
             int previousMilestoneCount = everCompletedIslands.Count;
+            int completedIslandCount = 0;
             bool anyIslandCompletedThisRefresh = false;
             bool anyIslandUnlockedThisRefresh = false;
 
@@ -1076,8 +1083,22 @@ namespace HashiGame.Scripts.Runtime
 
                 if (island.IsCompleted)
                 {
+                    completedIslandCount++;
                     everCompletedIslands.Add(island.Coordinate);
                 }
+            }
+
+            int totalIslandCount = islandsByCoordinate.Count;
+            bool islandProgressChanged =
+                currentCompletedIslandCount != completedIslandCount ||
+                lastReportedTotalIslandCount != totalIslandCount;
+
+            currentCompletedIslandCount = completedIslandCount;
+            lastReportedTotalIslandCount = totalIslandCount;
+
+            if (islandProgressChanged)
+            {
+                IslandProgressChanged?.Invoke(completedIslandCount, totalIslandCount);
             }
 
             int milestoneCount = everCompletedIslands.Count;
@@ -1262,6 +1283,8 @@ namespace HashiGame.Scripts.Runtime
             connectionsByPair.Clear();
             chainBarriers.Clear();
             everCompletedIslands.Clear();
+            currentCompletedIslandCount = 0;
+            lastReportedTotalIslandCount = -1;
         }
 
         private static void DestroyObject(GameObject target)
