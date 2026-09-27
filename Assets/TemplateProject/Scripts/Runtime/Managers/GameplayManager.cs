@@ -5,6 +5,7 @@ using DG.Tweening;
 // using ElephantSDK;
 using TemplateProject.Scripts.Data;
 using TemplateProject.Scripts.Data.Config;
+using TemplateProject.Scripts.Utilities;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -163,6 +164,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
                 return;
             }
 
+            DisableRecorderFingerCanvases();
             LevelManager.instance.TrackLevelFinished(true);
             LevelManager.instance.isGamePlayable = false;
             uiManager.LevelCompleteEvents();
@@ -198,6 +200,7 @@ namespace TemplateProject.Scripts.Runtime.Managers
         public void LoseGame(bool isTimeLose)
         {
             if (!LevelManager.instance.isGamePlayable || LevelManager.instance.isLevelFailed) return;
+            DisableRecorderFingerCanvases();
             LevelManager.instance.TrackLevelFinished(false);
             LevelManager.instance.isGamePlayable = false;
             LevelManager.instance.isLevelFailed = true;
@@ -235,6 +238,25 @@ namespace TemplateProject.Scripts.Runtime.Managers
 
 
             
+        }
+
+        private static void DisableRecorderFingerCanvases()
+        {
+            RecorderFinger[] recorderFingers = FindObjectsByType<RecorderFinger>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None);
+
+            for (int i = 0; i < recorderFingers.Length; i++)
+            {
+                RecorderFinger recorderFinger = recorderFingers[i];
+                if (recorderFinger == null)
+                {
+                    continue;
+                }
+
+                recorderFinger.SetOverlayEnabled(false);
+                recorderFinger.gameObject.SetActive(false);
+            }
         }
 
 
